@@ -120,6 +120,13 @@ takeaways about adoption,
 
 \section{Roblox Contex}
 
+\paragraph{Creating Experiences}
+
+more than games
+
+telemetry gets a session id per experience
+
+
 \paragraph{Script, Module}
 
 %% https://create.roblox.com/docs/education/coding-6/intro-to-module-scripts
@@ -138,6 +145,20 @@ changes to DM can give huge type error changes
 moving (re-parent) a node changes the type of the DM, unsoundness in type system
 
 type checker assumes initial state
+
+
+\section{Telemetry Design}
+
+No PII whatsoever
+
+Random session selection
+
+Random events during session, except module switch.
+
+No access to other key events: save, exit.
+Don't want access to run, publish.
+
+\url{https://docs.google.com/document/d/1DnKvw8x1jy0EWCbBSM8neKULWz7WAg1OauKy7qqYqkI/edit}
 
 
 \section{Predictions}
