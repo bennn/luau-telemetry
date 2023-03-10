@@ -9,6 +9,7 @@
 \usepackage{alltt}
 \usepackage{amssymb}
 \usepackage{calc}
+\usepackage{cleveref}
 \usepackage{listings}
 \usepackage{mathpartir}
 \usepackage{pifont}
@@ -162,6 +163,7 @@ Don't want access to run, publish.
 
 
 \section{Predictions}
+%%bg: merge with prev section, on telemetry design?
 
 nocheck forcestrict keep growing
 
@@ -172,6 +174,16 @@ nonstrict fs unclear
 
 \section{Results}
 \label{s:data}
+
+\begin{figure}[t]
+  \includegraphics{img/row-distribution.pdf}
+  \Description{TBD: histogram with about 100 records per hour except for a 600-record spike near the end of Jan 12th.}
+  \caption{Telemetry records per hour. Each tick on the $x$-axis marks the start of a new day in California.}
+  \label{f:records-per-hour}
+\end{figure}
+
+\Cref{f:records-per-hour} shows when data arrived across the whole dataset.
+
 
 \section{Interpretation}
 
