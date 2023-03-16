@@ -14,6 +14,7 @@ jobs:
       - name: Upload pdf
         uses: actions/upload-artifact@v2
         with:
-          name: paper.pdf
-          path: oopsla23/paper.pdf
+          name: draft
+          path: oopsla23
+
           
