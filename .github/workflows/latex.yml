@@ -11,7 +11,7 @@ jobs:
       - name: Initialize TeXlive
         run: tlmgr init-usertree
       - name: Update TeXlive
-        run: tlmgr update --self
+        run: tlmgr update --all --self
       - name: Install LaTeX packages
         run: tlmgr install ncctools comment cleveref wrapfig mathpartir libertine inconsolata newtx
       - name: LaTeX
