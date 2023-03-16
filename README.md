@@ -1,3 +1,6 @@
+![latex](https://github.com/asajeffrey/luau-telemetry/actions/workflows/latex.yml/badge.svg)
+
+
 luau-telemetry
 ===
 
