@@ -8,6 +8,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Install TeXlive
         run: sudo apt-get update && sudo apt-get install texlive latexmk
+      - name: Install LaTeX packages
+        run: tlmgr install ncctools comment cleveref wrapfig mathpartir libertine inconsolata newtx
       - name: LaTeX
         working-directory: oopsla23
         run: pdflatex paper; bibtex paper; pdflatex paper; pdflatex paper
