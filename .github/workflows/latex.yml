@@ -1,0 +1,19 @@
+name: latex
+on: [push]
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install TeXlive
+        run: sudo apt-get update && sudo apt-get install texlive latexmk
+      - name: LaTeX
+        working-directory: oopsla23
+        run: pdflatex paper; bibtex paper; pdflatex paper; pdflatex paper
+      - name: Upload pdf
+        uses: actions/upload-artifact@v2
+        with:
+          name: paper.pdf
+          path: oopsla23
+          
