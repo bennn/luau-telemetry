@@ -7,13 +7,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install TeXlive
-        run: sudo apt-get update && sudo apt-get install texlive latexmk
-      - name: Initialize TeXlive
-        run: tlmgr init-usertree
-      - name: Update TeXlive
-        run: tlmgr update --all --self
-      - name: Install LaTeX packages
-        run: tlmgr install ncctools comment cleveref wrapfig mathpartir libertine inconsolata newtx
+        run: sudo apt-get update && sudo apt-get install texlive texlive-latex-extra
       - name: LaTeX
         working-directory: oopsla23
         run: pdflatex paper; bibtex paper; pdflatex paper; pdflatex paper
