@@ -1,6 +1,7 @@
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
 
-\documentclass[acmsmall,review,anonymous]{acmart}
+% \documentclass[acmsmall,review,anonymous]{acmart}
+\documentclass[acmsmall,review]{acmart}
 
 %\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
@@ -23,6 +24,9 @@
 \begin{document}
 
 \title{Millions of Type Errors}
+\subtitle{Using Telemetry To Measure The User Experience Of Type Error Reporting}
+
+% Alphabetical order for authors?
 
 \author{Ben Greenman}
 \orcid{0000-0001-7078-9287}
@@ -44,16 +48,6 @@
 }
 \email{}
 
-\author{Mitesh Shah}
-\orcid{TODO}
-\affiliation{%
-  \institution{Roblox}
-  \city{San Mateo}
-  \state{California}
-  \country{USA}
-}
-\email{}
-
 \author{Shriram Krishnamurthi}
 \orcid{0000-0001-5184-1975}
 \affiliation{%
@@ -64,13 +58,28 @@
 }
 \email{shriram@brown.edu}
 
+\author{Mitesh Shah}
+\orcid{TODO}
+\affiliation{%
+  \institution{Roblox}
+  \city{San Mateo}
+  \state{California}
+  \country{USA}
+}
+\email{}
+
 %\renewcommand{\shortauthors}{...}
 
 %%
 %% The abstract is a short summary of the work to be presented in the
 %% article.
 \begin{abstract}
-  TBD
+  \anon{Roblox Studio} is a tool which places programming in the hands of
+  millions of creators, ranging from high school students to professional
+  development studios. It has the ability to report telemetry data,
+  which allows large-scale measurement of the creator experience. In
+  this paper, we discuss one use of telemtry, to measure the experience
+  of type error reporting.
 \end{abstract}
 
 
@@ -108,6 +117,37 @@
 
 \section{Introduction}
 \label{s:introduction}
+
+\anon{Roblox} is a platform for \anon{shared virtual experiences},
+with 56~million Daily Active Users, and 49~billion hours of engagement in
+2022~\anon[(ANONYMIZED CITATION)]{\cite{roblox-quarterly-results}}.
+There are XX~million creators using \anon{Roblox Studio},
+and YY~million creations.
+
+\anon{Roblox experiences} are scripted using the 
+\anon{Luau} programming language~\anon[(ANONYMIZED CITATION)]{\cite{luau-lang.org}},
+an extension of \anon{Lua~5.1~\cite{lua}}.
+The main extension is the addition of a static type system, which uses
+type inference to synthesize types for user code. These types
+are used primarily in type-driven tooling such as autocomplete
+and API documentation~\anon[(ANONYMIZED CITATION)]{\cite{luau-autocomplete}},
+but creators can also opt in to receiving type error reports.
+
+As discussed in~\anon[(ANONYMIZED CITATION)]{\cite{bfj-hatra-2021}},
+the goals of the \anon{Luau} type system are rather different from
+a traditional type system, which focuses on compilation and memory safety.
+\anon{Luau} has a very heterogenous user community, ranging from
+students in code camps to professional development studios. These
+creators have quite different needs, with different emphases on
+enabling rapid creation and ensuring software quality.
+
+In this paper, we investigate methods for measuring the effectiveness
+of the \anon{Luau} type system in development of \anon{Roblox} scripts.
+In comparison to existing studies~\cite{BEN-WE-NEED-CITATIONS}
+which are based on small-scale user studies, we performed
+a large-scale study using \emph{telemetry}.
+
+
 
 millions of creators:
  gradual types,
