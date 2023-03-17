@@ -147,19 +147,39 @@ In comparison to existing studies~\cite{BEN-WE-NEED-CITATIONS}
 which are based on small-scale user studies, we performed
 a large-scale study using \emph{telemetry}.
 
+\anon{Roblox Studio} has a telemetry system, which is used to guage
+the effectiveness of creation features. This system stochastically
+determines which sessions should report telemety, and for those
+sessions, reports telemetry records back with a summary of the
+session. In the case of this study, the telemetry includes data on the
+number of errors at various levels of granularity: in the current edit
+region, in the current file, and in every file which was type
+checked.
 
+The telemetry data we analyzed does not contain any Personally
+Identifying Information. There is no record of the creator's identity,
+geographic location, IP address, or which creation they worked on.
+Telemetry records are correlated by session, using a pseudonymized
+session identifier.
 
-millions of creators:
- gradual types,
- success types,
- semantic subtyping
+Most users of \anon{Roblox Studio} do not opt in to type error
+reporting, and so they do not see the ``squiggly underlining'' that
+indicates a type error site. Nonetheless, the type inference system
+still runs (since it drives automplete and other type-based tools) and
+so we can record which type errors would have been reported had the
+user enabled type error reporting. As a result, we can investigate
+which type errors are  fixed by users, even if they did not opt in to
+type error reporting.
 
-millions (?) of telemetry records
+\textbf{Ben: give an outline of our RQs here.}
 
-takeaways about adoption,
- errors by mode (nocheck, nonstrict, strict),
- patterns of use,
+This paper is the first to use telemetry as a mechanism for
+large-scale measurement of the effectiveness of type error reporting.
+Our data captures \textbf{XX} sessions, for a total of \textbf{YY}
+hours and \textbf{ZZ} type errors.
 
+Telemetry cannot replace user studies, as there is no way to measure
+creator sentiment, but provide complementary data at scale.
 
 \section{Roblox Contex}
 
