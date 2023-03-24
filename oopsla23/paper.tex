@@ -197,33 +197,81 @@ creator sentiment, but provide complementary data at scale.
 Creators of \anon{Roblox experiences} use \anon{Roblox Studio},
 which combines \anon{3D creation} tools as well as an Integrated
 Developer Environment (IDE), as seen in Fig.~\ref{fig:roblox-studio}.
+The IDE includes an optional ``Script Analysis'' widget, which
+reports syntax errors, type errors, and problems identified by
+lint tools. The script editor also (optionally) highlights
+the location in code where reported errors occur.
 
-\paragraph{Creating Experiences}
+To opt in to type error reporting, creators set a \emph{mode}
+for each script, which is one of:
+\begin{itemize}
+\item \emph{nocheck}: only syntax errors are reported,
+\item \emph{nonstrict}: all syntax errors, and a subset of ``high probability'' type errors, are reported, or
+\item \emph{strict}: all syntax errors and type errors, are reported.
+\end{itemize}
+As an example of nonstrict mode, the following program only reports one error:
+\begin{verbatim}
+--!nonstrict
+local x = { p = 5, q = nil }
+if condition then x.q = 7 end
+local y = x.p + x.q --> no type error
+local z = x.r       --> "Key 'r' not found in table 'x'"
+\end{verbatim}
+but in strict mode it reports two:
+\begin{verbatim}
+--!strict
+local x = { p = 5, q = nil }
+if condition then x.q = 7 end
+local y = x.p + x.q --> "Type 'nil' could not be converted into 'number'"
+local z = x.r       --> "Key 'r' not found in table 'x'"
+\end{verbatim}
+In cases like this, where it is undecidable whether there will be a run-time error,
+strict mode errs on the side of reporting an error, and nonstrict mode errs on
+the side of suppressing the error.
 
-more than games
+Both modes report the \verb|Key 'r' not found in table 'x'| error --
+misspellings of property names are common enough to report in both
+strict and nonstrict mode. See~\anon[ANONYMIZED CITATION]{\cite{bfj-hatra-2021}}
+for a more detailed discussion of the rationale for strict and nonstrict mode.
 
-telemetry gets a session id per experience
+Both modes are opt-in. Creators have the option to make nonstrict mode
+the default rather than nocheck mode.
 
+Even in nocheck mode, \anon{Roblox Studio} performs type inference, since
+the results are needed by type-directed tooling such as autocomplete and
+API documentation. This behind-the-scenes typechecking is always performed
+in strict mode, since it is important that the inferred types be as precise
+as possible. The type errors produced by this pass are always discarded,
+so the verbosity of strict mode is not an issue.
 
-\paragraph{Script, Module}
+Since this pass is always performed in strict mode, we refer to it as
+\emph{forced strict} mode. Its main use is in autocomplete, so forced
+strict mode is triggered on every keystroke
 
-%% https://create.roblox.com/docs/education/coding-6/intro-to-module-scripts
+Scripts come in two favors: \emph{module scripts} and \emph{non-module
+scripts}.  Module scripts provide reusable libraries, which may be
+\emph{required} by other scripts. Since module scripts can require
+other module script, modules form a graph (though we consider it to be
+an error in strict mode if the graph is cyclic, and remove edges to
+make it acyclic).
 
-script = code that runs, can have many scripts in a codebase
+When typechecking is performed for script analysis, any script that
+has been modified is marked as dirty, then any script that is dirty,
+or which transitively requires a dirty module, is typechecked. More
+commonly, when typechecking is performed for autocomplete, we only
+need to typecheck the current script, since it is the only dirty
+script, and nothing it requires can transitively require it, since we
+have broken cycles.
 
-module = library, reusable functions, doesn't run directly
+The state of the world in a \anon{Roblox} experience is captured by
+the \emph{data model}, which is a tree of \emph{instances}, such as
+parts, models, meshes, effects, lighting, audio assets, and physics
+constraints such as forces, springs and joints.
 
-scripts are fine for basic games. professional developers are much more likely to use modules.
-
-
-\paragraph{Data Model}
-
-changes to DM can give huge type error changes
-
-moving (re-parent) a node changes the type of the DM, unsoundness in type system
-
-type checker assumes initial state
-
+While an experience is under development, it is typical for the data
+model to be edited (for example instances to be added, deleted, moved
+or renamed). Since the initial shape of the data model tree is reflected in
+the type system, it is possible for these edits to introduce type errors.
 
 \section{Telemetry Design}
 
