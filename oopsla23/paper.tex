@@ -81,7 +81,7 @@
   millions of creators, ranging from high school students to professional
   development studios. It has the ability to report telemetry data,
   which allows large-scale measurement of the creator experience. In
-  this paper, we discuss one use of telemtry, to measure the experience
+  this paper, we discuss one use of telemetry, to measure the experience
   of type error reporting.
 \end{abstract}
 
@@ -138,7 +138,7 @@ but creators can also opt in to receiving type error reports.
 As discussed in~\anon[(ANONYMIZED CITATION)]{\cite{bfj-hatra-2021}},
 the goals of the \anon{Luau} type system are rather different from
 a traditional type system, which focuses on compilation and memory safety.
-\anon{Luau} has a very heterogenous user community, ranging from
+\anon{Luau} has a very heterogeneous user community, ranging from
 students in code camps to professional development studios. These
 creators have quite different needs, with different emphases on
 enabling rapid creation and ensuring software quality.
@@ -149,9 +149,9 @@ In comparison to existing studies~\cite{BEN-WE-NEED-CITATIONS}
 which are based on small-scale user studies, we performed
 a large-scale study using \emph{telemetry}.
 
-\anon{Roblox Studio} has a telemetry system, which is used to guage
+\anon{Roblox Studio} has a telemetry system, which is used to gauge
 the effectiveness of creation features. This system stochastically
-determines which sessions should report telemety, and for those
+determines which sessions should report telemetry, and for those
 sessions, reports telemetry records back with a summary of the
 session. In the case of this study, the telemetry includes data on the
 number of errors at various levels of granularity: in the current edit
@@ -167,7 +167,7 @@ session identifier.
 Most users of \anon{Roblox Studio} do not opt in to type error
 reporting, and so they do not see the ``squiggly underlining'' that
 indicates a type error site. Nonetheless, the type inference system
-still runs (since it drives automplete and other type-based tools) and
+still runs (since it drives autocomplete and other type-based tools) and
 so we can record which type errors would have been reported had the
 user enabled type error reporting. As a result, we can investigate
 which type errors are  fixed by users, even if they did not opt in to
