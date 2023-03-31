@@ -373,6 +373,112 @@ Don't want access to run, publish.
 
 \url{https://docs.google.com/document/d/1DnKvw8x1jy0EWCbBSM8neKULWz7WAg1OauKy7qqYqkI/edit}
 
+\subsection{What are we logging (from gdoc)}
+
+\FILL{} change to long-form paragraphs, use more space for examples
+
+\begin{description}
+  \item[D1] metadata: uid, timestamp, session duration
+  \item[D2] mode (strict / nonstrict / nocheck)
+  \item[D3] a 1-bit reason for sending: did the user switch module?
+    \subitem we get logs for two reasons: (1) switch module, (2) randomly with
+    low probability after typechecking
+  \item[D4] size of codebase: num files, num lines
+  \item[D5] size of edit region
+  \item[D6] overall type errors: for old and curr states, have: \# total, \# in module, and \# in region
+  \item[D7] specific errors in the edit region: in the edit region, for old and
+    curr states, how many type errors for each type error code? (There is 1
+    edit region per log.)
+    \subitem Examples, if the old state had one type-A error:
+    \begin{itemize}
+      \item If the latest edits touched it and fixed it, the next log says 1
+        old type-A and 0 new type-A
+      \item touched it, didn't fix => 1 old-A, 1 new-A
+      \item didn't touch (fixed or not) => 0 old-A, 0 new-A
+    \end{itemize}
+  \item[D8] ForcedStrict "what if" errors for nocheck: specific errors for the
+    edit region computed as if the user had strict mode enabled (even though they
+    have no-check enabled)
+    \subitem This info is available because it gives better hints for
+    autocomplete, because it assumes precise types for ALL libraries (rather
+    than Any)
+  \item[D9] TooComplexErrors: project-wide count for this one specific error type
+\end{description}
+
+
+\subsection{what to study}
+
+RQs + Analysis
+
+\begin{itemize}
+  \item How often does the typechecker give up with CodeTooComplex errors?
+  \subitem [[ For context: the type system is designed to give useful feedback
+    to all sorts of code, whether strict-typed, nonstrict-typed, or nocheck.
+    But it has an escape hatch: CTC. Hope it's rarely needed. ]]
+    \begin{itemize}
+      \item Count the overall CTC errors (in each mode) for a coarse view of
+        how rare they are. [D9 of course, D8 to compare nocheck code with
+        strict-mode code via the same typechecker]
+      \subitem Note: We can't look at the code to learn why the errors
+        happened. Can only look for trends and tell the Roblox team where to
+        look.
+      %% \subitem Count CTC errors within each session to see if these errors are intermittent, or if they stick around. [D9 for the count, D8 for nocheck vs strict, D7 because CTC might show up in the edit region]
+    \end{itemize}
+  \item How helpful are highlighted regions?
+    \begin{itemize}
+      \item How often do edits in a highlighted region remove type errors? How
+        often do they add new ones?
+      \subitem [D7 compare specific old vs specific new]
+      \subitem [may want to filter using D2 + D5]
+      \item How often do edits outside the region remove type errors? How often do they add new ones?
+      \subitem [D6 looking for old count vs. new count difference without a matching delta in the D7 counts]
+      \item Which specific errors seem easy / hard to fix via highlights?
+      \subitem [D6 removed by edit => easy; D6 survive edit => hard]
+    \end{itemize}
+  \item In what ways do types improve quality of life?
+  \begin{itemize}
+    \item Does nocheck code have many more latent errors than the others?
+    \subitem [D8 latent errors come from the "what if" analysis]
+  \end{itemize}
+\end{itemize}
+
+% What to study?
+% 
+% Sanity checks
+% How large are edit regions? Plot the distribution.
+% How long between logs? Long times & very short times are problematic.
+% General Roblox trends
+% How many sessions use strict / nonstrict / nocheck?
+% Expect few strict/nonstrict, lots of nocheck
+% How often does mode change within a session?
+% Expect few of these b/c error reports are easy to ignore; non-intrusive
+% If a down-switch happens, expect the current #errors to be high
+% If an up-switch happens, hope to stay up
+% How many CodeTooComplex errors arise, overall?
+% Expect very few. Hopefully zero.
+% How often do module switches happen?
+% Expect not-too-many, with some logs in between each time
+% Compare strict vs. nonstrict vs. nocheck
+% Get median # errors across all snapshots.
+% Expect nocheck median to be higher than the others.
+% Plot #errors vs time, or vs codebase size
+% Expect nocheck errors to keep going up. For other modes, #errors should stay low.
+% General type error trends
+% Plot the distribution of #errors across all edit regions
+% Expect different counts based on error-kind. SEE BELOW
+% Count specific errors that get fixed. For each kind of error, how many times is it old-in-region but not new-in-region? Compare to #old-in-region totals.
+% Expect all errors to have a decent fix rate.
+% If one error has a lower % than others, its error region may be misleading. Or, maybe it's hard to fix
+% Type errors vs. edit region
+% Compare #old vs. #new in region
+% Expect a decrease, #old > #new
+% If there's an increase, look for an explanation. Could be a huge edit region. Could be a 1-line region that we captured 2x in a row. Could be that this user is simply ignoring type errors.
+% Compare [#old-in-region vs. (total #old - total #new)]
+% If #old-in-region = 0, then hope the total # increases
+% Decrease => nonlocal edits fixed an error => type error hilite may be inaccurate
+% If #old-in-region > 0, then hope the total # decreases
+% Increase (in region or otherwise) => made things worse
+
 
 
 
