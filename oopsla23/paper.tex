@@ -27,7 +27,7 @@
 \begin{document}
 
 \title{Millions of Type Errors}
-\subtitle{Using Telemetry To Measure The User Experience Of Type Error Reporting}
+\subtitle{Non-Invasive Telemetry to Measure User Experience}
 
 % Alphabetical order for authors?
 
@@ -564,12 +564,33 @@ Mind your language~\cite{mfk-onward-2011}.
 Transparent telemetry: explain what it is and contrast our approach.
 What essential, non-transparent things did we collect?
 
-TT =
+https://research.swtch.com/telemetry-intro
+
+TT:
 no user ID, no machine ID,
 no time-ordered traces,
 public process to decide what to collect
 
-https://research.swtch.com/telemetry-intro
+
+
+kindle track every tap (page turn etc),
+enables whispersync feature,
+drove design of navigation tools,
+opt-out possible~\cite{kindle-telemetry}
+
+vscode: usage data, crash reports, error data (not a crash but unexpected);
+save file, open terminal, copy-paste, autocomplete offered, git queries, machine id,
+session id, timestamp,
+opt-out may be possible, but not for all usage data (per license, sec 2a) and
+every extension can do its own thing~\cite{vscode-telemetry}
+
+.NET SDK and .NET CLI:
+crash reports, command invoked, args, hashed cwd, timings;
+more listed online;
+published in aggregate under CC-BY
+opt-out possible~\cite{dotnet-telemetry}
+
+
 
 
 \section{Discussion}
