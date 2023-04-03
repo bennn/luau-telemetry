@@ -341,7 +341,7 @@ the type system, it is possible for these edits to introduce type errors.
     \code{TypeMismatch} & Generic label for other type errors \\
     \code{GenericError}
     & Generic label for other errors, e.g., declaring a \\
-    & supertype that is not a class type
+    & \quad{} supertype that is not a class type
     %% or iterated over a table without specifying how
 
 
@@ -516,27 +516,41 @@ nonstrict fs unclear
 
 \Cref{f:records-per-hour} shows when data arrived across the whole dataset.
 
-\begin{table}[t]
-  \caption{Dataset overview}
-  \label{t:dataset-overview}
+\begin{figure}[t]
 \begin{tabular}{rl}
+ 5108 total logs = 4574 nocheck + 510 nonstrict + 24 strict
+ 182247 total forced strict type errors, 83005 in module, 5113 in edit regions
+ 1521 total type errors, 1035 in module, 110 non-stx + 47 syntax in edit regions
+ 1146 sessions
+  1143 single mode = 1046 nocheck + 94 nonstrict + 3 strict
+  2 multi mode projects
+  2 mode upgrades
+  2 mode downgrades
+
+
  5,108 & total logs \\
        & 4,574 nocheck + 510 nonstrict + 24 strict \\
  182,247 & total forced strict type errors \\
-       & {113,274 in module, 6,425 in edit regions} \\
+       & {83,005 in module, 5,113 in edit regions} \\
   1,521 & total type errors \\
-       & {1,485 in module, 331 in edit regions}
+       & {1,035 in module, 110 non-syntax + 47 syntax in edit regions}
   \\[2ex]
 
   1,146 & sessions \\
-  & \begin{tabular}{rl}
-      1,143 & single mode = 1046 nocheck + 94 nonstrict + 3 strict \\
-      7 & multi mode projects \\
-      3 & mode upgrades \\
-      4 & mode downgrades
+  & \begin{tabular}{l}
+      1,143 single mode = 1046 nocheck + 94 nonstrict + 3 strict \\
+      detected 2 multi-mode projects, 2 mode upgrades, 2 mode downgrades
     \end{tabular}
 \end{tabular}
-\end{table}
+  \caption{Dataset overview}
+  \label{f:dataset-overview}
+\end{figure}
+
+\Cref{f:dataset-overview}:
+cannot filter syntax errors from the total and per-module error counts (\cref{s:threats});
+multi-mode project = found a module switch that coincides with a mode switch, which suggests that two modules have different modes;
+upgrade = found a up-mode switch that does not match a module switch (quite possible to miss these);
+downgrade = found a down-mode switch that does not match a module switch
 
 
 \section{Interpretation}
@@ -557,6 +571,15 @@ Error 1000 = type mismatch (subtyping etc);
   - 
 \end{verbatim}
 
+
+\section{Threats to Validity}
+\label{s:threats}
+
+Error counts per-project and per-module include syntax errors.
+Problematic, because syntax errors are uninteresting (easy to fix),
+but common, which makes it likely that our per-keystroke telemetry will record them.
+Edit region has specific counts.
+Next time, we should do that for the other aggregates.
 
 
 \section{Related Work}
