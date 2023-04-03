@@ -504,6 +504,15 @@ nonstrict te tend to zero, fixing your program should fix the errors, no false p
 nonstrict fs unclear
 
 
+\section{Data Cleaning}
+
+Deduplicated records with the same client timestamp,
+kept only the first.
+Timestamps by millisecond.
+
+
+
+
 \section{Results}
 \label{s:data}
 
@@ -518,18 +527,8 @@ nonstrict fs unclear
 
 \begin{figure}[t]
 \begin{tabular}{rl}
- 5108 total logs = 4574 nocheck + 510 nonstrict + 24 strict
- 182247 total forced strict type errors, 83005 in module, 5113 in edit regions
- 1521 total type errors, 1035 in module, 110 non-stx + 47 syntax in edit regions
- 1146 sessions
-  1143 single mode = 1046 nocheck + 94 nonstrict + 3 strict
-  2 multi mode projects
-  2 mode upgrades
-  2 mode downgrades
-
-
- 5,108 & total logs \\
-       & 4,574 nocheck + 510 nonstrict + 24 strict \\
+ 5,001 & total logs \\
+       & 4,471 nocheck + 506 nonstrict + 24 strict \\
  182,247 & total forced strict type errors \\
        & {83,005 in module, 5,113 in edit regions} \\
   1,521 & total type errors \\
