@@ -332,17 +332,17 @@ the type system, it is possible for these edits to introduce type errors.
     \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit \\
     \code{SyntaxError} & Basic parse error, e.g., \code{for if end} \\
 
-    \code{IncorrectGenericParameterCount} & Arity mismatch for a generic type \\
     \code{CountMismatch} & Arity mismatch for a function \\
+    \code{IncorrectGenericParameterCount} & Arity mismatch for a generic type \\
     \code{UnknownProperty} & Referenced an invalid field or method  \\
     \code{OnlyTablesCanHaveMethods} & Tried to attach a method to a non-table \\
     \code{CannotCallNonFunction} & Called a value that is not a function \\
     \code{TypesAreUnrelated} & Failed to cast, unify, or check subtyping \\
     \code{TypeMismatch} & Generic label for other type errors \\
     \code{GenericError}
-    & Generic label for other errors, e.g., declaring a \\
-    & \quad{} supertype that is not a class type
-    %% or iterated over a table without specifying how
+    & Generic label for other non-type errors, such as looping\!\!\! \\
+    & over a table without a clear iteration strategy
+    %% & {}~~declaring a supertype that is not a class type
 
 
 %    \code{ExtraInformation} & Follow-on error that provides additional information for an error at the same source location. \\
@@ -549,6 +549,39 @@ Timestamps by millisecond.
       detected 2 multi-mode projects, 2 mode upgrades, 2 mode downgrades
     \end{tabular}
 \end{tabular}
+
+  \begin{minipage}{0.5\textwidth}
+    \begin{tabular}{rr}
+      Session length & \# Sessions \\\midrule
+      1 &  450 \\
+      2 &  199 \\
+      3 &  129 \\
+      4 &  73 \\
+      5 &  60 \\
+      6-10 & 150 \\
+      11-20 & 67 \\
+      21-40 & 11 \\
+      >40 & 7
+      %% max 393
+    \end{tabular}
+  \end{minipage}\begin{minipage}{0.5\textwidth}
+    \begin{tabular}{rr}
+      Time delta & \# Records \\\midrule
+      <=0ms & 0 \\
+      0-5ms & 284 \\
+      5-1000ms & 248 \\
+      1-2s & 153 \\
+      2-5s & 232 \\
+      5-10s & 207 \\
+      10-30s & 524 \\
+      30-60s & 392 \\
+      1-2m & 394 \\
+      2-5m & 559 \\
+      5-10m & 360 \\
+      >10-60m & 502
+    \end{tabular}
+  \end{minipage}
+
   \caption{Dataset overview}
   \label{f:dataset-overview}
 \end{figure}
