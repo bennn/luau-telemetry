@@ -225,6 +225,9 @@ creator sentiment, but provide complementary data at scale.
 
 \end{itemize}
 
+Analysis pipeline to be freely available.
+Data may be available, depends on Roblox.
+
 
 \section{\anon{Roblox} Context}
 % https://create.roblox.com/docs/scripting/luau
@@ -534,23 +537,26 @@ Timestamps by millisecond.
 \Cref{f:records-per-hour} shows when data arrived across the whole dataset.
 
 \begin{figure}[t]
-\begin{tabular}{rl}
- 5,001 & total logs \\
-       & 4,471 nocheck + 506 nonstrict + 24 strict \\
- 182,247 & total forced strict type errors \\
-       & {83,005 in module, 5,113 in edit regions} \\
-  1,521 & total type errors \\
-       & {1,035 in module, 110 non-syntax + 47 syntax in edit regions}
-  \\[2ex]
+  %% TODO split counts, total = current + previous
+  \begin{tabular}{rl}
+   5,001 & total logs \\
+         & 4,471 nocheck + 506 nonstrict + 24 strict \\
+   182,247 & total forced strict type errors \\
+         & {83,005 in module, 5,113 in edit regions} \\
+    1,521 & total type errors \\
+         & {1,035 in module, 110 non-syntax + 47 syntax in edit regions}
+    \\[2ex]
 
-  1,146 & sessions \\
-  & \begin{tabular}{l}
-      1,143 single mode = 1046 nocheck + 94 nonstrict + 3 strict \\
-      detected 2 multi-mode projects, 2 mode upgrades, 2 mode downgrades
-    \end{tabular}
-\end{tabular}
+    1,146 & sessions \\
+    & \begin{tabular}{l}
+        1,143 single mode = 1046 nocheck + 94 nonstrict + 3 strict \\
+        detected 2 multi-mode projects, 2 mode upgrades, 2 mode downgrades
+      \end{tabular}
+  \end{tabular}
 
-  \begin{minipage}{0.5\textwidth}
+  %% TODO these need to be plots, it's too much reading for the quick takeaway
+  %% put exactly this data into bars!
+  \begin{minipage}[t]{0.5\textwidth}
     \begin{tabular}{rr}
       Session length & \# Sessions \\\midrule
       1 &  450 \\
@@ -564,10 +570,9 @@ Timestamps by millisecond.
       >40 & 7
       %% max 393
     \end{tabular}
-  \end{minipage}\begin{minipage}{0.5\textwidth}
+  \end{minipage}\begin{minipage}[t]{0.5\textwidth}
     \begin{tabular}{rr}
       Time delta & \# Records \\\midrule
-      <=0ms & 0 \\
       0-5ms & 284 \\
       5-1000ms & 248 \\
       1-2s & 153 \\
@@ -584,6 +589,40 @@ Timestamps by millisecond.
 
   \caption{Dataset overview}
   \label{f:dataset-overview}
+\end{figure}
+
+\begin{figure}[t]
+  %% TODO draw bars or curves b/c numbers are too hard to compare horizontally
+
+  TODOD table: mode (fs), project, module, region; cell olde,curr; two rows per actual mode ... or two tables
+
+  Errors in edit region.
+  Each record with an edit region error adds +1 to at least 1 row.
+
+  \begin{tabular}{lrrr}
+    Error Label & \# Added & \# Persist & \# Remove \\\midrule
+    CodeTooComplex
+    & 0 & 0 & 0 \\
+    UnificationTooComplex
+    & 0 & 0 & 0 \\[1ex]
+    SyntaxError
+    & 30 & 0 & 76 \\
+    UnknownSymbol
+    & 12 & 14 & 19 \\
+    UnknownProperty
+    & 3 & 1 & 4 \\
+    UnknownRequire
+    & 1 & 5 & 0 \\
+    GenericError
+    & 1 & 0 & 1 \\
+    CountMismatch
+    &  1 &  0 &  1 \\
+    OptionalValueAccess
+    &  0 &  0 &  1 \\
+  \end{tabular}
+
+  \caption{Errors overview}
+  \label{f:errors-overview}
 \end{figure}
 
 \Cref{f:dataset-overview}:
