@@ -537,10 +537,10 @@ Timestamps by millisecond.
 \Cref{f:records-per-hour} shows when data arrived across the whole dataset.
 
 \begin{figure}[t]
-  %% TODO split counts, total = current + previous
   \begin{tabular}{rl}
    5,001 & total logs \\
          & 4,471 nocheck + 506 nonstrict + 24 strict \\
+         & 1,628 from module switches \\
    182,247 & total forced strict type errors \\
          & {83,005 in module, 5,113 in edit regions} \\
     1,521 & total type errors \\
@@ -592,15 +592,27 @@ Timestamps by millisecond.
 \end{figure}
 
 \begin{figure}[t]
-  %% TODO draw bars or curves b/c numbers are too hard to compare horizontally
+  %% TODO stacked bars?
+  %% TODO align old;curr
+  \begin{tabular}{lrrrrr}
+    Mode             & \# Rows & E         & Any Error & In Module & In Region \\
+      & & & & (old ; curr) &  (old ; curr) \\\midrule
+    \code{nocheck}   &   4,471 & \code{te} &    5.77\% &  0.20\% ;  2.21\% &  0.16\% ;  0.63\% \\
+                     &         & \code{fs} &   59.18\% & 32.81\% ; 49.16\% &  9.17\% ; 13.13\% \\
+    \code{nonstrict} &     506 & \code{te} &   25.89\% & 12.06\% ; 18.18\% &  6.32\% ;  7.91\% \\
+                     &         & \code{fs} &   62.45\% & 37.94\% ; 53.75\% & 16.60\% ; 20.75\% \\
+    \code{strict}    &      24 & \code{te} &   50.00\% & 29.17\% ; 33.33\% &     0\% ;     0\% \\
+                     &         & \code{fs} &   62.50\% & 50.00\% ; 58.33\% &  4.17\% ;  8.33\% 
+  \end{tabular}
 
-  TODOD table: mode (fs), project, module, region; cell olde,curr; two rows per actual mode ... or two tables
+  \bigskip
 
   Errors in edit region.
   Each record with an edit region error adds +1 to at least 1 row.
 
+  %% TODO draw bars or curves b/c numbers are too hard to compare horizontally
   \begin{tabular}{lrrr}
-    Error Label & \# Added & \# Persist & \# Remove \\\midrule
+    Error Label & \# Add & \# Keep & \# Remove \\\midrule
     CodeTooComplex
     & 0 & 0 & 0 \\
     UnificationTooComplex
