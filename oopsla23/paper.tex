@@ -607,8 +607,10 @@ Timestamps by millisecond.
 
   \bigskip
 
-  Errors in edit region.
+  Below, edit region only.
   Each record with an edit region error adds +1 to at least 1 row.
+
+  \smallskip
 
   %% TODO draw bars or curves b/c numbers are too hard to compare horizontally
   \begin{tabular}{lrrr}
@@ -643,6 +645,32 @@ multi-mode project = found a module switch that coincides with a mode switch, wh
 upgrade = found a up-mode switch that does not match a module switch (quite possible to miss these);
 downgrade = found a down-mode switch that does not match a module switch
 
+\begin{figure}[t]
+
+  {Few local adds => Few people ignoring script analysis}
+  \smallskip
+
+  \begin{tabular}{lrrrr}
+    & Local Remove & Local Add & Nonlocal Remove & Nonlocal Add \\
+    Mode
+    & \#err (count)
+    & \#err (count)
+    & \#err (count)
+    & \#err (count) \\
+    \code{nocheck}   & 86 (71) & 0 (0) & 110 (57) & 161 (74) \\
+    \code{nonstrict} & 87 (25) & 9 (3) & 185 (29) & 207 (37) \\
+    \code{strict}    &  1  (1) & 0 (0) &  14  (6) &   6  (3) \\
+  \end{tabular}
+
+  \bigskip
+  {}
+  \smallskip
+  \begin{tabular}{lrrr}
+  \end{tabular}
+
+  \caption{Per-mode comparison}
+  \label{f:mode-errors}
+\end{figure}
 
 \section{Interpretation}
 
