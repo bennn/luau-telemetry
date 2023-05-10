@@ -734,6 +734,51 @@ FILL error density: number vs region size
   \label{f:edit-deltas}
 \end{figure}
 
+TODO nocheck accumulated errors?
+
+
+\subsection{Example Sessions}
+
+FILL example sessions.
+
+\Cref{f:ex-session-strict} begins in strict mode
+but jumps to nocheck mode as well.
+The jumps sometimes coincide with module switches (vertical line),
+sometimes not.
+The green line counts type errors.in the codebase.
+
+\begin{figure}[t]
+  \includegraphics[width=0.7\columnwidth]{img/example-session-strict.pdf}
+  \caption{Example strict session}
+  \label{f:ex-session-strict}
+\end{figure}
+
+\Cref{f:ex-session-nonstrict} presents the three sessions from \mnonstrict{} mode
+that have the greatest number of events (not necessarily the longest time spans).
+There are no module or mode switches.
+There are few type errors.
+One high point shows 10 errors, but these errors are gone (probably fixed) at
+the next event.
+
+\begin{figure}[t]
+  \includegraphics[width=0.7\columnwidth]{img/example-session-nonstrict.pdf}
+  \caption{Three most populated nonstrict sessions}
+  \label{f:ex-session-nonstrict}
+\end{figure}
+
+\Cref{f:ex-session-nocheck} shows a roller coaster from \mnocheck{} mode.
+Several hundred ForcedStrict type errors appear and disappear between events.
+There are lots of module switches too \ldots but that makes no difference
+for these project-wide error counts.
+
+\begin{figure}[t]
+  \includegraphics[width=0.7\columnwidth]{img/example-session-nocheck.pdf}
+  \caption{Example nocheck session}
+  \label{f:ex-session-nocheck}
+\end{figure}
+
+
+\subsection{Aggregate Sessions}
 
 TODO scribble figures ... 
 
