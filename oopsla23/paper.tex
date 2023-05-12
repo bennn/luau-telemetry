@@ -541,6 +541,13 @@ Timestamps by millisecond.
 
 
 \Cref{f:records-per-hour} shows when data arrived across the whole dataset.
+FILL: currently clientTimestamp, which has caveats.
+Unclear what timezone they are from.
+Some records have a client timestamp much older than the server, up to 1 week behind.
+Some are ahead of the server by a day.
+Why?
+Could be wrong local settings on the computer, or a delayed record due to lost
+internet connection or closed laptop.
 
 \begin{figure}[t]
   \begin{tabular}{rl}
