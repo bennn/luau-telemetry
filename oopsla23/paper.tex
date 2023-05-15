@@ -241,10 +241,17 @@ Data may be available, depends on Roblox.
 FILL table = object
 
 \begin{figure}
-  \anon{
+
+  \makeatletter
+  \if@ACM@anonymous
+    \includegraphics[width=.45\textwidth]{img/anon-studio.png}
+    \includegraphics[width=.45\textwidth]{img/anon-studio-ide.png}
+  \else
     \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
     \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
-  }
+  \fi
+  \makeatother
+
   \caption{\anon{Roblox Studio 3D creation} tools (left) and IDE (right)}
   \label{fig:roblox-studio}
 \end{figure}
