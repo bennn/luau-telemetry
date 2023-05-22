@@ -526,6 +526,8 @@ Deduplicated records with the same client timestamp,
 kept only the first.
 Timestamps by millisecond.
 
+FILL ignore sessions close to start / end time?
+remove all syntax errors from later stages?
 
 
 
@@ -673,10 +675,10 @@ downgrade = found a down-mode switch that does not match a module switch
   \begin{tabular}{lrrrr}
     & Local Remove & Local Add & Nonlocal Remove & Nonlocal Add \\
     Mode
-    & \#err (count)
-    & \#err (count)
-    & \#err (count)
-    & \#err (count) \\\midrule
+    & \#err (\#log)
+    & \#err (\#log)
+    & \#err (\#log)
+    & \#err (\#log) \\\midrule
     \mnocheck{}   & 86 (71) & 0 (0) & 110 (57) & 161 (74) \\
     \mnonstrict{} & 87 (25) & 9 (3) & 185 (29) & 207 (37) \\
     \mstrict{}    &  1  (1) & 0 (0) &  14  (6) &   6  (3) \\
