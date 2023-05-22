@@ -86,6 +86,7 @@
   which allows large-scale measurement of the creator experience. In
   this paper, we discuss one use of telemetry, to measure the experience
   of type error reporting.
+  We find FILL.
 \end{abstract}
 
 \newcommand{\code}[1]{\texttt{#1}}
@@ -155,13 +156,16 @@ but creators can also opt in to receiving type error reports.
 As discussed in~\anon[(ANONYMIZED CITATION)]{\cite{bfj-hatra-2021}},
 the goals of the \anon{Luau} type system are rather different from
 a traditional type system, which focuses on compilation and memory safety.
-\anon{Luau} has a very heterogeneous user community, ranging from
+\anon{Luau} has a diverse user community, ranging from
 students in code camps to professional development studios. These
 creators have quite different needs, with different emphases on
 enabling rapid creation and ensuring software quality.
+\anon{Luau} therefore supports three typing modes---strict types,
+relaxed (nonstrict) types, and no types---and lets users switch
+between modes gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
 
 In this paper, we investigate methods for measuring the effectiveness
-of the \anon{Luau} type system in development of \anon{Roblox} scripts.
+of the \anon{Luau} type system in the development of \anon{Roblox} scripts.
 In comparison to prior work~(\cref{s:related}), which is either small in scale
 or depends on personally identifiable information~(PII),
 we performed a large-scale study using pseudonymized \emph{telemetry}.
@@ -187,28 +191,38 @@ session identifier.
 Most users of \anon{Roblox Studio} do not opt in to type error
 reporting, and so they do not see the ``squiggly underlining'' that
 indicates a type error site. Nonetheless, the type inference system
-still runs (since it drives autocomplete and other type-based tools) and
-so we can record which type errors would have been reported had the
-user enabled type error reporting. As a result, we can investigate
-which type errors are  fixed by users, even if they did not opt in to
-type error reporting.
+still runs in the background (since it drives autocomplete and other
+type-based tools), letting us see which type errors would have
+been reported and whether users fix these errors over time.
 
 With this telemetry data, we investigate research questions about
-the adoption and benefits of type analysis.
-First, to learn how many creators use type analysis of any sort
-and to estimate whether they pay attention to the results (\FILL{} really, attention?).
-Once in type-analysis mode, do creators stay, or revert to no-check?
-Second, what errors do creators face and how do they respond.
-Are the error highlights helpful for removing the error?
-Is there any indication that type analysis improves the quality of the development experience?
+the adoption and benefits of type analysis:
+\begin{description}
+  \item[RQ1.]
+    How many creators use type analysis,
+    how often does a project use multiple analysis modes,
+    and how often do creators turn the analysis off?
+  \item[RQ2.]
+    For modules that use type analysis: which errors
+    arise, how do users respond, and which errors
+    tend to persist through subsequent edits?
+  \item[RQ3.]
+    What impact, if any, does type analysis have on overall code quality?
+\end{description}
 
-This paper is the first to use telemetry as a mechanism for
+Answers to these questions can inform the design of gradual languages
+in general, and of extensions to \anon{Lua} and languages with semantic
+subtyping in particular.
+
+At a higher level, this paper is a step toward data-driven language
+design. We are the first to use telemetry as a mechanism for
 large-scale measurement of the effectiveness of type error reporting.
 Our data captures \textbf{XX} sessions, for a total of \textbf{YY}
 hours and \textbf{ZZ} type errors.
 
 Telemetry cannot replace user studies, as there is no way to measure
 creator sentiment, but provide complementary data at scale.
+FILL can stats answer questions that point-by-point analysis cannot?
 
 \paragraph{Contributions}
 \begin{itemize}
@@ -873,6 +887,8 @@ opt-out possible~\cite{dotnet-telemetry}
 \section{Discussion}
 \label{s:conclusion}
 \label{s:discussion}
+
+FILL regrets, lessons learned, advice for next time
 
 
 
