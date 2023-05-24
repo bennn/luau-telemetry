@@ -199,29 +199,36 @@ With this telemetry data, we investigate research questions about
 the adoption and benefits of type analysis:
 \begin{description}
   \item[RQ1.]
-    How many creators use type analysis,
-    how often does a project use multiple analysis modes,
-    and how often do creators turn the analysis off?
+    How many creators use type analysis?
+    How often do projects contain modules with different
+    analysis modes?
+    How often do creators turn analysis off?
   \item[RQ2.]
-    For modules that use type analysis: which errors
-    arise, how do users respond, and which errors
-    tend to persist through subsequent edits?
+    For modules that use type analysis:
+    which errors arise,
+    how do creators respond,
+    and which errors tend to persist despite subsequent edits?
   \item[RQ3.]
-    What impact, if any, does type analysis have on overall code quality?
+    What impact does type analysis have on the number of background type
+    errors?
+    For example, do background errors pile up in unanalyzed projects?
 \end{description}
 
-Answers to these questions can inform the design of gradual languages
-in general, and of extensions to \anon{Lua} and languages with semantic
-subtyping in particular.
+Beyond their immediate applications to \anon{Lua},
+answers to these questions have implications for gradual types,
+success types, and semantic subtyping.
 
-At a higher level, this paper is a step toward data-driven language
-design. We are the first to use telemetry as a mechanism for
-large-scale measurement of the effectiveness of type error reporting.
-Our data captures \textbf{XX} sessions, for a total of \textbf{YY}
-hours and \textbf{ZZ} type errors.
+At a higher level, this paper is the first to use telemetry 
+to study a typechecker.
+It thus represents a step toward data-driven language design,
+informed by many users' actual practice.
+Our data captures \textbf{XX} sessions
+for a total of \textbf{YY} hours
+and \textbf{ZZ} type errors.
+By contrast to typical qualitative methods (e.g., surveys and interviews), it
+is not restricted to users' \emph{perceptions} about their work and it is not
+limited to a small number of users.
 
-Telemetry cannot replace user studies, as there is no way to measure
-creator sentiment, but provide complementary data at scale.
 FILL can stats answer questions that point-by-point analysis cannot?
 
 \paragraph{Contributions}
@@ -829,6 +836,9 @@ but common, which makes it likely that our per-keystroke telemetry will record t
 Edit region has specific counts.
 Next time, we should do that for the other aggregates.
 
+Telemetry cannot replace user studies, as there is no way to measure
+creator sentiment, but provide complementary data at scale.
+
 
 \section{Related Work}
 \label{s:related}
@@ -881,6 +891,12 @@ custom builds beware inadvertant disclosure, keep your filepaths clear;
 data published in aggregate under CC-BY;
 opt-out possible~\cite{dotnet-telemetry}
 
+
+\citet{lnsmc-usenix-2018} blame-proportional logging,
+scale up ``near'' points of interest,
+could be useful for us in the future.
+\citet{fnm-sigmod-2020} ditto, faster than statistical at finding root-cause,
+deterministic.
 
 
 
