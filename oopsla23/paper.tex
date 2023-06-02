@@ -711,9 +711,21 @@ downgrade = found a down-mode switch that does not match a module switch
 
 \section{Interpretation}
 
-\subsection{Code Too Complex}
+\subsection{Dead Ends: Too Complex}
 
-The (example) code is NEVER too complex.
+The typechecker has two internal limits regarding the problems it will attempt
+to solving.
+Hitting a limit triggers either a \code{CodeTooComplex} or
+\code{UnificationTooComplex} error.
+A casual user should never see these errors.
+
+Based on the data, these errors are indeed extremely rare.
+Out of 1.5M telemetry records, only 11 report any \code{TooComplex} errors.
+These records came from three sessions (possibly by a single user), and each
+record counted at most 4 \code{CodeTooComplex} errors and zero
+\code{UnificationTooComplex} errors.
+There is no evidence to suggest that the limits are too strict or that the
+typechecker should improve.
 
 
 \subsection{TBD}
@@ -832,7 +844,7 @@ for these project-wide error counts.
 
 Error counts per-project and per-module include syntax errors.
 Problematic, because syntax errors are uninteresting (easy to fix),
-but common, which makes it likely that our per-keystroke telemetry will record them.
+but common, which makes it likely that our per-keystroke telemetry (1/2k) will record them.
 Edit region has specific counts.
 Next time, we should do that for the other aggregates.
 
@@ -842,6 +854,8 @@ creator sentiment, but provide complementary data at scale.
 
 \section{Related Work}
 \label{s:related}
+
+%% zfstt-ieeesensors-2022
 
 \paragraph{Research on Errors}
 
