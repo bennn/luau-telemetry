@@ -1,5 +1,6 @@
 *pdf
 *.aux
+*.bcf
 *.log
 *.out
 *.bbl
@@ -10,5 +11,6 @@
 *.swn
 *.swo
 *.swp
+*.run.xml
 *~
 **/.DS_Store

@@ -1,19 +1,22 @@
+% -*- coding: utf-8; -*-
+% vim: set fileencoding=utf-8 :
+
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
 
-\documentclass[
-  acmsmall,
-  review,
-  anonymous,
-]{acmart}
-
-%\settopmatter{printfolios=true,printccs=false,printacmref=false}
+\documentclass[english,submission,cleveref]{programming}
+%% use 'submission' for initial submission, remove it for camera-ready (see 5.1)
 
 \overfullrule=1mm
-\citestyle{acmauthoryear}
-%\setcitestyle{round}
+
+%% BEGIN tobias pape 2021-11-06
+\makeatletter
+\newcommand*\abstractpart[1]{\unskip\par\noindent{\firamedium\color{P@GrayFG}{#1}}\enspace}
+\makeatother
+%% END
 
 \usepackage{alltt}
-% \usepackage{amssymb} -- already loaded by acmart
+\usepackage[backend=biber]{biblatex}
+\usepackage{amssymb}
 \usepackage{calc}
 \usepackage{cleveref}
 \usepackage{listings}
@@ -26,6 +29,35 @@
 \usepackage{xcolor}
 \usetikzlibrary{shapes.geometric}
 
+\addbibresource{bib.bib}
+
+%%%%%%%%%%%%%%%%%%
+\paperdetails{
+  %% perspective options are: art, sciencetheoretical, scienceempirical, engineering.
+  %% Choose exactly the one that best describes this work. (see 2.1)
+  perspective=scienceempirical,
+  %% State one or more areas, separated by a comma. (see 2.2)
+  %% Please see list of areas in http://programming-journal.org/cfp/
+  %% The list is open-ended, so use other areas if yours is/are not listed.
+  area={Data mining for programming, Telemetry},
+  %% You may choose the license for your paper (see 3.)
+  %% License options include: cc-by (default), cc-by-nc
+  % license=cc-by,
+}
+%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%
+%% These data are provided by the editors. May be left out on submission.
+%\paperdetails{
+%  submitted=2023-1-31,
+%  published=2016-10-11,
+%  year=2016,
+%  volume=1,
+%  issue=1,
+%  articlenumber=1,
+%}
+%%%%%%%%%%%%%%%%%%
+
 \begin{document}
 
 \title{Millions of Type Errors}
@@ -34,60 +66,25 @@
 
 % Alphabetical order for authors?
 
-\author{Ben Greenman}
-\orcid{0000-0001-7078-9287}
-\affiliation{%
-  \institution{Brown University}
-  \city{Providence}
-  \state{Rhode Island}
-  \country{USA}
-}
-\email{benjaminlgreenman@gmail.com}
+\author[a]{Ben Greenman}
+\authorinfo{(\email{benjamin.l.greenman@gmail.com}) is a postdoc at Brown University. He will be joining the University of Utah in Fall~2023.}
+\affiliation[a]{Brown University, Providence, RI, USA}
+% \orcid{0000-0001-7078-9287}
+\affiliation[a]{Brown University, Providence, RI, USA}
 
-\author{Alan Jeffrey}
-\orcid{0000-0001-6342-0318}
-\affiliation{%
-  \institution{Roblox}
-  \city{San Mateo}
-  \state{California}
-  \country{USA}
-}
-\email{ajeffrey@roblox.com}
+\author[b]{Alan Jeffrey}
+\authorinfo{(\email{ajeffrey@roblox.com}) TBD}
+% \orcid{0000-0001-6342-0318}
+\affiliation[b]{Roblox, San Mateo, CA, USA}
 
-\author{Shriram Krishnamurthi}
-\orcid{0000-0001-5184-1975}
-\affiliation{%
-  \institution{Brown University}
-  \city{Providence}
-  \state{Rhode Island}
-  \country{USA}
-}
-\email{shriram@brown.edu}
+\author[a]{Shriram Krishnamurthi}
+% \orcid{0000-0001-5184-1975}
+\authorinfo{(\email{shriram@brown.edu}) is the Vice President of Programming Languages (no, not really) at Brown University.}
 
-\author{Mitesh Shah}
-\orcid{TODO}
-\affiliation{%
-  \institution{Roblox}
-  \city{San Mateo}
-  \state{California}
-  \country{USA}
-}
-\email{mshah@roblox.com}
+\author[b]{Mitesh Shah}
+\authorinfo{(\email{mshah@roblox.com}) TBD.}
 
 %\renewcommand{\shortauthors}{...}
-
-%%
-%% The abstract is a short summary of the work to be presented in the
-%% article.
-\begin{abstract}
-  \anon{Roblox Studio} is a tool which places programming in the hands of
-  millions of creators, ranging from high school students to professional
-  development studios. It has the ability to report telemetry data,
-  which allows large-scale measurement of the creator experience. In
-  this paper, we discuss one use of telemetry, to measure the experience
-  of type error reporting.
-  We find FILL.
-\end{abstract}
 
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\FILL}{\textbf{FILL}}
@@ -135,42 +132,79 @@
 
 \maketitle
 
+\begin{abstract}
+  {Roblox Studio} is a tool which places programming in the hands of
+  millions of creators, ranging from high school students to professional
+  development studios. It has the ability to report telemetry data,
+  which allows large-scale measurement of the creator experience. In
+  this paper, we discuss one use of telemetry, to measure the experience
+  of type error reporting.
+  We find FILL.
+
+  %\let\paragraph\abstractpart
+
+  % \paragraph{Context}
+  %% What is the broad context of the work? What is
+  %% the importance of the general research area?
+
+  % \paragraph{Inquiry}
+  %% What problem or question does the paper
+  %% address? How has this problem or question been
+  %% addressed by others (if at all)?
+
+  %\paragraph{Approach}
+  %% What was done that unveiled new knowledge?
+
+  %\paragraph{Knowledge}
+  %% What new facts were uncovered? If the
+  %% research was not results oriented, what new
+  %% capabilities are enabled by the work?
+
+  %\paragraph{Grounding}
+  %% What argument, feasibility proof, artifacts,
+  %% or results and evaluation support this work?
+
+  %\paragraph{Importance}
+  %% Why does this work matter?
+
+\end{abstract}
+
 \section{Introduction}
 \label{s:introduction}
 
-\anon{Roblox} is a platform for \anon{shared virtual experiences},
+{Roblox} is a platform for {shared virtual experiences},
 with 56~million Daily Active Users, and 49~billion hours of engagement in
-2022~\anon[(ANONYMIZED CITATION)]{\cite{roblox-quarterly-results}}.
-There are \textbf{XX}~million creators using \anon{Roblox Studio},
+2022~\cite{roblox-quarterly-results}.
+There are \textbf{XX}~million creators using {Roblox Studio},
 and \textbf{YY}~million creations.
 
-\anon{Roblox experiences} are scripted using the 
-\anon{Luau} programming language~\anon[(ANONYMIZED CITATION)]{\cite{luau-lang.org}},
-an extension of \anon{Lua~5.1~\cite{lua}}.
+{Roblox experiences} are scripted using the 
+{Luau} programming language~\cite{luau-lang.org},
+an extension of {Lua~5.1~\cite{lua}}.
 The main extension is the addition of a static type system, which uses
 type inference to synthesize types for user code. These types
 are used primarily in type-driven tooling such as autocomplete
-and API documentation~\anon[(ANONYMIZED CITATION)]{\cite{luau-autocomplete}},
+and API documentation~\cite{luau-autocomplete},
 but creators can also opt in to receiving type error reports.
 
-As discussed in~\anon[(ANONYMIZED CITATION)]{\cite{bfj-hatra-2021}},
-the goals of the \anon{Luau} type system are rather different from
+As discussed in~\cite{bfj-hatra-2021},
+the goals of the {Luau} type system are rather different from
 a traditional type system, which focuses on compilation and memory safety.
-\anon{Luau} has a diverse user community, ranging from
+{Luau} has a diverse user community, ranging from
 students in code camps to professional development studios. These
 creators have quite different needs, with different emphases on
 enabling rapid creation and ensuring software quality.
-\anon{Luau} therefore supports three typing modes---strict types,
+{Luau} therefore supports three typing modes---strict types,
 relaxed (nonstrict) types, and no types---and lets users switch
 between modes gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
 
 In this paper, we investigate methods for measuring the effectiveness
-of the \anon{Luau} type system in the development of \anon{Roblox} scripts.
+of the {Luau} type system in the development of {Roblox} scripts.
 In comparison to prior work~(\cref{s:related}), which is either small in scale
 or depends on personally identifiable information~(PII),
 we performed a large-scale study using pseudonymized \emph{telemetry}.
 
-\anon{Roblox Studio} has a telemetry system, which is used to gauge
+{Roblox Studio} has a telemetry system, which is used to gauge
 the effectiveness of creation features. This system stochastically
 determines which sessions should report telemetry, and for those
 sessions, reports telemetry records back with a summary of the
@@ -188,7 +222,7 @@ and no information about what creation the data came from.
 Telemetry records are correlated by session, using a pseudonymized
 session identifier.
 
-Most users of \anon{Roblox Studio} do not opt in to type error
+Most users of {Roblox Studio} do not opt in to type error
 reporting, and so they do not see the ``squiggly underlining'' that
 indicates a type error site. Nonetheless, the type inference system
 still runs in the background (since it drives autocomplete and other
@@ -214,7 +248,7 @@ the adoption and benefits of type analysis:
     For example, do background errors pile up in unanalyzed projects?
 \end{description}
 
-Beyond their immediate applications to \anon{Lua},
+Beyond their immediate applications to {Lua},
 answers to these questions have implications for gradual types,
 success types, and semantic subtyping.
 
@@ -256,29 +290,22 @@ Analysis pipeline to be freely available.
 Data may be available, depends on Roblox.
 
 
-\section{\anon{Roblox} Context}
+\section{{Roblox} Context}
 % https://create.roblox.com/docs/scripting/luau
 
 FILL table = object
 
 \begin{figure}
 
-  \makeatletter
-  \if@ACM@anonymous
-    \includegraphics[width=.45\textwidth]{img/anon-studio.png}
-    \includegraphics[width=.45\textwidth]{img/anon-studio-ide.png}
-  \else
-    \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
-    \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
-  \fi
-  \makeatother
+  \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
+  \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
 
-  \caption{\anon{Roblox Studio 3D creation} tools (left) and IDE (right)}
+  \caption{{Roblox Studio 3D creation} tools (left) and IDE (right)}
   \label{fig:roblox-studio}
 \end{figure}
       
-Creators of \anon{Roblox experiences} use \anon{Roblox Studio},
-which combines \anon{3D creation} tools as well as an Integrated
+Creators of {Roblox experiences} use {Roblox Studio},
+which combines {3D creation} tools as well as an Integrated
 Developer Environment (IDE), as seen in Fig.~\ref{fig:roblox-studio}.
 The IDE includes an optional ``Script Analysis'' widget, which
 reports syntax errors, type errors, and problems identified by
@@ -314,13 +341,13 @@ the side of suppressing the error.
 
 Both modes report the \verb|Key 'r' not found in table 'x'| error --
 misspellings of property names are common enough to report in both
-strict and nonstrict mode. See~\anon[ANONYMIZED CITATION]{\cite{bfj-hatra-2021}}
+strict and nonstrict mode. See~\cite{bfj-hatra-2021}
 for a more detailed discussion of the rationale for strict and nonstrict mode.
 
 Both modes are opt-in. Creators have the option to make nonstrict mode
 the default rather than \mnocheck{} mode.
 
-Even in \mnocheck{} mode, \anon{Roblox Studio} performs type inference, since
+Even in \mnocheck{} mode, {Roblox Studio} performs type inference, since
 the results are needed by type-directed tooling such as autocomplete and
 API documentation. This behind-the-scenes typechecking is always performed
 in strict mode, since it is important that the inferred types be as precise
@@ -346,7 +373,7 @@ need to typecheck the current script, since it is the only dirty
 script, and nothing it requires can transitively require it, since we
 have broken cycles.
 
-The state of the world in a \anon{Roblox} experience is captured by
+The state of the world in a {Roblox} experience is captured by
 the \emph{data model}, which is a tree of \emph{instances}, such as
 parts, models, meshes, effects, lighting, audio assets, and physics
 constraints such as forces, springs and joints.
@@ -557,14 +584,12 @@ remove all syntax errors from later stages?
 
 \begin{figure}[t]
   \includegraphics{img/row-distribution.pdf}
-  \Description{FILL Histogram with approximately 100 records per hour, except for a 600-record spike near the end of Jan 12th.}
   \caption{Telemetry records per hour. Each tick on the $x$-axis marks the start of a new day in California.}
   \label{f:records-per-hour}
 \end{figure}
 
 \begin{figure}[t]
   TODO file size distribution: table or bars %% \includegraphics{img/row-distribution.pdf}
-  \Description{FILL}
   \caption{Size of analyzed code: number of files, number of lines , and lines in edit region}
   \label{f:analysis-size}
 \end{figure}
@@ -906,10 +931,10 @@ data published in aggregate under CC-BY;
 opt-out possible~\cite{dotnet-telemetry}
 
 
-\citet{lnsmc-usenix-2018} blame-proportional logging,
+\cite{lnsmc-usenix-2018} blame-proportional logging,
 scale up ``near'' points of interest,
 could be useful for us in the future.
-\citet{fnm-sigmod-2020} ditto, faster than statistical at finding root-cause,
+\cite{fnm-sigmod-2020} ditto, faster than statistical at finding root-cause,
 deterministic.
 
 
@@ -922,17 +947,19 @@ FILL regrets, lessons learned, advice for next time
 
 
 
-\begin{acks}
-  TBD
+\acks
 
 Greenman was supported by
-  \grantsponsor{NSF}{NSF}{https://www.nsf.gov} grant
- \href{"https://www.nsf.gov/awardsearch/showAward?AWD_ID=2030859"}{\grantnum{NSF}{CCF 2030859}}
-  to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
-\end{acks}
+grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
+to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
-\bibliographystyle{ACM-Reference-Format}
-\bibliography{bib}
+\newpage
+
+{ \printbibliography }
+
 
 \end{document}
-\endinput
+
+% Local Variables:
+% TeX-engine: luatex
+% End:
