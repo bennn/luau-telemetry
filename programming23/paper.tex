@@ -6,7 +6,7 @@
 \documentclass[english,submission,cleveref]{programming}
 %% use 'submission' for initial submission, remove it for camera-ready (see 5.1)
 
-\overfullrule=1mm
+%%\overfullrule=1mm
 
 %% BEGIN tobias pape 2021-11-06
 \makeatletter
@@ -249,8 +249,10 @@ the adoption and benefits of type analysis:
 \end{description}
 
 Beyond their immediate applications to {Lua},
-answers to these questions have implications for gradual types,
-success types, and semantic subtyping.
+answers to these questions have implications for the design
+of gradual types, success types, and semantic subtyping.
+Luau represents the first large-scale combination of these features,
+and lessons from this experience can inform future applications.
 
 At a higher level, this paper is the first to use telemetry 
 to study a typechecker.
@@ -392,8 +394,8 @@ the type system, it is possible for these edits to introduce type errors.
   %% FILL examples for each error?
   \begin{tabular}{ll}
     Label & Interpretation \\\midrule
-    \code{CodeTooComplex} & Type analysis failed, cannot understand the code \\
-    \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit \\
+    \code{CodeTooComplex} & Type analysis failed, cannot understand the code\!\!\! \\
+    \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit\!\!\! \\
     \code{SyntaxError} & Basic parse error, e.g., \code{for if end} \\
 
     \code{CountMismatch} & Arity mismatch for a function \\
@@ -404,9 +406,10 @@ the type system, it is possible for these edits to introduce type errors.
     \code{TypesAreUnrelated} & Failed to cast, unify, or check subtyping \\
     \code{TypeMismatch} & Generic label for other type errors \\
     \code{GenericError}
-    & Generic label for other non-type errors, such as looping\!\!\! \\
-    & over a table without a clear iteration strategy
-    %% & {}~~declaring a supertype that is not a class type
+    & Generic label for other non-type errors, such as\\
+    & \hbox{}~~looping over an unordered table
+    %% attempting to extend a type that does not describe a class
+    %% attempting to iterate over a table without a clear order
 
 
 %    \code{ExtraInformation} & Follow-on error that provides additional information for an error at the same source location. \\
@@ -438,16 +441,70 @@ the type system, it is possible for these edits to introduce type errors.
 
 \section{Telemetry Design}
 
-No PII whatsoever
+\paragraph{Goals:}
 
-Random session selection
+\begin{itemize}
+  \item
+    Learn about type system adoption and use
+  \item
+    Discover roadblocks to adoption
+  \item
+    Assess the helpfulness of error highlights
+\end{itemize}
 
-Random events during session, except module switch.
+\paragraph{Limits:}
 
-No access to other key events: save, exit.
-Don't want access to run, publish.
+\begin{itemize}
+\item
+  No personal data (PII)
+  \subitem
+    Fairly obvious.
+    But, we also can't collect directory names, filenames, or code snapshots
+    because these all might have PII throughout.
+\item
+  No data about public events.
+  \subitem
+    Contributions to the Roblox Marketplace, for instance, are a public event.
+    Although it would be interesting to know the number of type errors
+    in published experiences, this data might be used to identify creators
+    who publish often --- or on a distinct schedule.
+\item
+  Low cost
+  \subitem
+    Building, sending, and storing the data must all run quickly.
+    FILL alan: what was our hard cap on Kibana use?
+\end{itemize}
+
+
+\paragraph{Solutions:}
+
+\begin{itemize}
+  \item
+    Collect metrics instead of source code: lines, modules, num errors
+  \item
+    Track an edit range to compare type errors with edits,
+    use a coarse $[min, max]$ interval for speed
+  \item
+    Count specific errors only for the current edit range
+    (reduces size of logs)
+  \item
+    Log randomly on keystroke instead of per specific event.
+    One exception: log module switches because that helps discover
+    codebases that use several analysis modes.
+    Randomness helps lower the amount of data.
+  \item
+    Observe sessions randomly (again to lower the amount of data).
+\end{itemize}
+
+
+%% Extra Roblox constraints:
+%% - No access to some events: save, exit
+%% - No idea if analysis widget is open, closed, or obscured
+%% - Don't know which module is the data model
+%%   (no ids for ANY module for that matter)
 
 \url{https://docs.google.com/document/d/1DnKvw8x1jy0EWCbBSM8neKULWz7WAg1OauKy7qqYqkI/edit}
+
 
 \subsection{What are we logging (from gdoc)}
 
