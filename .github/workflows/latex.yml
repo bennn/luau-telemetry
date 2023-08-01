@@ -9,12 +9,12 @@ jobs:
       - name: Install TeXlive
         run: sudo apt-get update && sudo apt-get install texlive texlive-latex-extra texlive-fonts-extra texlive-science
       - name: LaTeX
-        working-directory: oopsla23
+        working-directory: programming23
         run: pdflatex paper; bibtex paper; pdflatex paper; pdflatex paper
       - name: Upload pdf
         uses: actions/upload-artifact@v2
         with:
           name: draft
-          path: oopsla23
+          path: programming23
 
           
