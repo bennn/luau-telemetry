@@ -7,7 +7,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install TeXlive
-        run: sudo apt-get update && sudo apt-get install texlive texlive-latex-extra texlive-fonts-extra texlive-science texlive-lang-cyrillic
+        run: sudo apt-get update && sudo apt-get install texlive texlive-latex-extra texlive-fonts-extra texlive-science texlive-lang-cyrillic texlive-bibtex-extra
       - name: LaTeX
         working-directory: programming23
         run: pdflatex paper; biber paper; pdflatex paper; pdflatex paper
