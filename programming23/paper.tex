@@ -440,6 +440,10 @@ the type system, it is possible for these edits to introduce type errors.
 
 \section{Telemetry Design}
 
+Prior work: transparent telemetry, VS Code telemetry, many others undocumented
+that are probably not cleary documented.
+\Cref{t:telemetry-design} gives an overview.
+
 \paragraph{Goals:}
 
 \begin{itemize}
@@ -486,6 +490,8 @@ the type system, it is possible for these edits to introduce type errors.
   \item
     Count specific errors only for the current edit range
     (reduces size of logs)
+  \item
+    Within the edit range, collect data before and after the latest edits.
   \item
     Log randomly on keystroke instead of per specific event.
     One exception: log module switches because that helps discover
@@ -952,7 +958,7 @@ Mind your language~\cite{mfk-onward-2011}.
   \begin{tabular}{l@{~}cccccc}
     &             & PII       & Session ID & Deterministic & Private Data \\\midrule
     & Transparent & \chkNo    & \chkNo     & \chkYes       & \chkNo      \\
-  * & Lite        & \chkNo    & \chkYes    & \chkNo        & \chkYes     \\
+  * & Us          & \chkNo    & \chkYes    & \chkNo        & \chkYes     \\
     & \code{.NET} & \chkMaybe & \chkYes    & \chkYes       & \chkYes     \\
     & VS Code     & \chkYes   & \chkYes    & \chkYes       & \chkYes     \\
   \end{tabular}
