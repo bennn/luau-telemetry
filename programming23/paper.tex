@@ -942,9 +942,126 @@ creator sentiment, but provide complementary data at scale.
 \section{Related Work}
 \label{s:related}
 
-%% zfstt-ieeesensors-2022
+%% - zfstt-ieeesensors-2022
+%% - lit review, benefits of static types
+%%   http://danluu.com/empirical-pl/
+%% - thomas kennedy .... generic usage monitoring ascilite 2003
+%% - ahmadzadeh elliman higgins iticse 2005
+%% - buffardi etal 2014 adaptive and social mechanisms
+%% - bddf-icse-2016
+%% -  sh edwards and jason snyder icer 2009 comparing effective and ineffective grading platform
+%% - murphy etal sigcse 2009 Retina: helping students
+%% - ESP workshop on empirical studies of programming
+%%   https://dl.acm.org/doi/proceedings/10.1145/266399
+%%   nothing sounds big ... empirical yes, large no
+%% - Choppella Haynes IU TR 426
+%% - Tip Dinesh tosem 2001
+
+\cite{bgimgm-cse-2016}
+study Java compiler error messages after an intervention, counting num errors,
+counting repeats, counting per user
+
+\cite{anna-russo-kennedy-ms-2006}
+BitFit, web-based java ide log num hint requests num, result of check answer
+requests num compile, num run, no code?! good we have the same constraint
+
+\cite{ab-sigcse-2015}
+frequency, time-to-fix, spread of errors
+ (we can't do time)
+parsing compile error + source code
+ sometimes with custom parsers
+
+\cite{m-masters-2016}
+study errors in blackbox dataset,
+ overwhelmingly syntax
+
+\cite{bkmu-sigcse-2014}
+blackbox, 100k users
+source code, diffs
+error line, column, message;
+keep all comments EXCEPT one above the class declaration
+
+
+\cite{bask-icer-2018}
+2TB data, Java programs
+18 publications survey, technical challenges in analysis
+ most pubs analyze errors;
+nobody asked:
+ which exns do students encounter (what?! mccall kolling 2014)
+ execution / editing timelines
+(blackbox analysis tutorial in sigcse 2020 on a mini dataset, to help researchers start writing an analysis)
+
+
+\cite{t-hatra-2021}
+plan for a large user-centered study 
+... not very deep, look at edit sequences, replay for errors
+
+
+\cite{cdhhjklwya-hatra-2020}
+evaluating the PLIERS design process (Coblenz etal 202X)
+teaching students to use PLIERS; everyone ran a user study!
+6 languages
+ 3 ran usability studies
+recommend talk-alouds
+
+
+\cite{gstf-hatra-2021}
+liquid types for java
+30 devs user study
+ zoom
+
+\cite{lfgc-pldi-2007}
+typechecker never errors,
+ calls a helper that looks for nearby programs that do typecheck
+tested on
+ 10 students, 2yrs professional experience
+ 5 hw assignments
+ 2122 files collected;
+won \pct{19}, lost \pct{17};
+ill-suited for things like (let x = e1 in ....),
+ change e1,
+ use typechecker feedback to guide edits;
+small data!
+
+
+\cite{w-popl-1986}
+reporting source, not detection
+tested on 9 type errors
+ all \emph{deletions}, such as forgetting to inject in an enum
+
+\cite{sscwj-oopsla-2017}
+NATE numerical analysis of type errors
+5000 labeled programs
+ errors from class, first fix
+
+
+\cite{sjw-jfp-2018}
+type error witness generation
+4500 ill-typed student programs
+ \pct{85} of time, synthesis works
+ \pct{70} of time, locate source
+
+
+\cite{h-dissertiation-2005}
+constraint-based type inference;
+general te criteria:
+- target audience (novice / expert)
+- output format (text / viz)
+- interactivity (yes / no)
+- heuristics (yes / no)
+- primary-or-external (most type errors are easy, some could really use dedicated help)
+
+
+\cite{hw-scp-2004}
+location of type error as a slice,
+ not a srcloc,
+ not a subtree
+
+
 
 \paragraph{Research on Errors}
+
+TODO Liblit dissertiation
 
 Mind your language~\cite{mfk-onward-2011}.
 
