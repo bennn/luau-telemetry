@@ -796,6 +796,109 @@ downgrade = found a down-mode switch that does not match a module switch
   \label{f:mode-errors}
 \end{figure}
 
+\subsection{Analysis 2}
+
+TODO work this into the above or below.
+
+What can we learn from the telemetry? We have 1.5 million records from Feb 22
+to April 14 (roughly 27K records per day).
+They mention +70 million type errors.
+(Some records point to a large number of errors. FILL median, max. Could be cascading,
+which makes the 70million number uninterpretable.)
+What takeaways are there??!
+
+First,
+users rarely switch type analysis mode. There are 3 modes available and users
+are free to switch between them, or to mix modes in a codebase, but we rarely
+detect these events:
+
+\pct{99} of sessions use a single mode
+
+\pct{0.2} of sessions use different modes in different modules. (More
+precisely, the user switched to a module --- triggering a telemetry record ---
+that used a different mode than the previous one.)
+
+\pct{0.2} of records show a mode switch (equally split between upgrades and
+downgrades, 341 and 320)
+
+
+Second,
+the stronger analysis modes are roughly 10x less popular than weaker ones
+(across the \pct{99} of sessions that stick with one mode):
+
+\pct{90} of sessions use nocheck mode
+\pct{9.8} use nonstrict mode
+\pct{0.2} use strict mode
+
+Third,
+In the edit range, we know exactly which errors showed up. This leads to a few
+takeaways, such as:
+
+Only 3 sessions (out of +300K) hit the typechecker's internal limits on problem
+size --- CodeTooComplex errors. Good!
+
+About \pct{90} of type errors are probably due to typos (SyntaxError, UnknownSymbol,
+UnknownProperty). These are not propoer type errors.
+
+10 errors never showed up. These include DynamicPropertyLookupOnClassesUnsafe and
+SwappedGenericTypeParameter
+
+
+Fourth,
+Codebase size and session length tend to follow a power law. 
+One aspect of size for nonstrict sessions: the number of
+lines in the edit range. Over 80 sessions have 20-line ranges, about 40 have a
+30-line range, etc.
+
+TODO must explain edit range carefully.
+
+TODO must show full plot, zoomed plot side by side
+
+Fifth,
+Increases and decreases to the number of type errors are evenly balanced across
+the data.
+In strict mode, \pct{24} of records increase the number of type errors. \pct{26}
+decrease. \pct{50} keep it constant.
+In nonstrict mode, \pct{14} increase errors, \pct{15} decrease, and \pct{71}
+keep it constant
+This plot is for nonstrict. X-axis = time since start of session, cut off at 30
+seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
+
+\begin{figure}[t]
+  \includegraphics[width=0.8\columnwidth]{img/example-error-delta.png}
+  \caption{Errors delta, nonstrict}
+  \label{f:error-delta}
+\end{figure}
+
+Sixth, a mystery. May be a bug in Luau.
+May be DM insensitivity in strict mode
+(if DM has top type that would lead to errors.)
+Context: each of the 3 modes runs 2 kinds of type analysis. One is the regular
+type analysis. The other is Forced Strict (FS), which converts all dependencies
+to strict mode. The reason for FS is that it sometimes gives better
+autocomplete suggestions etc.
+You'd expect that the number of type errors is always <= num FS errors. But we
+found several cases where this is false!
+The plot here "stacks" every strict session into bars. X-axis is a record index
+within a session (bars are higher on the left because we have lots more short
+sessions than long ones). Y-axis counts the number of records where num TE <= num FS
+is true (blue) and false (yellow).
+
+TODO clarify semantic x-axis order
+
+%% FS has: 1 all dependencies in strict, 2 data-model awareness (DM turns into
+%% type graph, ... initial DM, all properties go into a table type; DM -> folder
+%% -> model -> part .. get dot-driven autocomplete) in strict, DM might have type
+%% Any might have type Instance, the latter would mean more errors than FS
+
+\begin{figure}[t]
+  \includegraphics[width=0.8\columnwidth]{img/example-tefs.png}
+  \caption{Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
+  \label{f:tefs}
+\end{figure}
+
+
+
 \section{Interpretation}
 
 \subsection{Dead Ends: Too Complex}
