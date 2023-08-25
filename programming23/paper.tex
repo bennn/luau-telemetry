@@ -636,6 +636,11 @@ Deduplicated records with the same client timestamp,
 kept only the first.
 Timestamps by millisecond.
 
+Edit range ignore huge numbers (above 4B),
+which are the result of subtraction overflowing.
+%% 4,000,000,000
+
+
 FILL ignore sessions close to start / end time?
 remove all syntax errors from later stages?
 
@@ -897,6 +902,14 @@ TODO clarify semantic x-axis order
   \label{f:tefs}
 \end{figure}
 
+Seventh, 
+
+
+\begin{figure}[t]
+  \includegraphics[width=0.8\columnwidth]{img/example-compass.png}
+  \caption{Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
+  \label{f:tefs}
+\end{figure}
 
 
 \section{Interpretation}
