@@ -640,9 +640,17 @@ Edit range ignore huge numbers (above 4B),
 which are the result of subtraction overflowing.
 %% 4,000,000,000
 
+Sessions, ignore if too close to start or end.
+Deciding if a session is close is tricky because we don't have
+a firm start and end time.
+Um, does this make sense at all?
+Well anyway we took the greater number from mean vs median
+gap (over all points, not just keystroke points)
+and multiplied by Nx to test closeness to a boundary.
+With N=2 we drop 1 nonstrict session, 0 strict (not sure about nocheck).
+With N=4 we drop 3, with N=8 we drop 9.
 
-FILL ignore sessions close to start / end time?
-remove all syntax errors from later stages?
+FILL remove all syntax errors from later stages?
 
 
 
