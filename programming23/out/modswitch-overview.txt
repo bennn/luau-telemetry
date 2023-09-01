@@ -1,0 +1,66 @@
+ 508,572 total logs = 445,600 nocheck + 60,192 nonstrict + 2,780 strict
+  508,572 due to module switch
+
+ 30,013,359 total forced strict type errors, 7,462,803 in module, 266,999 in edit regions
+
+ 374,262 total type errors, 142,748 in module, 4,055 non-stx + 16,007 syntax in edit regions
+
+ 171,518 sessions
+  170,980 single mode = 152,690 nocheck + 17,928 nonstrict + 362 strict
+N/A xxx  538 multi mode projects
+  0 mode upgrades
+  0 mode downgrades
+
+#hash(
+  ("TooComplexErrors" . 14)
+
+  ("Studio-Luau-TypeErrors.OldTypeError1000InEditRange" . 162)
+  ("Studio-Luau-TypeErrors.OldTypeError1001InEditRange" . 3272)
+  ("Studio-Luau-TypeErrors.OldTypeError1002InEditRange" . 418)
+  ("Studio-Luau-TypeErrors.OldTypeError1003InEditRange" . 14)
+  ("Studio-Luau-TypeErrors.OldTypeError1004InEditRange" . 112)
+  ("Studio-Luau-TypeErrors.OldTypeError1005InEditRange" . 0)
+  ("Studio-Luau-TypeErrors.OldTypeError1007InEditRange" . 152)
+  ("Studio-Luau-TypeErrors.OldTypeError1008InEditRange" . 7)
+  ("Studio-Luau-TypeErrors.OldTypeError1010InEditRange" . 0)
+  ("Studio-Luau-TypeErrors.OldTypeError1011InEditRange" . 67)
+  ("Studio-Luau-TypeErrors.OldTypeError1012InEditRange" . 1)
+  ("Studio-Luau-TypeErrors.OldTypeError1013InEditRange" . 17535)
+  ("Studio-Luau-TypeErrors.OldTypeError1016InEditRange" . 24)
+  ("Studio-Luau-TypeErrors.OldTypeError1017InEditRange" . 68)
+  ("Studio-Luau-TypeErrors.OldTypeError1019InEditRange" . 10)
+  ("Studio-Luau-TypeErrors.OldTypeError1020InEditRange" . 7)
+  ("Studio-Luau-TypeErrors.OldTypeError1022InEditRange" . 15)
+  ("Studio-Luau-TypeErrors.OldTypeError1023InEditRange" . 30)
+  ("Studio-Luau-TypeErrors.OldTypeError1024InEditRange" . 16)
+  ("Studio-Luau-TypeErrors.OldTypeError1026InEditRange" . 15)
+  ("Studio-Luau-TypeErrors.OldTypeError1027InEditRange" . 17)
+  ("Studio-Luau-TypeErrors.OldTypeError1029InEditRange" . 85)
+  ("Studio-Luau-TypeErrors.OldTypeError1030InEditRange" . 7)
+  ("Studio-Luau-TypeErrors.OldTypeError1031InEditRange" . 2)
+
+  ("Studio-Luau-TypeErrors.TypeError1000InEditRange" . 300)
+  ("Studio-Luau-TypeErrors.TypeError1001InEditRange" . 2561)
+  ("Studio-Luau-TypeErrors.TypeError1002InEditRange" . 721)
+  ("Studio-Luau-TypeErrors.TypeError1003InEditRange" . 19)
+  ("Studio-Luau-TypeErrors.TypeError1004InEditRange" . 3)
+  ("Studio-Luau-TypeErrors.TypeError1005InEditRange" . 1)
+  ("Studio-Luau-TypeErrors.TypeError1006InEditRange" . 0)
+  ("Studio-Luau-TypeErrors.TypeError1007InEditRange" . 70)
+  ("Studio-Luau-TypeErrors.TypeError1008InEditRange" . 3)
+  ("Studio-Luau-TypeErrors.TypeError1011InEditRange" . 75)
+  ("Studio-Luau-TypeErrors.TypeError1012InEditRange" . 0)
+  ("Studio-Luau-TypeErrors.TypeError1013InEditRange" . 16007)
+  ("Studio-Luau-TypeErrors.TypeError1016InEditRange" . 22)
+  ("Studio-Luau-TypeErrors.TypeError1017InEditRange" . 69)
+  ("Studio-Luau-TypeErrors.TypeError1019InEditRange" . 9)
+  ("Studio-Luau-TypeErrors.TypeError1020InEditRange" . 5)
+  ("Studio-Luau-TypeErrors.TypeError1022InEditRange" . 25)
+  ("Studio-Luau-TypeErrors.TypeError1023InEditRange" . 18)
+  ("Studio-Luau-TypeErrors.TypeError1024InEditRange" . 16)
+  ("Studio-Luau-TypeErrors.TypeError1026InEditRange" . 7)
+  ("Studio-Luau-TypeErrors.TypeError1027InEditRange" . 7)
+  ("Studio-Luau-TypeErrors.TypeError1029InEditRange" . 117)
+  ("Studio-Luau-TypeErrors.TypeError1030InEditRange" . 6)
+  ("Studio-Luau-TypeErrors.TypeError1031InEditRange" . 1)
+)
