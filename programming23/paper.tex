@@ -210,7 +210,7 @@ determines which sessions should report telemetry, and for those
 sessions, reports telemetry records back with a summary of the
 session. In the case of this study, the telemetry includes data on the
 number of errors at various levels of granularity: in the current edit
-region, in the current file, and in every file which was type
+range, in the current file, and in every file which was type
 checked.
 
 The telemetry data we analyzed does not contain any PII:
@@ -523,11 +523,11 @@ that are probably not cleary documented.
     \subitem we get logs for two reasons: (1) switch module, (2) randomly with
     low probability after typechecking
   \item[D4] size of codebase: num files, num lines
-  \item[D5] size of edit region
-  \item[D6] overall type errors: for old and curr states, have: \# total, \# in module, and \# in region
-  \item[D7] specific errors in the edit region: in the edit region, for old and
+  \item[D5] size of edit range
+  \item[D6] overall type errors: for old and curr states, have: \# total, \# in module, and \# in range
+  \item[D7] specific errors in the edit range: in the edit range, for old and
     curr states, how many type errors for each type error code? (There is 1
-    edit region per log.)
+    edit range per log.)
     \subitem Examples, if the old state had one type-A error:
     \begin{itemize}
       \item If the latest edits touched it and fixed it, the next log says 1
@@ -536,7 +536,7 @@ that are probably not cleary documented.
       \item didn't touch (fixed or not) => 0 old-A, 0 new-A
     \end{itemize}
   \item[D8] ForcedStrict "what if" errors for \mnocheck{}: specific errors for the
-    edit region computed as if the user had strict mode enabled (even though they
+    edit range computed as if the user had strict mode enabled (even though they
     have no-check enabled)
     \subitem This info is available because it gives better hints for
     autocomplete, because it assumes precise types for ALL libraries (rather
@@ -561,15 +561,15 @@ RQs + Analysis
       \subitem Note: We can't look at the code to learn why the errors
         happened. Can only look for trends and tell the Roblox team where to
         look.
-        %% \subitem Count CTC errors within each session to see if these errors are intermittent, or if they stick around. [D9 for the count, D8 for \mnocheck{} vs strict, D7 because CTC might show up in the edit region]
+        %% \subitem Count CTC errors within each session to see if these errors are intermittent, or if they stick around. [D9 for the count, D8 for \mnocheck{} vs strict, D7 because CTC might show up in the edit range]
     \end{itemize}
-  \item How helpful are highlighted regions?
+  \item How helpful are highlighted ranges?
     \begin{itemize}
-      \item How often do edits in a highlighted region remove type errors? How
+      \item How often do edits in a highlighted range remove type errors? How
         often do they add new ones?
       \subitem [D7 compare specific old vs specific new]
       \subitem [may want to filter using D2 + D5]
-      \item How often do edits outside the region remove type errors? How often do they add new ones?
+      \item How often do edits outside the range remove type errors? How often do they add new ones?
       \subitem [D6 looking for old count vs. new count difference without a matching delta in the D7 counts]
       \item Which specific errors seem easy / hard to fix via highlights?
       \subitem [D6 removed by edit => easy; D6 survive edit => hard]
@@ -584,7 +584,7 @@ RQs + Analysis
 % What to study?
 % 
 % Sanity checks
-% How large are edit regions? Plot the distribution.
+% How large are edit ranges? Plot the distribution.
 % How long between logs? Long times & very short times are problematic.
 % General Roblox trends
 % How many sessions use strict / nonstrict / \mnocheck{}?
@@ -603,20 +603,20 @@ RQs + Analysis
 % Plot #errors vs time, or vs codebase size
 % Expect nocheck errors to keep going up. For other modes, #errors should stay low.
 % General type error trends
-% Plot the distribution of #errors across all edit regions
+% Plot the distribution of #errors across all edit ranges
 % Expect different counts based on error-kind. SEE BELOW
-% Count specific errors that get fixed. For each kind of error, how many times is it old-in-region but not new-in-region? Compare to #old-in-region totals.
+% Count specific errors that get fixed. For each kind of error, how many times is it old-in-range but not new-in-range? Compare to #old-in-range totals.
 % Expect all errors to have a decent fix rate.
-% If one error has a lower % than others, its error region may be misleading. Or, maybe it's hard to fix
-% Type errors vs. edit region
-% Compare #old vs. #new in region
+% If one error has a lower % than others, its error range may be misleading. Or, maybe it's hard to fix
+% Type errors vs. edit range
+% Compare #old vs. #new in range
 % Expect a decrease, #old > #new
-% If there's an increase, look for an explanation. Could be a huge edit region. Could be a 1-line region that we captured 2x in a row. Could be that this user is simply ignoring type errors.
-% Compare [#old-in-region vs. (total #old - total #new)]
-% If #old-in-region = 0, then hope the total # increases
+% If there's an increase, look for an explanation. Could be a huge edit range. Could be a 1-line range that we captured 2x in a row. Could be that this user is simply ignoring type errors.
+% Compare [#old-in-range vs. (total #old - total #new)]
+% If #old-in-range = 0, then hope the total # increases
 % Decrease => nonlocal edits fixed an error => type error hilite may be inaccurate
-% If #old-in-region > 0, then hope the total # decreases
-% Increase (in region or otherwise) => made things worse
+% If #old-in-range > 0, then hope the total # decreases
+% Increase (in range or otherwise) => made things worse
 
 
 
@@ -662,13 +662,13 @@ FILL remove all syntax errors from later stages?
   %% TODO bigger text
   %% code/row-distribution.rkt
   \includegraphics[width=\columnwidth]{img/row-distribution.pdf}
-  \caption{Telemetry records per hour. Each tick on the $x$-axis marks the start of a new day in California. Shaded regions correspond to weekends.}
+  \caption{Telemetry records per hour. Each tick on the $x$-axis marks the start of a new day in California. Shaded ranges correspond to weekends.}
   \label{f:records-per-hour}
 \end{figure}
 
 \begin{figure}[t]
   TODO file size distribution: table or bars %% \includegraphics{img/row-distribution.pdf}
-  \caption{Size of analyzed code: number of files, number of lines , and lines in edit region}
+  \caption{Size of analyzed code: number of files, number of lines , and lines in edit range}
   \label{f:analysis-size}
 \end{figure}
 
@@ -682,9 +682,9 @@ Why?
 Could be wrong local settings on the computer, or a delayed record due to lost
 internet connection or closed laptop.
 
-FILL te in edit region, 
+FILL te in edit range, 
  14,917 non-stx
- 16,007 syntax in edit regions.
+ 16,007 syntax in edit ranges.
  Most are typos!
 
 \begin{figure}[t]
@@ -709,12 +709,12 @@ FILL te in edit region,
       \begin{tabular}[t]{lrl}
         595,137 & Type errors \\
         289,698 & in current module & [\pct{48.68}] \\
-         30,924 & in edit region & [\pct{5.20}]
+         30,924 & in edit range & [\pct{5.20}]
       \end{tabular}
       \begin{tabular}[t]{lrl}
         72,235,735 & {Forced-strict errors} \\
         37,027,281 & in current module & [\pct{51.26}] \\
-         1,111,178 & in edit region & [\pct{1.54}]
+         1,111,178 & in edit range & [\pct{1.54}]
       \end{tabular}
     \end{tabular}
     \caption{Type errors and forced-strict errors across all telemetry records}
@@ -743,6 +743,13 @@ FILL te in edit region,
   \caption{Dataset overview}
   \label{f:dataset-overview}
 \end{figure}
+
+%% TODO explain timestamps in prose, fig in appendix?
+
+%% TODO power-law: event count, timespan, files lines editRange /session, 
+%% ... gotta know project size
+
+%% TODO overall stats on type errors
 
 %  %% TODO these need to be plots, it's too much reading for the quick takeaway
 %  %% put exactly this data into bars!
@@ -782,7 +789,7 @@ FILL te in edit region,
   %% TODO stacked bars?
   %% TODO align old;curr
   \begin{tabular}{lrrrrr}
-    Mode             & \# Rows & E         & Any Error & In Module & In Region \\
+    Mode             & \# Rows & E         & Any Error & In Module & In range \\
       & & & & (old ; curr) &  (old ; curr) \\\midrule
     \mnocheck{}   &   4,471 & \code{te} &    5.77\% &  0.20\% ;  2.21\% &  0.16\% ;  0.63\% \\
                   &         & \code{fs} &   59.18\% & 32.81\% ; 49.16\% &  9.17\% ; 13.13\% \\
@@ -794,8 +801,8 @@ FILL te in edit region,
 
   \bigskip
 
-  Below, edit region only.
-  Each record with an edit region error adds +1 to at least 1 row.
+  Below, edit range only.
+  Each record with an edit range error adds +1 to at least 1 row.
 
   \smallskip
 
@@ -1025,7 +1032,7 @@ For FS: \mnocheck{} 400, \mnonstrict{} 39, \mstrict{} 6.
 
 \subsection{Types and Quality of Life}
 
-FILL error density: number vs region size
+FILL error density: number vs range size
 
 \begin{figure}[h]
   \begin{tabular}{llrrr}
@@ -1113,7 +1120,7 @@ Probably data model!
 Error counts per-project and per-module include syntax errors.
 Problematic, because syntax errors are uninteresting (easy to fix),
 but common, which makes it likely that our per-keystroke telemetry (1/2k) will record them.
-Edit region has specific counts.
+Edit range has specific counts.
 Next time, we should do that for the other aggregates.
 
 Telemetry cannot replace user studies, as there is no way to measure
