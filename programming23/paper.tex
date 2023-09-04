@@ -648,9 +648,14 @@ often assigns equal timestamps to dozens of records.
 Hence, we ignore the server timestamps.
 Throughout the paper a \emph{timestamp} is always a client-side timestamp.
 
-Edit range ignore huge numbers (above 4 billion),
-which are the result of subtraction overflowing.
-%% 4,000,000,000
+
+Edit ranges are negative in a handful of records (1,533).
+%% out/negative-edit-range.txt
+%% actual value is NOT negative, but large positive over 4 billion
+%% example: 4294967293
+This may happen when a user deletes a large block of code.
+Since the issue affects so few records, we omit those ranges
+from the analysis.
 
 Sessions, ignore if too close to start or end.
 Deciding if a session is close is tricky because we don't have
@@ -1343,6 +1348,26 @@ FILL regrets, lessons learned, advice for next time
 Greenman was supported by
 grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
 to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
+
+\newpage
+
+\appendix
+
+\section{Data Details}
+
+Tips for interpreting the data:
+
+\begin{itemize}
+  \item
+    Edit ranges are non-negative because we
+    implemented the interval arithmetic for them using unsigned integers.
+    To filter out negative edit ranges, we removed all ranges
+    greater than 4 billion.
+
+  \item
+  \item
+  \item
+\end{itemize}
 
 \newpage
 
