@@ -633,11 +633,22 @@ nonstrict fs unclear
 
 \section{Data Cleaning}
 
-Deduplicated records with the same client timestamp,
+Deduplicated records with the same timestamp,
 kept only the first.
 Timestamps by millisecond.
 
-Edit range ignore huge numbers (above 4B),
+Records come with two timestamps, a \emph{client timestamp}
+that the IDE generates before sending the record
+and a \emph{server timestamp} that the telemetry server
+generates when it receives the record.
+We collected timestamps to sort records from earliest to latest.
+The server timestamps, however, are less useful for sorting
+because the server processes groups of records in a batch and
+often assigns equal timestamps to dozens of records.
+Hence, we ignore the server timestamps.
+Throughout the paper a \emph{timestamp} is always a client-side timestamp.
+
+Edit range ignore huge numbers (above 4 billion),
 which are the result of subtraction overflowing.
 %% 4,000,000,000
 
@@ -744,12 +755,16 @@ FILL te in edit range,
   \label{f:dataset-overview}
 \end{figure}
 
-%% TODO explain timestamps in prose, fig in appendix?
-
 %% TODO power-law: event count, timespan, files lines editRange /session, 
 %% ... gotta know project size
 
-%% TODO overall stats on type errors
+%% results 1 section?!
+
+%% TODO counting stats on type errors
+%% - specific errors
+%% - typos vs rest
+%% - too complex
+%% - mod switch vs other
 
 %  %% TODO these need to be plots, it's too much reading for the quick takeaway
 %  %% put exactly this data into bars!
