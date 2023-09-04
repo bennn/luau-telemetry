@@ -14,3 +14,4 @@
 *.run.xml
 *~
 **/.DS_Store
+compiled/
