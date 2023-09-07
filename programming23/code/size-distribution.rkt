@@ -101,9 +101,7 @@
         (cons (car k*) (cons n (cdr k*)))
         (cons (car k*) (loop (cdr k*)))))))
 
-(define (f:plot-simple-distro h# summary key out-kind)
-  ;; TODO check nsa
-  ;; get mean etc from there, UGH
+(define (f:plot-simple-distro h# summary key out-kind #:x-max [x-max #f] #:y-max [y-max #f])
   (define ww 200)
   (define hh 180)
   (define out-file (build-path img-dir (format "~a-distribution.~a" key out-kind)))
@@ -142,24 +140,36 @@
         #:width ww
         #:height hh
         #:x-min 0
-        #:x-max 1000
+        #:x-max x-max
         #:y-min 0
-        #:y-max 1000
+        #:y-max y-max
         #:x-label #f #:y-label #f #:title #f)))
   (void))
 
-(define (f:plot-size-distros x y out-kind)
+(define (f:plot-codebase-distros x y out-kind limit)
+  (f:plot-size-distros x y out-kind #:x-max limit #:y-max limit #:keys '(editrange lines files)))
+
+(define (f:plot-session-distros x y out-kind)
+  (define limit 1000)
+  (f:plot-size-distros x y out-kind #:x-max limit #:y-max limit #:keys '(timespan event-count)))
+
+(define (f:plot-size-distros x y out-kind #:x-max [x-max #f] #:y-max [y-max #f] #:keys [keys #f] )
   (define h# (file->value x))
   (define s# (file->value y))
   ;; (displayln (hash-keys h#))
   ;; (timespan event-count editrange lines files)
-  (for (((kk -vv) (in-hash h#)))
+  (for (((kk -vv) (in-hash h#))
+        #:when (or (not keys) (memq kk keys)))
     (define vv
-      (if (eq? kk 'editrange)
-        (value-cleaning (lambda (n) (< n 4000000000)) -vv)
-        -vv))
+      (cond
+        [(eq? kk 'editrange)
+         (value-cleaning (lambda (n) (< n 4000000000)) -vv)]
+        [(eq? kk 'timespan)
+         (key-normalize (lambda (k) (quotient k 1000)) -vv)]
+        [else
+          -vv]))
     (define summary (hash-ref s# kk))
-    (f:plot-simple-distro vv summary kk out-kind))
+    (f:plot-simple-distro vv summary kk out-kind #:x-max x-max #:y-max y-max))
   (void))
 
 (define (value-cleaning f h#)
@@ -167,13 +177,26 @@
              #:when (f v))
     (values k v)))
 
+(define (key-normalize f h#)
+  (define m (make-hash))
+  (for (((k v) (in-hash h#))
+        #:when k)
+    (hash-update! m (f k) (lambda (n) (+ v n)) (lambda () 0)))
+  m)
+
 (module+ main
   (define out-kind 'pdf) ;; png
   (define fname "size-distributions.rktd")
-  (f:plot-size-distros
+  #;(f:plot-codebase-distros
     (build-path data-dir fname)
     (build-path data-dir (string-append "summary-of-" fname))
     out-kind
-    ))
+    1000)
+  (f:plot-session-distros
+    (build-path data-dir fname)
+    (build-path data-dir (string-append "summary-of-" fname))
+    out-kind)
+  )
+
 
 
