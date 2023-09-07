@@ -682,12 +682,30 @@ FILL remove all syntax errors from later stages?
   \label{f:records-per-hour}
 \end{figure}
 
+FILL investigate one tower
+
 \begin{figure}[t]
-  TODO file size distribution: table or bars %% \includegraphics{img/row-distribution.pdf}
+  %% \includegraphics{img/row-distribution.pdf}
+  \begin{tabular}{lrrr}
+           & Files  &     Lines &    Edit Range \\
+    Median &  7,678 &     3,115 &           926 \\
+    Mean   & 11,911 &     6,497 &         3,680 \\
+    Max    & 54,884 & 1,089,963 &     1,156,036 \\
+    & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
+    & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
+    & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
+
+  \end{tabular}
+
   \caption{Size of analyzed code: number of files, number of lines , and lines in edit range}
-  \label{f:analysis-size}
+  \label{f:codebase-size}
 \end{figure}
 
+TODO .. somewhere ... out/error-density-*
+TODO ... somewhere ... te leq fs : use error-density
+
+summary of timespan :: max 1387897376 median 845648 mean 3184317.084881936 stddev 15724745.722577972
+summary of event-count :: max 6079 median 138 mean 286.5851851851852 stddev 582.5752201972966
 
 \Cref{f:records-per-hour} shows when data arrived across the whole dataset.
 FILL: currently clientTimestamp, which has caveats.
@@ -756,6 +774,13 @@ FILL te in edit range,
     \label{f:total-sessions}
   \end{subfigure}
 
+  \begin{subfigure}[t]{\columnwidth}
+    \caption{TODO session size}
+    \label{f:sessions-size}
+  \end{subfigure}
+
+  %% TODO out/size-dist*rktd
+
   \caption{Dataset overview}
   \label{f:dataset-overview}
 \end{figure}
@@ -771,43 +796,11 @@ FILL te in edit range,
 %% - too complex
 %% - mod switch vs other
 
-%  %% TODO these need to be plots, it's too much reading for the quick takeaway
-%  %% put exactly this data into bars!
-%  \begin{minipage}[t]{0.5\textwidth}
-%    \begin{tabular}{rr}
-%      Session length & \# Sessions \\\midrule
-%      1 &  450 \\
-%      2 &  199 \\
-%      3 &  129 \\
-%      4 &  73 \\
-%      5 &  60 \\
-%      6-10 & 150 \\
-%      11-20 & 67 \\
-%      21-40 & 11 \\
-%      >40 & 7
-%      %% max 393
-%    \end{tabular}
-%  \end{minipage}\begin{minipage}[t]{0.5\textwidth}
-%    \begin{tabular}{rr}
-%      Time delta & \# Records \\\midrule
-%      0-5ms & 284 \\
-%      5-1000ms & 248 \\
-%      1-2s & 153 \\
-%      2-5s & 232 \\
-%      5-10s & 207 \\
-%      10-30s & 524 \\
-%      30-60s & 392 \\
-%      1-2m & 394 \\
-%      2-5m & 559 \\
-%      5-10m & 360 \\
-%      >10-60m & 502
-%    \end{tabular}
-%  \end{minipage}
-
 
 \begin{figure}[t]
   %% TODO stacked bars?
   %% TODO align old;curr
+  %% TODO sep23 remove this??!
   \begin{tabular}{lrrrrr}
     Mode             & \# Rows & E         & Any Error & In Module & In range \\
       & & & & (old ; curr) &  (old ; curr) \\\midrule
@@ -861,6 +854,7 @@ downgrade = found a down-mode switch that does not match a module switch
 
 \begin{figure}[t]
 
+  %% TODO import code from tmp to nsa
   {Few local adds => Few people ignoring script analysis}
   \smallskip
 
