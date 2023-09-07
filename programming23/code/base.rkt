@@ -7,6 +7,7 @@
   pict-abbrevs
   racket/string
   racket/math
+  racket/file
   racket/list
   plot/no-gui
   (only-in plot/utils linear-seq)
@@ -180,4 +181,7 @@
 (define (ts->datetime str)
   ;; http://unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
   (parse-datetime (unstr str) "MMM d, y @ HH:mm:ss.S"))
+
+(define (type-error-codes)
+  (file->value (build-path data-dir "typeerror.rktd")))
 

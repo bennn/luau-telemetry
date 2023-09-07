@@ -1,0 +1,36 @@
+((1000 TypeMismatch)
+(1001 UnknownSymbol) ;; ... var
+(1002 UnknownProperty) ;; ... obj, method
+(1003 NotATable)
+(1004 CannotExtendTable)
+(1005 OnlyTablesCanHaveMethods)
+(1006 DuplicateTypeDefinition)
+(1007 CountMismatch) ;; ... arity
+(1008 FunctionDoesNotTakeSelf)
+(1009 FunctionRequiresSelf)
+(1010 OccursCheckFailed)
+(1011 UnknownRequire) ;; ... bad symbol @ import
+(1012 IncorrectGenericParameterCount)
+(1013 SyntaxError)
+(1014 CodeTooComplex)
+(1015 UnificationTooComplex)
+(1016 UnknownPropButFoundLikeProp)
+(1017 GenericError) ;; ... generic T escapes scope, 
+(1018 InternalError)
+(1019 CannotCallNonFunction)
+(1020 ExtraInformation)
+(1021 DeprecatedApiUsed)
+(1022 ModuleHasCyclicDependency)
+(1023 IllegalRequire)
+(1024 FunctionExitsWithoutReturning)
+(1025 DuplicateGenericParameter)
+(1026 CannotInferBinaryOperation)
+(1027 MissingProperties)
+(1028 SwappedGenericTypeParameter)
+(1029 OptionalValueAccess)
+(1030 MissingUnionProperty)
+(1031 TypesAreUnrelated)
+(1032 NormalizationTooComplex)
+(1033 TypePackMismatch)
+(1034 DynamicPropertyLookupOnClassesUnsafe))
+
