@@ -185,3 +185,17 @@
 (define (type-error-codes)
   (file->value (build-path data-dir "typeerror.rktd")))
 
+(define (intcode->str code* ii)
+  (for/first ((kv (in-list code*))
+             #:when (eqv? (car kv) ii))
+    (cadr kv)))
+
+(define (str->intcode str)
+  (define mm (regexp-match #rx"TypeError([0-9][0-9][0-9][0-9])InEdit" str))
+  (unless mm
+    (raise-argument-error 'str->intcode "TypeErrorNNNN string?" str))
+  (string->number (cadr mm)))
+
+(define (str->tename str code#)
+  (hash-ref code# (str->intcode str)))
+

@@ -18,15 +18,6 @@
 
 ;; ---
 
-(define (str->intcode str)
-  (define mm (regexp-match #rx"TypeError([0-9][0-9][0-9][0-9])InEdit" str))
-  (unless mm
-    (raise-argument-error 'str->intcode "TypeErrorNNNN string?" str))
-  (string->number (cadr mm)))
-
-(define (str->tename str code#)
-  (hash-ref code# (str->intcode str)))
-
 (define (overview->te# fn)
   (define ln* (file->lines fn))
   (define h-idx (index-where ln* (lambda (str) (string=? str "#hash(" ))))

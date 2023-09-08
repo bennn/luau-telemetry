@@ -101,6 +101,7 @@
 \newcommand{\mstrict}{\modefont{strict}}
 \newcommand{\zerowidth}[1]{\makebox[0pt][l]{#1}}
 \newcommand{\stddev}[1]{[#1\textsc{k}]}
+\newcommand{\gcell}[1]{\cellcolor{green!20}#1}
 \newcommand{\ycell}[1]{\cellcolor{yellow!18}#1}
 \newcommand{\ocell}[1]{\cellcolor{orange!29}#1}
 \newcommand{\rcell}[1]{\cellcolor{red!30}$\!\!$#1$\!\!$}
@@ -870,69 +871,52 @@ Fourteen errors never showed up.
 Nothing for \code{CodeTooComplex} or \code{UnificationTooComplex} is great news.
 But what about the others? FILL
 
-=== BEN START HERE
-
 TODO get counts for each mode. Are there fewer stx errors in strict mode??!
 
-TODO which type errors at end of session?
+NOTE can't ask about type errors at end because we don't know
+the end.
+The final record can be sent minutes before the end of session.
 
-\begin{figure}[t]
-  Below, edit range only.
-  Each record with an edit range error adds +1 to at least 1 row.
+\begin{table}[t]
 
-  \smallskip
+    \begin{tabular}{lr@{~}r@{~}rr@{~}r@{~}rr@{~}r@{~}r}
+      & \zerowidth{\mnocheck{}} & & & \zerowidth{\mnonstrict{}} & & & \zerowidth{\mstrict{}} & & \\
+      & \rcell{Add} & \ycell{Keep} & \gcell{Drop} & \rcell{Add} & \ycell{Keep} & \gcell{Drop} & \rcell{Add} & \ycell{Keep} & \gcell{Drop} \\\midrule
+      TypeMismatch & {0} & {0} & {0} & {159} & {62} & {129} & {21} & {10} & {28} \\
+      UnknownSymbol & {0} & {0} & {0} & {2348} & {496} & {2973} & {49} & {19} & {55} \\
+      UnknownProperty & {0} & {0} & {0} & {347} & {180} & {385} & {19} & {19} & {35} \\
+      NotATable & {0} & {0} & {0} & {7} & {2} & {8} & {2} & {0} & {1} \\
+      CannotExtendTable & {0} & {0} & {0} & {7} & {9} & {10} & {0} & {0} & {1} \\
+      OnlyTablesCanHaveMethods & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
+      DuplicateTypeDefinition & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
+      CountMismatch & {0} & {0} & {0} & {223} & {48} & {269} & {12} & {2} & {17} \\
+      FunctionDoesNotTakeSelf & {0} & {0} & {0} & {4} & {6} & {5} & {0} & {0} & {0} \\
+      OccursCheckFailed & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {1} \\
+      UnknownRequire & {0} & {0} & {0} & {91} & {39} & {85} & {12} & {3} & {4} \\
+      IncorrectGenericParameterCount & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
+      SyntaxError & {8349} & {314} & {19220} & {983} & {46} & {2658} & {16} & {0} & {71} \\
+      UnknownPropButFoundLikeProp & {0} & {0} & {0} & {26} & {18} & {21} & {1} & {0} & {1} \\
+      GenericError & {0} & {0} & {0} & {206} & {52} & {203} & {8} & {1} & {9} \\
+      CannotCallNonFunction & {0} & {0} & {0} & {17} & {4} & {20} & {1} & {0} & {1} \\
+      ExtraInformation & {0} & {0} & {0} & {48} & {7} & {39} & {2} & {0} & {1} \\
+      ModuleHasCyclicDependency & {0} & {0} & {0} & {20} & {9} & {15} & {0} & {0} & {1} \\
+      IllegalRequire & {0} & {0} & {0} & {16} & {3} & {33} & {0} & {0} & {2} \\
+      FunctionExitsWithoutReturning & {0} & {0} & {0} & {9} & {3} & {6} & {11} & {5} & {8} \\
+      CannotInferBinaryOperation & {0} & {0} & {0} & {1} & {2} & {1} & {7} & {6} & {9} \\
+      MissingProperties & {0} & {0} & {0} & {11} & {3} & {11} & {6} & {4} & {6} \\
+      OptionalValueAccess & {0} & {0} & {0} & {40} & {52} & {27} & {6} & {2} & {7} \\
+      MissingUnionProperty & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
+      TypesAreUnrelated & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {1} \\
+    \end{tabular}
 
-  %% TODO draw bars or curves b/c numbers are too hard to compare horizontally
-  \begin{tabular}{lrrr}
-    Error Label & \# Add & \# Keep & \# Remove \\\midrule
-    CodeTooComplex
-    & 0 & 0 & 0 \\
-    UnificationTooComplex
-    & 0 & 0 & 0 \\[1ex]
-    SyntaxError
-    & 30 & 0 & 76 \\
-    UnknownSymbol
-    & 12 & 14 & 19 \\
-    UnknownProperty
-    & 3 & 1 & 4 \\
-    UnknownRequire
-    & 1 & 5 & 0 \\
-    GenericError
-    & 1 & 0 & 1 \\
-    CountMismatch
-    &  1 &  0 &  1 \\
-    OptionalValueAccess
-    &  0 &  0 &  1 \\
-  \end{tabular}
+  \caption{Type error survival}
+  \label{t:type-error-survival}
+\end{table}
 
-  \caption{Errors overview}
-  \label{f:errors-overview}
-\end{figure}
+
 
 TODO .. somewhere ... out/error-density-*
 TODO ... somewhere ... te leq fs : use error-density
-
-\begin{figure}[t]
-
-  %% TODO import code from tmp to nsa
-  {Few local adds => Few people ignoring script analysis}
-  \smallskip
-
-  \begin{tabular}{lrrrr}
-    & Local Remove & Local Add & Nonlocal Remove & Nonlocal Add \\
-    Mode
-    & \#err (\#log)
-    & \#err (\#log)
-    & \#err (\#log)
-    & \#err (\#log) \\\midrule
-    \mnocheck{}   & 86 (71) & 0 (0) & 110 (57) & 161 (74) \\
-    \mnonstrict{} & 87 (25) & 9 (3) & 185 (29) & 207 (37) \\
-    \mstrict{}    &  1  (1) & 0 (0) &  14  (6) &   6  (3) \\
-  \end{tabular}
-
-  \caption{Per-mode comparison}
-  \label{f:mode-errors}
-\end{figure}
 
 \section{Analysis}
 
