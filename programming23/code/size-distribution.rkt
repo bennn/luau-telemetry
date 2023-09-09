@@ -75,6 +75,7 @@
       (plot-file
         my-bars
         out-file
+        out-kind
         #:width ww
         #:height hh
         #:x-min 0

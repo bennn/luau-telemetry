@@ -6,7 +6,7 @@
 
 ;; ---
 
-(define mode-key* '(nocheck nonstrict strict))
+(define mode-key* roblox-mode*)
 
 (define (count-up-down n*)
   ;; entries = (- curr olde)

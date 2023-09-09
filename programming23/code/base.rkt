@@ -6,6 +6,7 @@
   racket/runtime-path
   pict-abbrevs
   racket/string
+  racket/format
   racket/math
   racket/file
   racket/list
@@ -198,4 +199,7 @@
 
 (define (str->tename str code#)
   (hash-ref code# (str->intcode str)))
+
+(define (pct a b)
+  (~r #:precision '(= 2) (* 100 (/ a b))))
 

@@ -508,12 +508,14 @@ that are probably not cleary documented.
     Observe sessions randomly (again to lower the amount of data).
 \end{itemize}
 
+TODO must explain edit range carefully.
 
-%% Extra Roblox constraints:
-%% - No access to some events: save, exit
-%% - No idea if analysis widget is open, closed, or obscured
-%% - Don't know which module is the data model
-%%   (no ids for ANY module for that matter)
+
+Extra Roblox constraints:
+- No access to some events: save, exit
+- No idea if analysis widget is open, closed, or obscured
+- Don't know which module is the data model
+  (no ids for ANY module for that matter)
 
 \url{https://docs.google.com/document/d/1DnKvw8x1jy0EWCbBSM8neKULWz7WAg1OauKy7qqYqkI/edit}
 
@@ -783,6 +785,8 @@ Incredible max numbers.
 
     \end{tabular}
 
+    15 days
+
     \caption{Session length in seconds and in number of records}
     \label{f:sessions-size}
   \end{subfigure}
@@ -915,29 +919,7 @@ The final record can be sent minutes before the end of session.
 
 
 
-TODO .. somewhere ... out/error-density-*
-TODO ... somewhere ... te leq fs : use error-density
-
 \section{Analysis}
-
-\begin{figure}[thb]
-  %% TODO stacked bars?
-  %% TODO align old;curr
-  %% TODO sep'23 remove this??!
-  \begin{tabular}{lrrrrr}
-    Mode             & \# Rows & E         & Any Error & In Module & In range \\
-      & & & & (old ; curr) &  (old ; curr) \\\midrule
-    \mnocheck{}   &   4,471 & \code{te} &    5.77\% &  0.20\% ;  2.21\% &  0.16\% ;  0.63\% \\
-                  &         & \code{fs} &   59.18\% & 32.81\% ; 49.16\% &  9.17\% ; 13.13\% \\
-    \mnonstrict{} &     506 & \code{te} &   25.89\% & 12.06\% ; 18.18\% &  6.32\% ;  7.91\% \\
-                  &         & \code{fs} &   62.45\% & 37.94\% ; 53.75\% & 16.60\% ; 20.75\% \\
-    \mstrict{}    &      24 & \code{te} &   50.00\% & 29.17\% ; 33.33\% &     0\% ;     0\% \\
-                  &         & \code{fs} &   62.50\% & 50.00\% ; 58.33\% &  4.17\% ;  8.33\% 
-  \end{tabular}
-
-  \caption{TODO}
-
-\end{figure}
 
 
 
@@ -995,8 +977,6 @@ One aspect of size for nonstrict sessions: the number of
 lines in the edit range. Over 80 sessions have 20-line ranges, about 40 have a
 30-line range, etc.
 
-TODO must explain edit range carefully.
-
 TODO must show full plot, zoomed plot side by side
 
 Fifth,
@@ -1009,9 +989,25 @@ keep it constant
 This plot is for nonstrict. X-axis = time since start of session, cut off at 30
 seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
 
+% TODO .. somewhere ... out/error-density-*
+%   row->te nocheck :: 48378 ++ , 9440 ==, 45479 --
+%   row->te nonstrict :: 19491 ++ , 9567 ==, 20121 --
+%   row->te strict :: 733 ++ , 368 ==, 770 --
+% 
+% TODO ... somewhere ... te leq fs : use error-density
+
 \begin{figure}[t]
-  \includegraphics[width=0.8\columnwidth]{img/example-error-delta.png}
-  \caption{Errors delta, nonstrict}
+  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row->te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row->te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-strict-row->te-density-diff.pdf}
+
+  \begin{tabular}{lr@{}rr@{}rr@{}r}
+    & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
+    \mnocheck{} & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
+    \mnonstrict{} & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
+    \mstrict{} & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
+  \end{tabular}
+  \caption{FILL error density}
   \label{f:error-delta}
 \end{figure}
 
