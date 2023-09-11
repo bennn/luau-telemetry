@@ -871,52 +871,64 @@ the end.
 The final record can be sent minutes before the end of session.
 
 
-\begin{table}[t]
-  %% NOTE: looks the same when restricted to modules
-  TODO recompute split by mode : te-editrange-ss-nocheck.rktd etc
+\begin{table}[t]\centering
+  %% NOTE: popularity looks similar when [over all records] vs. [restricted to module switch records]
 
-  \begin{tabular}{l@{~~}l}
-    \begin{tabular}[t]{lr}
-      \code{SyntaxError} & 60.79\% \\
-      \code{UnknownSymbol} & 27.34\% \\
-      \code{UnknownProperty} & 4.08\% \\
-      \code{TypeMismatch} & 1.92\% \\
-      \code{UnknownRequire} & 1.40\% \\
-      \code{CountMismatch} & 1.08\% \\
-      \code{OptionalValueAccess} & 0.99\% \\
-      \code{GenericError} & 0.93\% \\
-      \code{CannotExtendTable} & 0.21\% \\
-      \code{UnknownPropButFoundLikeProp} & 0.20\% \\
-      \code{FunctionExitsWithoutReturning} & 0.16\% \\
-      \code{ExtraInformation} & 0.14\% \\
-      \code{CannotInferBinaryOperation} & 0.14\% \\
-      \code{MissingProperties} & 0.13\% \\
-      \code{ModuleHasCyclicDependency} & 0.10\% \\
-      \code{IllegalRequire} & 0.09\% \\
-      \code{NotATable} & 0.09\% \\
-      \code{MissingUnionProperty} & 0.08\%
-    \end{tabular} &
-    \begin{tabular}[t]{lr}
-      \code{CannotCallNonFunction} & 0.07\% \\
-      \code{FunctionDoesNotTakeSelf} & 0.03\% \\
-      \code{IncorrectGenericParameterCount} & 0.01\% \\
-      \code{OnlyTablesCanHaveMethods} & 0.00\% \\
-      \code{TypesAreUnrelated} & 0.00\% \\
-      \code{DuplicateTypeDefinition} & 0.00\% \\
-      \code{OccursCheckFailed} & 0.00\% \\
-      \code{TypePackMismatch} & 0.00\% \\
-      \code{FunctionRequiresSelf} & 0.00\% \\
-      \code{DuplicateGenericParameter} & 0.00\% \\
-      \code{InternalError} & 0.00\% \\
-      \code{CodeTooComplex} & 0.00\% \\
-      \code{DeprecatedApiUsed} & 0.00\% \\
-      \code{NormalizationTooComplex} & 0.00\% \\
-      \code{SwappedGenericTypeParameter} & 0.00\% \\
-      \code{DynamicPropertyLookupOnClassesUnsafe} & 0.00\% \\
-      \code{UnificationTooComplex} & 0.00\% \\
+  \begin{tabular}{ll}
+    \mnonstrict{} & \mstrict{} \\
+    \begin{tabular}[t]{l@{~}r}
+      \code{UnknownSymbol} & \pct{62.13} \\
+      \code{SyntaxError} & \pct{15.42} \\
+      \code{UnknownProperty} & \pct{8.28} \\
+      \code{UnknownRequire} & \pct{3.13} \\
+      \code{TypeMismatch} & \pct{2.44} \\
+      \code{CountMismatch} & \pct{2.26} \\
+      \code{OptionalValueAccess} & \pct{2.07} \\
+      \code{GenericError} & \pct{2.06} \\
+      \code{UnknownPropButFoundLikeProp} & \pct{0.44} \\
+      \code{CannotExtendTable} & \pct{0.42} \\
+      \code{ExtraInformation} & \pct{0.32} \\
+      \code{ModuleHasCyclicDependency} & \pct{0.23} \\
+      \code{IllegalRequire} & \pct{0.20} \\
+      \code{NotATable} & \pct{0.15} \\
+      \code{CannotCallNonFunction} & \pct{0.15} \\
+      \code{MissingProperties} & \pct{0.09} \\
+      \code{FunctionExitsWithoutReturning} & \pct{0.07} \\
+      \code{FunctionDoesNotTakeSelf} & \pct{0.07} \\
+      \code{MissingUnionProperty} & \pct{0.02} \\
+      \code{CannotInferBinaryOperation} & \pct{0.02} \\
+      \code{OnlyTablesCanHaveMethods} & \pct{0.01} \\
+      \code{DuplicateTypeDefinition} & {<\pct{0.01}} \\
+      \code{TypesAreUnrelated} & {<\pct{0.01}} \\
+    \end{tabular}
+        &
+    \begin{tabular}[t]{l@{~}r}
+      \code{UnknownSymbol} & \pct{23.97} \\
+      \code{TypeMismatch} & \pct{20.46} \\
+      \code{UnknownProperty} & \pct{18.88} \\
+      \code{SyntaxError} & \pct{9.31} \\
+      \code{CannotInferBinaryOperation} & \pct{6.94} \\
+      \code{MissingProperties} & \pct{4.04} \\
+      \code{CountMismatch} & \pct{2.99} \\
+      \code{OptionalValueAccess} & \pct{2.99} \\
+      \code{FunctionExitsWithoutReturning} & \pct{2.99} \\
+      \code{UnknownRequire} & \pct{2.37} \\
+      \code{GenericError} & \pct{2.28} \\
+      \code{NotATable} & \pct{1.32} \\
+      \code{ExtraInformation} & \pct{0.35} \\
+      \code{UnknownPropButFoundLikeProp} & \pct{0.26} \\
+      \code{IncorrectGenericParameterCount} & \pct{0.18} \\
+      \code{CannotCallNonFunction} & \pct{0.18} \\
+      \code{IllegalRequire} & \pct{0.18} \\
+      \code{ModuleHasCyclicDependency} & \pct{0.09} \\
+      \code{CannotExtendTable} & \pct{0.09} \\
+      \code{OccursCheckFailed} & \pct{0.09} \\
+      \code{TypesAreUnrelated} & \pct{0.09} \\
     \end{tabular}
   \end{tabular}
-  \caption{Type error popularity}
+
+  \caption{Type error popularity for \mnonstrict{} and \mstrict{} modes.
+  In \mnocheck{}, \code{SyntaxError} accounts for \pct{100} of the error.}
   \label{t:type-error-count}
 \end{table}
 
