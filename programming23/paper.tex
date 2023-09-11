@@ -15,7 +15,8 @@
 %% END
 
 \usepackage{alltt}
-\usepackage[backend=biber]{biblatex}
+% Not sure why <Programming> is recommending non-standard tools
+% \usepackage[backend=biber]{biblatex}
 \usepackage{amssymb}
 \usepackage{calc}
 \usepackage{colortbl}
@@ -33,8 +34,6 @@
 \usepackage{wasysym}
 \usepackage{xcolor}
 \usetikzlibrary{shapes.geometric}
-
-\addbibresource{bib.bib}
 
 %%%%%%%%%%%%%%%%%%
 \paperdetails{
@@ -1385,8 +1384,7 @@ Tips for interpreting the data:
 
 \newpage
 
-{ \printbibliography }
-
+\bibliography{bib}
 
 \end{document}
 
