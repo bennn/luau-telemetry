@@ -27,7 +27,7 @@
 % <argument> \l__siunitx_number_implicit_plus_bool 
 % l.61 \begin{document}
 % using Mac TeXlive 20230313_2
-%  \usepackage{siunitx}
+% \usepackage{siunitx}
 \usepackage{tikz}
 \usepackage{subcaption}
 \usepackage{wasysym}
@@ -1009,9 +1009,10 @@ seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
 \begin{figure}[t]\centering
 TODO diff vs 1st, not previous
 
-  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row->te-density-diff.pdf}
-  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row->te-density-diff.pdf}
-  \includegraphics[width=\columnwidth]{img/error-count-strict-row->te-density-diff.pdf}
+  % > is not a valid filename char on some OSs!
+  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
 
   TODO bars instead, percent only, don't care about counts
 
