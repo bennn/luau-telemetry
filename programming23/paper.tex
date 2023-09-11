@@ -22,7 +22,12 @@
 \usepackage{listings}
 \usepackage{mathpartir}
 \usepackage{pifont}
-\usepackage{siunitx}
+% Errors with
+% ! Undefined control sequence.
+% <argument> \l__siunitx_number_implicit_plus_bool 
+% l.61 \begin{document}
+% using Mac TeXlive 20230313_2
+%  \usepackage{siunitx}
 \usepackage{tikz}
 \usepackage{subcaption}
 \usepackage{wasysym}
@@ -1045,11 +1050,14 @@ is true (blue) and false (yellow).
   %% - colors for good , bad (disagree) , neutral
   \begin{tabular}{lll}
     \mnocheck{} & \mnonstrict{} & \mstrict{} \\
-    \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
+    % Missing file
+    % \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
     &
-    \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
+    % Missing file
+    % \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
     &
-    \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
+    % Missing file
+    % \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
   \end{tabular}
   \caption{FILL Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
   \label{f:tefs}
