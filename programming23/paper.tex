@@ -1027,26 +1027,23 @@ within a session (bars are higher on the left because we have lots more short
 sessions than long ones). Y-axis counts the number of records where num TE <= num FS
 is true (blue) and false (yellow).
 
-% TODO ... somewhere ... te leq fs : use error-density
-%% 
-
-\begin{figure}[t]
-  TODO use 2 bars? ask a few similar questions?
-  \includegraphics[width=0.8\columnwidth]{img/example-tefs.png}
-  \caption{Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
+\begin{figure}[t]\centering
+  %% TODO
+  %% - thin bars
+  %% - colors for good , bad (disagree) , neutral
+  \begin{tabular}{lll}
+    \mnocheck{} & \mnonstrict{} & \mstrict{} \\
+    \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
+    &
+    \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
+    &
+    \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
+  \end{tabular}
+  \caption{FILL Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
   \label{f:tefs}
 \end{figure}
 
-Seventh, 
-
-
-\begin{figure}[t]
-TODO smaller
-
-  \includegraphics[width=0.5\columnwidth]{img/example-compass.png}
-  \caption{Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
-  \label{f:tefs}
-\end{figure}
+TODO individual sessions
 
 
 \section{Interpretation}

@@ -154,17 +154,26 @@
           (make-string i)))))
   (ticks time-dist-layout time-dist-format))
 
+(define (percent-ticks ymax)
+  (define num-ticks 3)
+  (ticks
+    (linear-major-layout num-ticks ymax)
+    percent-format))
+
 (define (linear-major-y-ticks num-ticks)
   (ticks
     (linear-major-layout num-ticks)
     linear-major-format))
 
-(define ((linear-major-layout num-ticks) ax-min ax-max)
-  (for/list ((ii (in-list (linear-seq ax-min ax-max num-ticks))))
+(define ((linear-major-layout num-ticks [ymax #f]) ax-min ax-max)
+  (for/list ((ii (in-list (linear-seq ax-min (or ymax ax-max) num-ticks))))
     (pre-tick (exact-floor ii) #true)))
 
 (define (linear-major-format ax-min ax-max pre-ticks)
   (map (compose1 number->string pre-tick-value) pre-ticks))
+
+(define (percent-format ax-min ax-max pre-ticks)
+  (map (compose1 (lambda (n) (format "~a%" n)) pre-tick-value) pre-ticks))
 
 (define (num-clean str)
   (let* ((str (string-replace str "," ""))
@@ -200,6 +209,9 @@
 (define (str->tename str code#)
   (hash-ref code# (str->intcode str)))
 
+(define (npct a b)
+  (* 100 (/ a b)))
+
 (define (pct a b)
-  (~r #:precision '(= 2) (* 100 (/ a b))))
+  (~r #:precision '(= 2) (npct a b)))
 
