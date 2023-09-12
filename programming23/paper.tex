@@ -438,46 +438,59 @@ the type system, it is possible for these edits to introduce type errors.
 
 \section{Telemetry Design}
 
-Prior work: transparent telemetry, VS Code telemetry, many others undocumented
-that are probably not cleary documented.
-\Cref{t:telemetry-design} gives an overview.
+\subsection{Limits of telemetry}
 
-\paragraph{Goals:}
+Telemetry allows an application to ``phone home'' with data
+summarizing usage patterns, such performance data, crash reporting,
+and feature uptake. A typical usage is in deciding whether an API can
+be deprecated: without telemetry it may be difficult to know how
+popular a feature is with users, but with telemetry it is
+straightforward.
 
+IDEs use telemetry in a similar fashion to most user-facing
+applications, for example VSCode~\cite{vsc-telemetry} and
+IntelliJ~\cite{intellij-telemetry} report telemetry.
+
+Telemetry for programming languages can be controversial, for example
+the lively discussion around telemetry in the Go
+toolchain~\cite{golang-telemetry}. 
+The Luau open source toolchain does \emph{not} report telemetry,
+as it is designed to be used in build environments such as Continuous Integration
+servers, where hermetic deterministic builds are expected.
+
+Much of the concern about telemetry is because of its potential impact on
+privacy, by revealing Personally Identifiable Information (PII).
+For this reason, it is important that any experiments using telemetry
+not reveal PII:
+no source code;
+no source code locations;
+no error messages (which may contain source code);
+no record of the creator's identity, locale, or IP address;
+and no information about what creation the data came from.
+A good introduction to the privacy implications and tradeoffs
+involved with telemetry is~\cite{transparent-telemetry}.
+
+For performance reasons, there are limits to telemetry data:
+telemetry records have size limits, and the performance impact of
+recording telemetry should be minimal.
+
+In summary, the limitations of telemetry are:
 \begin{itemize}
-  \item
-    Learn about type system adoption and use
-  \item
-    Discover roadblocks to adoption
-  \item
-    Assess the helpfulness of error highlights
+  \item Data which reveals no PII.
+  \item Fixed-size telemetry records.
+  \item Minimal overhead to record telemtry.
+\end{itemize}
+In addition, due to the architecture of Roblox Studio
+there is some information that is not available to the
+typechecker:
+\begin{itemize}
+  \item The typechecker does not have access to some lifecycle events,
+    such as save, quit and publish.
+  \item The typechecker does not have access to GUI state, for example
+    whether the Script Analysis widget is visible.
 \end{itemize}
 
-\paragraph{Limits:}
-
-\begin{itemize}
-\item
-  No personal data (PII)
-  \subitem
-    Fairly obvious.
-    But, we also can't collect directory names, filenames, or code snapshots
-    because these all might have PII throughout.
-\item
-  No data about public events.
-  \subitem
-    Contributions to the Roblox Marketplace, for instance, are a public event.
-    Although it would be interesting to know the number of type errors
-    in published experiences, this data might be used to identify creators
-    who publish often --- or on a distinct schedule.
-\item
-  Low cost
-  \subitem
-    Building, sending, and storing the data must all run quickly.
-    FILL what was our hard cap on Kibana use?
-\end{itemize}
-
-
-\paragraph{Solutions:}
+\subsection{When are we logging?}
 
 \begin{itemize}
   \item
@@ -502,16 +515,7 @@ that are probably not cleary documented.
 TODO must explain edit range carefully.
 
 
-Extra Roblox constraints:
-- No access to some events: save, exit
-- No idea if analysis widget is open, closed, or obscured
-- Don't know which module is the data model
-  (no ids for ANY module for that matter)
-
-\url{https://docs.google.com/document/d/1DnKvw8x1jy0EWCbBSM8neKULWz7WAg1OauKy7qqYqkI/edit}
-
-
-\subsection{What are we logging (from gdoc)}
+\subsection{What are we logging?}
 
 \FILL{} change to long-form paragraphs, use more space for examples
 
