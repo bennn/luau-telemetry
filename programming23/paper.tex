@@ -320,19 +320,19 @@ for each script, which is one of:
 \end{itemize}
 As an example of nonstrict mode, the following program only reports one error:
 \begin{verbatim}
---!nonstrict
-local x = { p = 5, q = nil }
-if condition then x.q = 7 end
-local y = x.p + x.q --> no type error
-local z = x.r       --> "Key 'r' not found in table 'x'"
+  --!nonstrict
+  local x = { p = 5, q = nil }
+  if condition then x.q = 7 end
+  local y = x.p + x.q --> no type error
+  local z = x.r       --> "Key 'r' not found in table 'x'"
 \end{verbatim}
 but in strict mode it reports two:
 \begin{verbatim}
---!strict
-local x = { p = 5, q = nil }
-if condition then x.q = 7 end
-local y = x.p + x.q --> "Type 'nil' could not be converted into 'number'"
-local z = x.r       --> "Key 'r' not found in table 'x'"
+  --!strict
+  local x = { p = 5, q = nil }
+  if condition then x.q = 7 end
+  local y = x.p + x.q --> "Type 'nil' could not be converted into 'number'"
+  local z = x.r       --> "Key 'r' not found in table 'x'"
 \end{verbatim}
 In cases like this, where it is undecidable whether there will be a run-time error,
 strict mode errs on the side of reporting an error, and nonstrict mode errs on
@@ -376,7 +376,7 @@ The state of the world in a {Roblox} experience is captured by
 the \emph{data model}, which is a tree of \emph{instances}, such as
 parts, models, meshes, effects, lighting, audio assets, and physics
 constraints such as forces, springs and joints.
-
+The data model can be seen in the Explorer view of Fig.~\ref{fig:roblox-studio}.
 While an experience is under development, it is typical for the data
 model to be edited (for example instances to be added, deleted, moved
 or renamed). Since the initial shape of the data model tree is reflected in
