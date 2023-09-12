@@ -10,7 +10,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install texlive texlive-latex-extra texlive-fonts-extra texlive-science texlive-lang-cyrillic texlive-bibtex-extra biber
       - name: LaTeX
         working-directory: programming23
-        run: pdflatex paper; biber paper; pdflatex paper; pdflatex paper
+        run: pdflatex paper; bibtex paper; pdflatex paper; pdflatex paper
       - name: Upload pdf
         uses: actions/upload-artifact@v2
         with:
