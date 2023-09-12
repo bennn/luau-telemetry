@@ -311,12 +311,11 @@ The IDE includes an optional ``Script Analysis'' widget, which
 reports syntax errors, type errors, and problems identified by
 lint tools. The script editor also (optionally) highlights
 the location in code where reported errors occur.
-
 To opt in to type error reporting, creators set a \emph{mode}
 for each script, which is one of:
 \begin{itemize}
   \item \mnocheck{}: only syntax errors are reported,
-  \item \mnonstrict{}: all syntax errors, and a subset of ``high probability'' type errors, are reported, or
+  \item \mnonstrict{}: all syntax errors, and a subset of ``high confidence'' type errors, are reported, or
   \item \mstrict{}: all syntax errors and type errors, are reported.
 \end{itemize}
 As an example of nonstrict mode, the following program only reports one error:
@@ -344,7 +343,7 @@ misspellings of property names are common enough to report in both
 strict and nonstrict mode. See~\cite{bfj-hatra-2021}
 for a more detailed discussion of the rationale for strict and nonstrict mode.
 
-Both modes are opt-in. Creators have the option to make nonstrict mode
+Both modes are opt-in. Creators have the option to make \mnonstrict{} mode
 the default rather than \mnocheck{} mode.
 
 Even in \mnocheck{} mode, {Roblox Studio} performs type inference, since
@@ -361,17 +360,17 @@ strict mode is triggered on every keystroke
 Scripts come in two favors: \emph{module scripts} and \emph{non-module
 scripts}.  Module scripts provide reusable libraries, which may be
 \emph{required} by other scripts. Since module scripts can require
-other module script, modules form a graph (though we consider it to be
-an error in strict mode if the graph is cyclic, and remove edges to
-make it acyclic).
+other module script, modules form a graph (though it is
+an error in strict mode if the graph is cyclic, and edges are removed to
+make the graph acyclic).
 
 When typechecking is performed for script analysis, any script that
 has been modified is marked as dirty, then any script that is dirty,
 or which transitively requires a dirty module, is typechecked. More
-commonly, when typechecking is performed for autocomplete, we only
-need to typecheck the current script, since it is the only dirty
-script, and nothing it requires can transitively require it, since we
-have broken cycles.
+commonly, when typechecking is performed for autocomplete, only
+the current script is typechecked, since it is the only dirty
+script, and nothing it requires can transitively require it, since
+the module graph is acyclic.
 
 The state of the world in a {Roblox} experience is captured by
 the \emph{data model}, which is a tree of \emph{instances}, such as
