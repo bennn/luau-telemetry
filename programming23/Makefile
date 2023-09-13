@@ -1,7 +1,7 @@
 all: full
 
 full: fast
-	biber paper
+	bibtex paper
 	pdflatex paper
 	pdflatex paper
 
