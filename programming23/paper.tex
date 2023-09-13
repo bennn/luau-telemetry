@@ -154,24 +154,21 @@
   %% What problem or question does the paper
   %% address? How has this problem or question been
   %% addressed by others (if at all)?
-  Since Luau is in the hands of so many creators,
-  how do they use it?
-  Of central importance, however, is protecting the privacy
-  of Luau creators.
-  FILL
-
-%  TYPE ERRORS
-%  investigate
-
-  It has the ability to report telemetry data,
-  which allows large-scale measurement of the creator experience. In
-  this paper, we discuss one use of telemetry, to measure the experience
-  of type error reporting.
-  We find FILL.
+  Our main goal is to collect feedback from creators to improve the design of
+  Luau.
+  We want to do so at a large scale, as creators work on their actual projects,
+  which suggests we deploy client-side telemetry to report on notable events.
+  However, we must respect creators privacy.
+  Finding ways to harness data from telemetery without exposing any
+  personally-identifiable information (such as source code) is the
+  central research challenge.
 
   \paragraph{Approach}
   %% What was done that unveiled new knowledge?
-  FILL impersonal telemetry, N months.
+  We designed and implemented a privacy-preserving telemetry system for Luau.
+  We deployed it for approximately four months in Spring 2023, during which
+  time we collected over one million telemetry records.
+  The telemetry focuses on the type errors that creators encountered.
 
   \paragraph{Knowledge}
   %% What new facts were uncovered? If the
@@ -184,6 +181,7 @@
   %% or results and evaluation support this work?
   Our findings are supported by a publicly-available dataset
   of over 1.5 million telemetry records.
+  We also release the code used to analyze the data.
 
   \paragraph{Importance}
   %% Why does this work matter?
