@@ -122,7 +122,7 @@
                  [plot-y-ticks (linear-major-y-ticks 3)]
                  [plot-font-size 10]
                  [plot-font-family 'roman])
-    (define out-file (build-path img-dir (format "error-count-~a-~a.~a" mode (object-name row->y) out-kind)))
+    (define out-file (build-path img-dir (string-replace (format "error-count-~a-~a.~a" mode (object-name row->y) out-kind) ">" "-")))
     (printf "plot-file ~a~n" (path->string (file-name-from-path out-file)))
     (define pp
       (plot-pict
