@@ -9,10 +9,10 @@
 %%\overfullrule=1mm
 
 %% BEGIN tobias pape 2021-11-06
-% Why do we need this?
-%\makeatletter
-%\newcommand*\abstractpart[1]{\unskip\par\noindent{\firamedium\color{P@GrayFG}{#1}}\enspace}
-%\makeatother
+% Why do we need this? To have headings in the abstract.
+\makeatletter
+\newcommand*\abstractpart[1]{\unskip\par\noindent{\firamedium\color{P@GrayFG}{#1}}\enspace}
+\makeatother
 %% END
 
 \usepackage{alltt}
@@ -708,12 +708,19 @@ FILL remove all syntax errors from later stages?
 FILL investigate one tower
 
 \begin{figure}[t]
-  %% \includegraphics{img/row-distribution.pdf}
+  % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
+  % ;; percentile* = 0.95 -- 0.99
+  %#hash((editrange . (1156036 926 3007043/817 30975.40553032358 (0.95 8220) (0.96 9858) (0.97 13656) (0.98 18956) (0.99 34725)))
+  %      (event-count . (6079 138 38689/135 582.5752201972966 (0.95 960) (0.96 1174) (0.97 1304) (0.98 1836) (0.99 3302)))
+  %      (files . (54884 7678 55257996/4639 11853.650098459446 (0.95 40029) (0.96 42771) (0.97 45417) (0.98 48688) (0.99 51761)))
+  %      (lines . (1089963 3115 38928947/5992 22364.75846303099 (0.95 18561) (0.96 25892) (0.97 27014) (0.98 29725) (0.99 50547)))
+  %      (timespan . (1387897376 845648 591343604248/185705 15724745.722577972 (0.95 10696064) (0.96 12715468) (0.97 15596940) (0.98 21153924) (0.99 35450460))))
+
   \begin{tabular}{l@{}r@{~}l@{}r@{~}l@{}r@{~}l}
-    & Files  & &     Lines & &    Edit Range & \\
+                 & Files  &              &     Lines &             &    Edit Range & \\
     Mean [std]   & 11,911 & \stddev{31}  &     6,497 & \stddev{22} &         3,680 & \stddev{12} \\
-    Median       &  7,678 &              &     3,115 &             &          926  & \\
-    Max          & 54,884 &              & 1,089,963 &             &    1,156,036  & \\
+    Median       &  7,678 &              &     3,115 &             &           926 & \\
+    \pct{99}     & 51,761 &              &    50,547 &             &        34,725 & \\
     & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
     & & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
     & & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
@@ -794,7 +801,7 @@ Incredible max numbers.
                    & Time Span (sec)  &       & Record Count  \\
       Mean [std]   &     3,184 & \stddev{16}  &     286 & [583] \\
       Median       &       845 &              &     138        \\
-      Max          & 1,387,897 &              &   6,079        \\
+      \pct{99}     &    35,450 &              &   3,302        \\
       & \includegraphics[width=0.2\columnwidth]{img/timespan-distribution.pdf}
       & & \includegraphics[width=0.2\columnwidth]{img/event-count-distribution.pdf}
 
