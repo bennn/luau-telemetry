@@ -997,8 +997,13 @@ seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
 \begin{figure}[t]\centering
 % TODO diff vs 1st, not previous
 
+  \mnocheck{}
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
+  \medskip
+  \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
+  \medskip
+  \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
 
   TODO bars instead, percent only, don't care about counts
@@ -1038,14 +1043,11 @@ is true (blue) and false (yellow).
   %% - colors for good , bad (disagree) , neutral
   \begin{tabular}{lll}
     \mnocheck{} & \mnonstrict{} & \mstrict{} \\
-    % Missing file
-    % \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
+    \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
     &
-    % Missing file
-    % \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
+    \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
     &
-    % Missing file
-    % \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
+    \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
   \end{tabular}
   \caption{FILL Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
   \label{f:tefs}
