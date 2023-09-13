@@ -510,63 +510,43 @@ typechecker:
     whether the Script Analysis widget is visible.
 \end{itemize}
 
-\subsection{When are we logging?}
+\subsection{Telemetry records}
 
+The telemetry for a Roblox Studio session is gathered as a series of
+telemtry records, all with the same psedonynimized session
+identifier. This allows us to correlate telemetry across a single
+session, but not between sessions.
+
+In order to avoid swamping our telemtry servers, we randomly throttle
+the generation of telemetry records:
 \begin{itemize}
   \item
-    Collect metrics instead of source code: lines, modules, num errors
+    10\% of Roblox Studio sessions were enrolled in generating telemetry, and
   \item
-    Track an edit range to compare type errors with edits,
-    use a coarse $[min, max]$ interval for speed
-  \item
-    Count specific errors only for the current edit range
-    (reduces size of logs)
-  \item
-    Within the edit range, collect data before and after the latest edits.
-  \item
-    Log randomly on keystroke instead of per specific event.
-    One exception: log module switches because that helps discover
-    codebases that use several analysis modes.
-    Randomness helps lower the amount of data.
-  \item
-    Observe sessions randomly (again to lower the amount of data).
+    5\% of runs of the typechecker in an enrolled session generated a telemetry record.
 \end{itemize}
-
-TODO must explain edit range carefully.
-
-
-\subsection{What are we logging?}
-
-\FILL{} change to long-form paragraphs, use more space for examples
-
+In order to find how file-switching correlated with type errors, we additionally have:
+\begin{itemize}
+  \item
+    every run of the typechecker in an enrolled session which switched file generated a telemetry record.
+\end{itemize}
+Each telemetry record contains:
 \begin{description}
-  \item[D1] metadata: uid, timestamp, session duration
-  \item[D2] mode (\mnocheck{}, \mnonstrict{}, \mstrict{})
-  \item[D3] a 1-bit reason for sending: did the user switch module?
-    \subitem we get logs for two reasons: (1) switch module, (2) randomly with
-    low probability after typechecking
-  \item[D4] size of codebase: num files, num lines
+  \item[D1] metadata: a psedonymized session identifier, timestamp and session duration,
+  \item[D2] mode of the current file: (\mnocheck{}, \mnonstrict{}, or \mstrict{}),
+  \item[D3] reason for sending: (random selection, or file switch),
+  \item[D4] size of codebase: number of files, and number of lines of code type checked,
   \item[D5] size of edit range
-  \item[D6] overall type errors: for old and curr states, have: \# total, \# in module, and \# in range
-  \item[D7] specific errors in the edit range: in the edit range, for old and
-    curr states, how many type errors for each type error code? (There is 1
-    edit range per log.)
-    \subitem Examples, if the old state had one type-A error:
-    \begin{itemize}
-      \item If the latest edits touched it and fixed it, the next log says 1
-        old type-A and 0 new type-A
-      \item touched it, didn't fix => 1 old-A, 1 new-A
-      \item didn't touch (fixed or not) => 0 old-A, 0 new-A
-    \end{itemize}
-  \item[D8] ForcedStrict "what if" errors for \mnocheck{}: specific errors for the
-    edit range computed as if the user had strict mode enabled (even though they
-    have no-check enabled)
-    \subitem This info is available because it gives better hints for
-    autocomplete, because it assumes precise types for ALL libraries (rather
-    than Any)
+  \item[D6] overall type errors: for previous and current states, we have the total number, the nunber in the current file, and number in the edit range,
+  \item[D7] specific errors in the edit range: for the previous and current states, for each type error code, the number type errors in the edit range,
+  \item[D8] forced strict errors: specific errors for the
+    edit range computed as if the user had strict mode enabled.
   \item[D9] TooComplexErrors: project-wide count for this one specific error type
 \end{description}
-
+To track the edit range, we record a start and end position, which we
+update appropriately on every edit. This can result in very large edit
+ranges (for example if the user edits an the beginning and end of the
+file) but fits in a fixed-size telemetry record.
 
 \subsection{what to study}
 
