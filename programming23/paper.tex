@@ -984,8 +984,6 @@ One aspect of size for nonstrict sessions: the number of
 lines in the edit range. Over 80 sessions have 20-line ranges, about 40 have a
 30-line range, etc.
 
-TODO must show full plot, zoomed plot side by side
-
 Fifth,
 Increases and decreases to the number of type errors are evenly balanced across
 the data.
@@ -997,9 +995,8 @@ This plot is for nonstrict. X-axis = time since start of session, cut off at 30
 seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
 
 \begin{figure}[t]\centering
-TODO diff vs 1st, not previous
+% TODO diff vs 1st, not previous
 
-  % > is not a valid filename char on some OSs!
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
@@ -1152,6 +1149,10 @@ creator sentiment, but provide complementary data at scale.
 
 \section{Related Work}
 \label{s:related}
+
+Liblit dissertation~\cite{liblit-thesis}
+
+RAMSS workshop series.
 
 Differential privacy for coverage analysis of software traces,
 adds noise to traces,
