@@ -140,52 +140,73 @@
   \paragraph{Context}
   %% What is the broad context of the work? What is
   %% the importance of the general research area?
-  {Roblox Studio} is a tool that lets millions of creators
+  {Roblox Studio} lets millions of creators
   build interactive experiences by programming in a variant
   of Lua called Luau.
   The creators form a broad group, ranging from novices writing
-  their first script to professional Luau developers, thus Luau
+  their first script to professional developers, thus Luau
   must support a wide audience.
   As part of its efforts to support all kinds programmers, Luau includes a
-  gradual type system that goes to great lengths to minimize false positive
+  gradual type system and goes to great lengths to minimize false positive
   errors.
 
   \paragraph{Inquiry}
   %% What problem or question does the paper
   %% address? How has this problem or question been
   %% addressed by others (if at all)?
-  Our main goal is to collect feedback from creators to improve the design of
-  Luau.
-  We want to do so at a large scale, as creators work on their actual projects,
-  which suggests we deploy client-side telemetry to report on notable events.
+  Since Luau is in the hands of many creators, we want to collect their feedback
+  and ultimately improve the language design (in particular, the type system).
+  We want feedback at a large scale, as creators work on their actual projects,
+  which suggests the deployment of client-side telemetry.
+  %% ^ awkward
   However, we must respect creators privacy.
-  Finding ways to harness data from telemetery without exposing any
-  personally-identifiable information (such as source code) is the
-  central research challenge.
+  Whatever telemetry we use to study the Luau language cannot include
+  personally-identifiable information.
+  For example, we cannot monitor source code or error messages as they
+  may contain personal data.
+  Finding ways to harness telemetry in a private way is the central research challenge.
 
   \paragraph{Approach}
   %% What was done that unveiled new knowledge?
   We designed and implemented a privacy-preserving telemetry system for Luau.
-  We deployed it for approximately four months in Spring 2023, during which
-  time we collected over one million telemetry records.
-  The telemetry focuses on the type errors that creators encountered.
+  Telemetry records include a timestamp, a (randomized) session id, a reason
+  for sending, and a sequence of counter values summarizing the results of type
+  analysis.
+  Over four months in Spring 2023, we deployed the telemetry system and collected
+  1.5 million telemetry records.
+  We analyzed the data to improve Luau.
 
   \paragraph{Knowledge}
   %% What new facts were uncovered? If the
   %% research was not results oriented, what new
   %% capabilities are enabled by the work?
-  FILL
+  We present several findings about Luau:
+  some confirm hypotheses by the Luau team, others are rather surprising, but
+  all findings support our claim that privacy-preserving telemetry is a useful
+  way to collect feedback.
+  One expected finding is that types are unpopular; there is an order-of-maginitude
+  difference in the number of sessions that use different type analysis modes.
+  One surprise is that the strict type analysis mode evidently makes it difficult
+  to connect a script with data assets.
+  Lastly, one reassuring finding is that type analysis rarely hits its internal
+  limits on problem size.
 
   \paragraph{Grounding}
   %% What argument, feasibility proof, artifacts,
   %% or results and evaluation support this work?
   Our findings are supported by a publicly-available dataset
-  of over 1.5 million telemetry records.
-  We also release the code used to analyze the data.
+  of over 1.5 million telemetry records
+  and by free software for analyzing the data.
 
   \paragraph{Importance}
   %% Why does this work matter?
-  FILL improve Luau, offer lessons to similar developments (epic?, elixir?).
+  Beyond the immediate benefits to Luau,
+  our findings about types and type errors have implications
+  for adoption and ergonomics in other gradually typed languages.
+  %% mention Elixir, Verse?
+  FILL specifics.
+  Our telemetry design is of broad interest, as it gathers useful
+  data without exposing personal information.
 
 \end{abstract}
 
@@ -1015,7 +1036,7 @@ seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
   \mnocheck{}
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
   \medskip
-  \mstrict{}
+  \mnonstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
   \medskip
   \mstrict{}
@@ -1387,6 +1408,20 @@ deterministic.
 
 FILL regrets, lessons learned, advice for next time
 
+\paragraph{Do we need timestamps?}
+
+Our telemetry records include timestamps.
+While timestamps are not personal data per se, they are in the ballpark.
+Telemetry would be even more private without them.
+Do we need them?
+
+Timestamps are not the focus of our analysis, but they do play a critical role.
+Consider~\cref{f:error-delta}.
+With timestamps, it is clear that error density stays close to zero.
+Without timestamps, we would be left with the counts at the bottom
+of~\cref{f:error-delta}.
+Many distributions could fit those counts, such as a ``mountain'' session that first
+grows and grows the number of type errors then shrinks and shrinks down to zero.
 
 
 \acks
