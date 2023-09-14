@@ -523,9 +523,10 @@ In order to avoid swamping our telemtry servers, we randomly throttle
 the generation of telemetry records:
 \begin{itemize}
   \item
-    10\% of Roblox Studio sessions were enrolled in generating telemetry, and
+    1\% of Roblox Studio sessions were enrolled in generating telemetry, and
   \item
-    5\% of runs of the typechecker in an enrolled session generated a telemetry record.
+    0.5\% of runs of the typechecker (approximately 1 in 200 keystrokes)
+      in an enrolled session generated a telemetry record.
 \end{itemize}
 In order to find how file-switching correlated with type errors, we additionally have:
 \begin{itemize}
@@ -1180,7 +1181,7 @@ Probably data model!
 
 Error counts per-project and per-module include syntax errors.
 Problematic, because syntax errors are uninteresting (easy to fix),
-but common, which makes it likely that our per-keystroke telemetry (1/2k) will record them.
+but common, which makes it likely that our per-keystroke telemetry (1/200) will record them.
 Edit range has specific counts.
 Next time, we should do that for the other aggregates.
 
