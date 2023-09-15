@@ -579,6 +579,11 @@ update appropriately on every edit. This can result in very large edit
 ranges (for example if the user edits an the beginning and end of the
 file) but fits in a fixed-size telemetry record.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{what to study}
 
 RQs + Analysis
@@ -851,6 +856,13 @@ multi-mode project = found a module switch that coincides with a mode switch, wh
 upgrade = found a up-mode switch that does not match a module switch (quite possible to miss these);
 downgrade = found a down-mode switch that does not match a module switch
 
+wow 619 up-pairs, 583 down-pairs
+=== UP
+min -3 max 57 median 0 mean 2.62 stddev 6.8390518952707335
+=== DOWN
+min -48 max 30 median 0 mean -0.31 stddev 4.498748355271854
+
+
 FILL most sessions fairly long in time (order of minutes),
 short in event count (dozens).
 
@@ -1100,6 +1112,7 @@ is true (blue) and false (yellow).
 Data model awareness, call for future work.
 
 \begin{figure}[t]\centering
+  %% TODO can we 
   \mnonstrict{}\\
   \includegraphics[width=\columnwidth]{img/timeline-nonstrict.pdf}
 
