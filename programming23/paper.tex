@@ -583,10 +583,6 @@ file.
 The main benefit of this strategy is that it ensures constant-size telemetry records.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \section{The Data}
 \label{s:data}
 
@@ -596,6 +592,7 @@ Every Studio session had a small random chance of generating
 telemetry~(\cref{s:telemetry-records}).
 The chosen sessions generated a record whenever the user switched modules and
 randomly on each keystroke.
+In total we collected 1.5 million telemetry records.
 
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 Each vertical bar counts the number of records generated per hour according to
@@ -612,8 +609,8 @@ guess it could be people not updating studio or people with strange time setting
 on their machine.)
 We do not know which timezone the records originated in, but since the counts
 tend to peak midday California time it seems that the majority
-of Roblox developers are following a Western Hemisphere schedule.
-%% \FILL{} probably North America, but do we really want to guess?
+of Roblox developers are following a USA schedule (or rather, a Western
+Hemisphere schedule).
 The counts for weekends (shaded regions) are often the tallest; these days presumably
 have a larger number of sessions for telemetry to observe.
 
@@ -673,11 +670,11 @@ the timestamps influence~\cref{f:records-per-hour}).
 \begin{figure}[t]
   % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
   % ;; percentile* = 0.95 -- 0.99
-  %#hash((editrange . (1156036 926 3007043/817 30975.40553032358 (0.95 8220) (0.96 9858) (0.97 13656) (0.98 18956) (0.99 34725)))
-  %      (event-count . (6079 138 38689/135 582.5752201972966 (0.95 960) (0.96 1174) (0.97 1304) (0.98 1836) (0.99 3302)))
-  %      (files . (54884 7678 55257996/4639 11853.650098459446 (0.95 40029) (0.96 42771) (0.97 45417) (0.98 48688) (0.99 51761)))
-  %      (lines . (1089963 3115 38928947/5992 22364.75846303099 (0.95 18561) (0.96 25892) (0.97 27014) (0.98 29725) (0.99 50547)))
-  %      (timespan . (1387897376 845648 591343604248/185705 15724745.722577972 (0.95 10696064) (0.96 12715468) (0.97 15596940) (0.98 21153924) (0.99 35450460))))
+  % #hash((editrange . (1156036 926 3007043/817 30975.40553032358 (0.95 8220) (0.96 9858) (0.97 13656) (0.98 18956) (0.99 34725)))
+  %       (event-count . (6079 138 38689/135 582.5752201972966 (0.95 960) (0.96 1174) (0.97 1304) (0.98 1836) (0.99 3302)))
+  %       (files . (54884 7678 55257996/4639 11853.650098459446 (0.95 40029) (0.96 42771) (0.97 45417) (0.98 48688) (0.99 51761)))
+  %       (lines . (1089963 3115 38928947/5992 22364.75846303099 (0.95 18561) (0.96 25892) (0.97 27014) (0.98 29725) (0.99 50547)))
+  %       (timespan . (1387897376 845648 591343604248/185705 15724745.722577972 (0.95 10696064) (0.96 12715468) (0.97 15596940) (0.98 21153924) (0.99 35450460))))
   %% NOTE: 3 records have +1M lines, all from one nocheck session, all with 3 files
   %% - session "30,762,216,447,324"
   %% NOTE: 133 records have +52K files, all from one nocheck session
@@ -686,7 +683,7 @@ the timestamps influence~\cref{f:records-per-hour}).
 
   \begin{tabular}{l@{}r@{~}l@{}r@{~}l@{}r@{~}l}
                  & Files  &              &     Lines &             &    Edit Range & \\
-    Mean [std]   & 11,911 & \stddev{31}  &     6,497 & \stddev{22} &         3,680 & \stddev{12} \\
+    Mean [std]   & 11,911 & \stddev{12}  &     6,497 & \stddev{22} &         3,680 & \stddev{31} \\
     Median       &  7,678 &              &     3,115 &             &           926 & \\
     \pct{99}     & 51,761 &              &    50,547 &             &        34,725 & \\
     & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
@@ -699,14 +696,26 @@ the timestamps influence~\cref{f:records-per-hour}).
   \label{f:codebase-size}
 \end{figure}
 
-TODO findings lessons etc.
+\Cref{f:codebase-size} summarizes the size of projects in the dataset.
+The top half of the figure reports the mean, standard deviation, median,
+and {99}th percentile for the number of files, lines, and lines in edit range.
+The bottom half shows zoomed-in distributions of the file, line, and edit range
+numbers.
+For example, the x-axis of the first plot ranges from 0 to 1,000 files and
+the y-axis counts up to 1,000 telemetry records.
+
+There is a huge amount of variation across projects.
+The largest ones have over 50k files (!) and 50k lines of code, and
+there are many small ones with 1 file and/or 1 line of code.
+Unsurprisingly, the numbers come with large standard deviations.
+The median values are more reasonable, with roughly 3,000 lines of code
+and 1,000 lines in edit ranges, but still have a large number of files: over 7,000.
+The high number of files may be because creators define mavy components to
+build a Roblox experience and put these components in separate files.
+(\FILL{} still that's a lot of components ... any better guesses+)
 
 
-FILL power-law files lines editrange.
-Incredible max numbers.
-
-
-\subsection{??? records}
+\subsection{Type Analysis Modes}
 
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
@@ -782,7 +791,11 @@ Incredible max numbers.
   \label{f:dataset-overview}
 \end{figure}
 
-\Cref{f:dataset-overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Cref{f:dataset-overview} breaks down the dataset ...
 
 FILL nocheck nonstrict strict, order-of-magnitude
 
