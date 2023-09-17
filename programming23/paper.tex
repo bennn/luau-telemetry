@@ -500,6 +500,7 @@ straightforward.
 IDEs use telemetry in a similar fashion to most user-facing
 applications, for example VSCode~\cite{vsc-telemetry} and
 IntelliJ~\cite{intellij-telemetry} report telemetry.
+See~\cref{s:related} for futher comparisons among telemetry designs.
 
 Telemetry for programming languages can be controversial, for example
 the lively discussion around telemetry in the Go
@@ -541,13 +542,14 @@ typechecker:
 \end{itemize}
 
 \subsection{Telemetry records}
+\label{s:telemetry-records}
 
 The telemetry for a Roblox Studio session is gathered as a series of
 telemtry records, all with the same psedonynimized session
 identifier. This allows us to correlate telemetry across a single
 session, but not between sessions.
 
-In order to avoid swamping our telemtry servers, we randomly throttle
+In order to avoid swamping our telemetry servers, we randomly throttle
 the generation of telemetry records:
 \begin{itemize}
   \item
@@ -576,152 +578,97 @@ Each telemetry record contains:
 \end{description}
 To track the edit range, we record a start and end position, which we
 update appropriately on every edit. This can result in very large edit
-ranges (for example if the user edits an the beginning and end of the
-file) but fits in a fixed-size telemetry record.
+ranges, for example, if the user edits at the beginning and end of the
+file.
+The main benefit of this strategy is that it ensures constant-size telemetry records.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{what to study}
-
-RQs + Analysis
-
-\begin{itemize}
-  \item How often does the typechecker give up with CodeTooComplex errors?
-  \subitem [[ For context: the type system is designed to give useful feedback
-    to all sorts of code, whether strict-typed, nonstrict-typed, or \mnocheck{}.
-    But it has an escape hatch: CTC. Hope it's rarely needed. ]]
-    \begin{itemize}
-      \item Count the overall CTC errors (in each mode) for a coarse view of
-        how rare they are. [D9 of course, D8 to compare \mnocheck{} code with
-        strict-mode code via the same typechecker]
-      \subitem Note: We can't look at the code to learn why the errors
-        happened. Can only look for trends and tell the Roblox team where to
-        look.
-        %% \subitem Count CTC errors within each session to see if these errors are intermittent, or if they stick around. [D9 for the count, D8 for \mnocheck{} vs strict, D7 because CTC might show up in the edit range]
-    \end{itemize}
-  \item How helpful are highlighted ranges?
-    \begin{itemize}
-      \item How often do edits in a highlighted range remove type errors? How
-        often do they add new ones?
-      \subitem [D7 compare specific old vs specific new]
-      \subitem [may want to filter using D2 + D5]
-      \item How often do edits outside the range remove type errors? How often do they add new ones?
-      \subitem [D6 looking for old count vs. new count difference without a matching delta in the D7 counts]
-      \item Which specific errors seem easy / hard to fix via highlights?
-      \subitem [D6 removed by edit => easy; D6 survive edit => hard]
-    \end{itemize}
-  \item In what ways do types improve quality of life?
-  \begin{itemize}
-    \item Does \mnocheck{} code have many more latent errors than the others?
-    \subitem [D8 latent errors come from the "what if" analysis]
-  \end{itemize}
-\end{itemize}
-
-% What to study?
-% 
-% Sanity checks
-% How large are edit ranges? Plot the distribution.
-% How long between logs? Long times & very short times are problematic.
-% General Roblox trends
-% How many sessions use strict / nonstrict / \mnocheck{}?
-% Expect few strict/nonstrict, lots of \mnocheck{}
-% How often does mode change within a session?
-% Expect few of these b/c error reports are easy to ignore; non-intrusive
-% If a down-switch happens, expect the current #errors to be high
-% If an up-switch happens, hope to stay up
-% How many CodeTooComplex errors arise, overall?
-% Expect very few. Hopefully zero.
-% How often do module switches happen?
-% Expect not-too-many, with some logs in between each time
-% Compare strict vs. nonstrict vs. nocheck
-% Get median # errors across all snapshots.
-% Expect nocheck median to be higher than the others.
-% Plot #errors vs time, or vs codebase size
-% Expect nocheck errors to keep going up. For other modes, #errors should stay low.
-% General type error trends
-% Plot the distribution of #errors across all edit ranges
-% Expect different counts based on error-kind. SEE BELOW
-% Count specific errors that get fixed. For each kind of error, how many times is it old-in-range but not new-in-range? Compare to #old-in-range totals.
-% Expect all errors to have a decent fix rate.
-% If one error has a lower % than others, its error range may be misleading. Or, maybe it's hard to fix
-% Type errors vs. edit range
-% Compare #old vs. #new in range
-% Expect a decrease, #old > #new
-% If there's an increase, look for an explanation. Could be a huge edit range. Could be a 1-line range that we captured 2x in a row. Could be that this user is simply ignoring type errors.
-% Compare [#old-in-range vs. (total #old - total #new)]
-% If #old-in-range = 0, then hope the total # increases
-% Decrease => nonlocal edits fixed an error => type error hilite may be inaccurate
-% If #old-in-range > 0, then hope the total # decreases
-% Increase (in range or otherwise) => made things worse
-
-
-
-
-\section{Predictions}
-%%bg: merge with prev section, on telemetry design?
-
-nocheck forcestrict keep growing
-
-nonstrict te tend to zero, fixing your program should fix the errors, no false positives
-
-nonstrict fs unclear
-
-
-\section{Data Cleaning}
-
-Deduplicated records with the same timestamp,
-kept only the first.
-Timestamps by millisecond.
-
-Records come with two timestamps, a \emph{client timestamp}
-that the IDE generates before sending the record
-and a \emph{server timestamp} that the telemetry server
-generates when it receives the record.
-We collected timestamps to sort records from earliest to latest.
-The server timestamps, however, are less useful for sorting
-because the server processes groups of records in a batch and
-often assigns equal timestamps to dozens of records.
-Hence, we ignore the server timestamps.
-Throughout the paper a \emph{timestamp} is always a client-side timestamp.
-
-
-Edit ranges are negative in a handful of records (1,533).
-%% out/negative-edit-range.txt
-%% actual value is NOT negative, but large positive over 4 billion
-%% example: 4294967293
-This may happen when a user deletes a large block of code.
-Since the issue affects so few records, we omit those ranges
-from the analysis.
-
-Sessions, ignore if too close to start or end.
-Deciding if a session is close is tricky because we don't have
-a firm start and end time.
-Um, does this make sense at all?
-Well anyway we took the greater number from mean vs median
-gap (over all points, not just keystroke points)
-and multiplied by Nx to test closeness to a boundary.
-With N=2 we drop 1 nonstrict session, 0 strict (not sure about nocheck).
-With N=4 we drop 3, with N=8 we drop 9.
-
-FILL remove all syntax errors from later stages?
-
-
-
-\section{Results}
+\section{The Data}
 \label{s:data}
+
+Roblox Studio collected type error telemetry in Spring 2023,
+between February and April.
+Every Studio session had a small random chance of generating
+telemetry~(\cref{s:telemetry-records}).
+The chosen sessions generated a record whenever the user switched modules and
+randomly on each keystroke.
+
+\Cref{f:records-per-hour} provides a time-ordered distribution of the data.
+Each vertical bar counts the number of records generated per hour according to
+a client-side timestamp.
+The bars are labeled with a California time zone because that is the locale of
+the Roblox servers, which parsed the timestamps.
+Most buckets contain roughly one thousand records, but some have very few
+and a handful of others exceed three thousand.
+%% \FILL{} investigate one tower, what's happening?? all one session?
+There is a sharp drop in early April because we disabled telemetry at that point
+but some clients continued to generate data
+(\FILL{} Q. Alan, is that an ok sentence? I'm not sure why there's a long tail,
+guess it could be people not updating studio or people with strange time settings
+on their machine.)
+We do not know which timezone the records originated in, but since the counts
+tend to peak midday California time it seems that the majority
+of Roblox developers are following a Western Hemisphere schedule.
+%% \FILL{} probably North America, but do we really want to guess?
+The counts for weekends (shaded regions) are often the tallest; these days presumably
+have a larger number of sessions for telemetry to observe.
 
 \begin{figure}[t]
   %% TODO bigger text
+  %% TODO weird artifact (|) in x-min label
   %% code/row-distribution.rkt
   \includegraphics[width=\columnwidth]{img/row-distribution.pdf}
   \caption{Telemetry records per hour. Each tick on the $x$-axis marks the start of a new day in California. Shaded ranges correspond to weekends.}
   \label{f:records-per-hour}
 \end{figure}
 
-FILL investigate one tower
+
+\subsection{Data Cleaning}
+\label{s:data-cleaning}
+
+A close inspection of the data revealed a few anomalies.
+For the most part, we omit the strange data from futher analysis.
+
+First, some records have odd timestamps according to the server's records.
+Every telemetry record comes with two timestamps: a client-side timestamp
+from when Roblox Studio created it and a server-side timestamp from when
+the server posted it to its database.
+The server timestamps are little use for our analysis because they bunch
+together; it is common for several records to have identical server
+timestamps.
+However, server timestamps are useful for auditing because they should
+be relatively close in value to the client timestamps.
+For some records (<100? \FILL{}), though, the client is off by a large
+margin: up to one week behind and up to one day ahead of the server.
+We attribute the large delays to issues when sending telemetry (lost internet
+connection, etc.) and smaller offsets to incorrect time settings on the client
+machine.
+In any event, we do not filter these records from further analysis.
+
+Second, some records have identical (client) timestamps.
+This can happen legitimately if type analysis runs several times
+in the same millisecond, but it is unlikely that a human would
+enter keystrokes or switch modules quickly enough.
+We keep the first record with a distinct timestamp and discard the others.
+%% TODO wait, better deduplicate by session and not globally!!!
+
+%% out/negative-edit-range.txt
+%% actual value is NOT negative, but large positive over 4 billion
+%% example: 4294967293
+Third, the edit ranges are negative in a few hundred records~(1,533).
+This is likely due to the user deleting a large block of code.
+Since the issue affects so few records, we omit the negative ranges
+from analysis (but, we do use other parts of the records; for example
+the timestamps influence~\cref{f:records-per-hour}).
+(\FILL{} Alan, double-check reasoning)
+
+
+\subsection{Codebase Size}
+\label{s:codebase-size}
 
 \begin{figure}[t]
   % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
@@ -752,17 +699,14 @@ FILL investigate one tower
   \label{f:codebase-size}
 \end{figure}
 
-\Cref{f:records-per-hour} shows when data arrived across the whole dataset.
-FILL: currently clientTimestamp, which has caveats.
-Unclear what timezone they are from.
-Some records have a client timestamp much older than the server, up to 1 week behind.
-Some are ahead of the server by a day.
-Why?
-Could be wrong local settings on the computer, or a delayed record due to lost
-internet connection or closed laptop.
+TODO findings lessons etc.
+
 
 FILL power-law files lines editrange.
 Incredible max numbers.
+
+
+\subsection{??? records}
 
 \begin{figure}[t]
   \begin{subfigure}[t]{\columnwidth}
