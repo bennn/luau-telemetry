@@ -394,8 +394,8 @@ misspellings of property names are common enough to report in both
 strict and nonstrict mode. See~\cite{bfj-hatra-2021}
 for a more detailed discussion of the rationale for strict and nonstrict mode.
 
-Both modes are opt-in. Creators have the option to make \mnonstrict{} mode
-the default rather than \mnocheck{} mode.
+Both modes are opt-in. The default for a new script is \mnocheck{} by
+default, but creators can change this default to \mnonstrict{}.
 
 Even in \mnocheck{} mode, {Roblox Studio} performs type inference, since
 the results are needed by type-directed tooling such as autocomplete and
@@ -593,7 +593,8 @@ Every Studio session had a small random chance of generating
 telemetry~(\cref{s:telemetry-records}).
 The chosen sessions generated a record whenever the user switched modules and
 randomly on each keystroke.
-In total we collected 1.5 million telemetry records.
+In total, we collected 1.5 million telemetry records.
+Roughly two-thirds of records are due to keystrokes.
 
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 Each vertical bar counts the number of records generated per hour according to
@@ -615,11 +616,19 @@ Hemisphere schedule).
 The counts for weekends (shaded regions) are often the tallest; these days presumably
 have a larger number of sessions for telemetry to observe.
 
-\begin{figure}[t]
+\begin{figure}[t]\centering
   %% TODO bigger text
   %% TODO weird artifact (|) in x-min label
   %% code/row-distribution.rkt
   \includegraphics[width=\columnwidth]{img/row-distribution.pdf}
+  \begin{tabular}{ll}
+    Reason for sending:
+    &
+    \begin{tabular}[t]{r@{~~}l@{~~}r}
+      996,164 & due to keystrokes  & [\pct{66.20}] \\
+      508,572 & due to module switch & [\pct{33.80}]
+    \end{tabular}
+  \end{tabular}
   \caption{Telemetry records per hour. Each tick on the $x$-axis marks the start of a new day in California. Shaded ranges correspond to weekends.}
   \label{f:records-per-hour}
 \end{figure}
@@ -664,9 +673,22 @@ from analysis (but, we do use other parts of the records; for example
 the timestamps influence~\cref{f:records-per-hour}).
 (\FILL{} Alan, double-check reasoning)
 
+\subsection{Overall Size and Shape}
 
-\subsection{Codebase Size}
-\label{s:codebase-size}
+The first step toward understanding the data is to have a sense of what
+is in it.
+Three important characteristics are the size of the codebases in the data,
+the length of the sessions we captured, and the number of type analysis
+errors.
+We discuss these in turn.
+Codebase size and session length follow power-law distributions, with
+many small items and a few very large items.
+The number of type analysis errors is somewhat low~(explained in the next
+section), but sufficient to proceed with futher analysis.
+
+
+\paragraph{Codebase Size}
+%\label{s:codebase-size}
 
 \begin{figure}[t]
   % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
@@ -714,10 +736,11 @@ The median values are more reasonable, with roughly 3,000 lines of code
 and 1,000 lines in edit ranges, but still have a large number of files: over 7,000.
 The high number of files may be because creators define mavy components to
 build a Roblox experience and put these components in separate files.
-(\FILL{} still that's a lot of components ... any better guesses+)
+(\FILL{} still that's a lot of components ... any better guesses?)
 
 
-\subsection{Session Size}
+\paragraph{Session Size}
+%\label{s:session-size}
 
 \begin{figure}[t]
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
@@ -737,8 +760,6 @@ build a Roblox experience and put these components in separate files.
   \label{f:session-size}
 \end{figure}
 
-FILL say more about why this data is interesting. What's the significance?
-
 \Cref{f:session-size} outlines the size of the Roblox Studio sessions in the
 data.
 There are two useful notions of size: real time in seconds (between the first
@@ -753,46 +774,74 @@ The longest sessions last several days and/or contain thousands of records,
 while the shortest last a few milliseconds or include just one record.
 Likewise, both plots in the figure follow a power-law distribution
 (especially for record count).
+A typical session runs on the order of minutes and consists of a few dozen events.
 The median session time is approximately 14 minutes.
 The median number of
 records is 138.
 These numbers are reasonable.
 
 
-\subsection{Type Analysis Modes}
+\paragraph{Number of Type Analysis Errors}
+%\label{s:count-analysis-errors}
 
 \begin{figure}[t]
+  \begin{tabular}[t]{ll} \\
+    \begin{tabular}[t]{l@{~~}r@{~}l}
+      595,137 & type errors \\
+      289,698 & in current module & [\pct{48.68}] \\
+       30,924 & in edit range & [\pct{5.20}]
+    \end{tabular}
+    \begin{tabular}[t]{l@{~~}r@{~}l}
+      72,235,735 & {forced strict errors} \\
+      37,027,281 & in current module & [\pct{51.26}] \\
+       1,111,178 & in edit range & [\pct{1.54}]
+    \end{tabular}
+  \end{tabular}
+  \caption{Type errors and forced strict errors across all telemetry records}
+  \label{f:count-analysis-errors}
+\end{figure}
+
+\FILL{} need old and current in edit range
+
+\Cref{f:count-analysis-errors} lists the number of type analysis errors
+and breaks them down by location in the codebase.
+In total, there are nearly 600K type errors.
+These appeared in modules that opted in to typechecking with either the
+\mnonstrict{} or \mstrict{} mode.
+The number of forced strict errors is much larger, 72M, because this analysis
+ran on every module using strict type.
+(Furthermore, forced strict runs silently, so creators have no incentive to
+fix these errors.)
+Approximately half the analysis errors occurred in the current module,
+and a small fraction overlapped with the current edit range~(\pct{5} for
+type errors, \pct{1} for forced strict).
+
+The large fraction of errors in the current module is encouraging.
+It suggests that errors appear locally, as the result of edits to nearby
+code (as opposed to edits in one module raising errors in another), and
+that creators fix the errors before switching focus to another
+module.
+The low fraction of errors in the edit range suggests that errors rarely
+persist through nearby edits.
+
+
+\subsection{Type Analysis Modes}
+\label{s:type-analysis-modes}
+
+\begin{figure}[t]\centering
   \begin{subfigure}[t]{\columnwidth}
     \begin{tabular}[t]{ll}
+      %% FILL bar chart? rectangle?
       \begin{tabular}[t]{r@{~~}l@{~}r}
          1,341,348 & \mnocheck{}          & [\pct{89.14}] \\
            156,883 & \mnonstrict{}        & [\pct{10.43}] \\
              6,505 & \mstrict{}           & [\pct{ 0.43}]
       \end{tabular}
       \begin{tabular}[t]{r@{~~}l@{~~}r}
-           508,572 & due to module switch & [\pct{33.80}] \\
-           996,164 & due to keystrokes    & [\pct{66.20}]
       \end{tabular}
     \end{tabular}
-    \caption{Total telemetry records (1,504,736), analysis modes, and reason-for-sending}
+    \caption{Analysis modes across the 1,504,736 records}
     \label{f:total-records}
-  \end{subfigure}
-
-  \begin{subfigure}[t]{\columnwidth}
-    \begin{tabular}[t]{ll} \\
-      \begin{tabular}[t]{l@{~~}r@{~}l}
-        595,137 & Type errors \\
-        289,698 & in current module & [\pct{48.68}] \\
-         30,924 & in edit range & [\pct{5.20}]
-      \end{tabular}
-      \begin{tabular}[t]{l@{~~}r@{~}l}
-        72,235,735 & {Forced-strict errors} \\
-        37,027,281 & in current module & [\pct{51.26}] \\
-         1,111,178 & in edit range & [\pct{1.54}]
-      \end{tabular}
-    \end{tabular}
-    \caption{Type errors and forced-strict errors across all telemetry records}
-    \label{f:total-tefs}
   \end{subfigure}
 
   \begin{subfigure}[t]{\columnwidth}
@@ -810,48 +859,73 @@ These numbers are reasonable.
         & 512 & contain modules with different modes
       \end{tabular}
     \end{tabular}
-    \caption{Total sessions (347,598), whether and how they switch analysis mode}
+    \caption{Analysis mode(s) for the 347,598 sessions}
     \label{f:total-sessions}
   \end{subfigure}
 
-  \caption{FILL Type analysis overview}
+  \caption{Overview of type analysis modes}
   \label{f:dataset-overview}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Creators have three analysis modes to choose from.
+Furthermore, they can switch between modes at any time.
+According to~\cref{s:type-analysis-modes}, however, usage is
+extremely skewed toward the type-free \mnocheck{} mode.
+Nearly \pct{90} of all records use the \mnocheck{} mode
+and \pct{90} of all sessions use \mnocheck{} exclusively.
+Among the rest, roughly \pct{10} of all records use \mnonstrict{} and only a
+tiny fraction (\pct{0.4}) use \mstrict{}.
+The per-session data is similar: \pct{9} use \mnonstrict{} exclusively
+and \pct{0.2} use \mstrict{}.
 
-\Cref{f:dataset-overview} breaks down the dataset ...
+These adoption numbers are concerning.
+Creators either do not know about type analysis, or they choose not
+to use it in the code they are currently maintaining.
+Uncovering the reason for low adaption is an important topic for future work on
+Luau that has implications for the gradual typing community~(\cref{s:discussion}).
 
-FILL nocheck nonstrict strict, order-of-magnitude
-
-FILL type error counts
-Mostly syntax errors though!
-Estimate \pct{40} are substantial type errors rather than syntax
-errors based on the edit range type errors~(\cref{s:type-error-count})
-but unfortunately we cannot get an exact number for the overall
-or per-module type error counts.
-
-FILL single-mode sessions, mostly
-
-FILL details on upgrades, downgrades, then ignore these for rest of paper.
-multi-mode project = found a module switch that coincides with a mode switch, which suggests that two modules have different modes;
-upgrade = found a up-mode switch that does not match a module switch (quite possible to miss these);
-downgrade = found a down-mode switch that does not match a module switch
-
-wow 619 up-pairs, 583 down-pairs
-=== UP
-min -3 max 57 median 0 mean 2.62 stddev 6.8390518952707335
-=== DOWN
-min -48 max 30 median 0 mean -0.31 stddev 4.498748355271854
-
-
-FILL most sessions fairly long in time (order of minutes),
-short in event count (dozens).
+%% mostly pure, rare mixes
+Most sessions (\pct{99.82}) stick to a single analysis mode.
+These sessions never change the mode in the current module and never switch
+focus to a module with a different analysis mode.
+Among the other sessions, most (\pct{80}) switch to modules with
+a different mode, about half contain at least one edit that upgrades the
+current mode, and about half contain a downgrade.
+There are 619 upgrades in total and 583 downgrades.
+\FILL{} Ben check how often the downgrades follow the upgrades.
 
 
-\section{Type Errors in Edit Range}
+\paragraph{Are Upgrades Discouraging?}
+
+%% 619 up-pairs, 583 down-pairs
+%% === UP
+%% min -3 max 57 median 0 mean 2.62 stddev 6.8390518952707335
+%% === DOWN
+%% min -48 max 30 median 0 mean -0.31 stddev 4.498748355271854
+
+A possible explanation for the low adoption of \mnonstrict{} and
+\mstrict{} mode is that upgrading to these modes leads to a large
+number of type errors.
+Creators might get discouraged by a high error count and revert to
+\mnocheck{} mode.
+
+The data does not support this explanation.
+On average, the mode-upgrades in the data resulted in 3 additional
+type errors (stddev 7, median 0).
+The worst-case increase was 57 type errors, which is very high
+but exceptional.
+In another exception, upgrading modes removed three type errors
+(presumably due to the increased precision of \mstrict{} mode
+\FILL{} Alan, sounds plausible?).
+
+Similarly, mode downgrades have only a small negative effect on the
+number of errors (mean -0.3, stddev 4, median 0, max -48).
+%% curious outlier: downgrade added 30 errors!
+Creators apparently tend switch modes only when the code is already
+well typed, or close to it.
+
+
+\subsection{Type Errors in Edit Range}
 \label{s:type-error-count}
 
 \begin{table}[t]
@@ -889,6 +963,20 @@ short in event count (dozens).
     \end{tabular}
 
 \end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+FILL specific type errors, 1st add/drop, 2nd popularity
+
+FILL type error counts
+Mostly syntax errors though!
+Estimate \pct{40} are substantial type errors rather than syntax
+errors based on the edit range type errors~(\cref{s:type-error-count})
+but unfortunately we cannot get an exact number for the overall
+or per-module type error counts.
+
 
 FILL popularity over all old and new in edit range.
 Syntax error by far the most common.
@@ -1408,9 +1496,34 @@ deterministic.
 \label{s:conclusion}
 \label{s:discussion}
 
+Findings:
+
+\begin{itemize}
+  \item
+    \pct{50} of errors in current module, so probably errors appear locally (not in a distant module);
+    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
+  \item
+    \pct{90} \mnocheck{},  \pct{10} \mnonstrict{},  \pct{0.1} \mstrict{}, wow.
+  \item
+  \item
+  \item
+    DM awareness is an important and surprising gap between strict
+    and forced strict, undoubtedly a usability barrier for \mstrict{}.
+  \item
+\end{itemize}
+
 FILL regrets, lessons learned, advice for next time
 
+\paragraph{Future work: Low adaption}
+
+why so few using nonstrict and strict?
+needs advertising?
+needs usability?
+
+
 \paragraph{Do we need timestamps?}
+
+FILL these were helpful for the overview
 
 Our telemetry records include timestamps.
 While timestamps are not personal data per se, they are in the ballpark.
