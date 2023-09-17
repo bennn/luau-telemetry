@@ -100,6 +100,7 @@
 \newcommand{\chkMaybe}{\wideas{\dotscale{\Circle}}{\chkYes}}
 \newcommand{\chkNo}{\wideas{}{\chkYes}}
 \newcommand{\pct}[1]{\SI{#1}{\percent}}
+\newcommand{\percentile}[1]{{#1}th~percentile}
 \newcommand{\modefont}[1]{\texttt{#1}}
 \newcommand{\mnocheck}{\modefont{nocheck}}
 \newcommand{\mnonstrict}{\modefont{nonstrict}}
@@ -686,6 +687,7 @@ the timestamps influence~\cref{f:records-per-hour}).
     Mean [std]   & 11,911 & \stddev{12}  &     6,497 & \stddev{22} &         3,680 & \stddev{31} \\
     Median       &  7,678 &              &     3,115 &             &           926 & \\
     \pct{99}     & 51,761 &              &    50,547 &             &        34,725 & \\
+    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
     & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
     & & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
     & & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
@@ -698,7 +700,7 @@ the timestamps influence~\cref{f:records-per-hour}).
 
 \Cref{f:codebase-size} summarizes the size of projects in the dataset.
 The top half of the figure reports the mean, standard deviation, median,
-and {99}th percentile for the number of files, lines, and lines in edit range.
+and \percentile{99} for the number of files, lines, and lines in edit range.
 The bottom half shows zoomed-in distributions of the file, line, and edit range
 numbers.
 For example, the x-axis of the first plot ranges from 0 to 1,000 files and
@@ -713,6 +715,48 @@ and 1,000 lines in edit ranges, but still have a large number of files: over 7,0
 The high number of files may be because creators define mavy components to
 build a Roblox experience and put these components in separate files.
 (\FILL{} still that's a lot of components ... any better guesses+)
+
+
+\subsection{Session Size}
+
+\begin{figure}[t]
+  %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
+
+  \begin{tabular}{l@{}r@{~}l@{}r@{~}l} \\
+                 & Time Span (sec)  &       & Record Count  \\
+    Mean [std]   &     3,184 & \stddev{16}  &     286 & [583] \\
+    Median       &       845 &              &     138        \\
+    \pct{99}     &    35,450 &              &   3,302        \\
+    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
+    & \includegraphics[width=0.2\columnwidth]{img/timespan-distribution.pdf}
+    & & \includegraphics[width=0.2\columnwidth]{img/event-count-distribution.pdf}
+
+  \end{tabular}
+
+  \caption{Session size in seconds and in number of records}
+  \label{f:session-size}
+\end{figure}
+
+FILL say more about why this data is interesting. What's the significance?
+
+\Cref{f:session-size} outlines the size of the Roblox Studio sessions in the
+data.
+There are two useful notions of size: real time in seconds (between the first
+and last record) and the total number of records.
+The top of~\cref{f:session-size} reports the mean, standard deviation,
+median, and \percentile{99}; the bottom shows size distributions, zoomed in
+to focus on at most 1,000 units (x-axis) and 1,000 sessions (y-axis).
+
+Similar to the data on project size, there is huge variation in session
+length.
+The longest sessions last several days and/or contain thousands of records,
+while the shortest last a few milliseconds or include just one record.
+Likewise, both plots in the figure follow a power-law distribution
+(especially for record count).
+The median session time is approximately 14 minutes.
+The median number of
+records is 138.
+These numbers are reasonable.
 
 
 \subsection{Type Analysis Modes}
@@ -770,24 +814,7 @@ build a Roblox experience and put these components in separate files.
     \label{f:total-sessions}
   \end{subfigure}
 
-  \begin{subfigure}[t]{\columnwidth}
-    %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
-
-    \begin{tabular}{l@{}r@{~}l@{}r@{~}l} \\
-                   & Time Span (sec)  &       & Record Count  \\
-      Mean [std]   &     3,184 & \stddev{16}  &     286 & [583] \\
-      Median       &       845 &              &     138        \\
-      \pct{99}     &    35,450 &              &   3,302        \\
-      & \includegraphics[width=0.2\columnwidth]{img/timespan-distribution.pdf}
-      & & \includegraphics[width=0.2\columnwidth]{img/event-count-distribution.pdf}
-
-    \end{tabular}
-
-    \caption{Session length in seconds and in number of records}
-    \label{f:sessions-size}
-  \end{subfigure}
-
-  \caption{Dataset overview}
+  \caption{FILL Type analysis overview}
   \label{f:dataset-overview}
 \end{figure}
 
