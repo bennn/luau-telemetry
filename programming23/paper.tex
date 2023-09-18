@@ -310,7 +310,7 @@ informed by many users' actual practice.
 Our data captures over 340,000 sessions
 that occured between February and April 2023
 and includes 72 million type analysis errors.
-By contrast to typical qualitative methods (e.g., surveys and interviews), it
+By contrast to typical qualitative methods such as surveys and interviews, it
 is not restricted to users' \emph{perceptions} about their work and it is not
 limited to a small number of users.
 
@@ -604,17 +604,14 @@ the Roblox servers, which parsed the timestamps.
 Most buckets contain roughly one thousand records, but some have very few
 and a handful of others exceed three thousand.
 %% \FILL{} investigate one tower, what's happening?? all one session?
-There is a sharp drop in early April because we disabled telemetry at that point
-but some clients continued to generate data
-(\FILL{} Q. Alan, is that an ok sentence? I'm not sure why there's a long tail,
-guess it could be people not updating studio or people with strange time settings
-on their machine.)
+There is a sharp drop in early April when the experiment was finished
+and the telemetry probe was removed (though there is a long tail as
+developers uopdated Roblox Studio).
 We do not know which timezone the records originated in, but since the counts
 tend to peak midday California time it seems that the majority
-of Roblox developers are following a USA schedule (or rather, a Western
-Hemisphere schedule).
-The counts for weekends (shaded regions) are often the tallest; these days presumably
-have a larger number of sessions for telemetry to observe.
+of Roblox developers are following a Western Hemisphere schedule.
+The counts for weekends (shaded regions) are often the tallest,
+as Roblox has a significant school-aged creator community.
 
 \begin{figure}[t]\centering
   %% TODO bigger text
@@ -649,7 +646,7 @@ together; it is common for several records to have identical server
 timestamps.
 However, server timestamps are useful for auditing because they should
 be relatively close in value to the client timestamps.
-For some records (<100? \FILL{}), though, the client is off by a large
+For a small number of records (<100? \FILL{}), though, the client is off by a large
 margin: up to one week behind and up to one day ahead of the server.
 We attribute the large delays to issues when sending telemetry (lost internet
 connection, etc.) and smaller offsets to incorrect time settings on the client
@@ -671,7 +668,8 @@ This is likely due to the user deleting a large block of code.
 Since the issue affects so few records, we omit the negative ranges
 from analysis (but, we do use other parts of the records; for example
 the timestamps influence~\cref{f:records-per-hour}).
-(\FILL{} Alan, double-check reasoning)
+%% (\FILL{} Alan, double-check reasoning)
+%% Seems fine by me
 
 \subsection{Overall Size and Shape}
 
@@ -729,7 +727,7 @@ For example, the x-axis of the first plot ranges from 0 to 1,000 files and
 the y-axis counts up to 1,000 telemetry records.
 
 There is a huge amount of variation across projects.
-The largest ones have over 50k files (!) and 50k lines of code, and
+The largest ones have over 50k files (!) and 50k lines of code, and %50kLoC and 50k files????
 there are many small ones with 1 file and/or 1 line of code.
 Unsurprisingly, the numbers come with large standard deviations.
 The median values are more reasonable, with roughly 3,000 lines of code
@@ -738,6 +736,7 @@ The high number of files may be because creators define mavy components to
 build a Roblox experience and put these components in separate files.
 (\FILL{} still that's a lot of components ... any better guesses?)
 
+% That seems way off, not sure we're seeing so many files :/
 
 \paragraph{Session Size}
 %\label{s:session-size}
@@ -878,17 +877,23 @@ tiny fraction (\pct{0.4}) use \mstrict{}.
 The per-session data is similar: \pct{9} use \mnonstrict{} exclusively
 and \pct{0.2} use \mstrict{}.
 
-These adoption numbers are concerning.
-Creators either do not know about type analysis, or they choose not
-to use it in the code they are currently maintaining.
-Uncovering the reason for low adaption is an important topic for future work on
-Luau that has implications for the gradual typing community~(\cref{s:discussion}).
+% I think this is too negative!
+%% These adoption numbers are concerning.
+%% Creators either do not know about type analysis, or they choose not
+%% to use it in the code they are currently maintaining.
+%% Uncovering the reason for low adaption is an important topic for future work on
+%% Luau that has implications for the gradual typing community~(\cref{s:discussion}).
+
+These adoption numbers indicate that there is a communication gap;
+as long as type checking is opt-in, most developers stay opted out.
+Once Luau type checking is opt-out rather than opt-in, it will be interesting
+to revisit these numbers.
 
 %% mostly pure, rare mixes
 Most sessions (\pct{99.82}) stick to a single analysis mode.
 These sessions never change the mode in the current module and never switch
 focus to a module with a different analysis mode.
-Among the other sessions, most (\pct{80}) switch to modules with
+Among the mixed-mode sessions, most (\pct{80}) switch to modules with
 a different mode, about half contain at least one edit that upgrades the
 current mode, and about half contain a downgrade.
 There are 619 upgrades in total and 583 downgrades.
@@ -915,8 +920,11 @@ type errors (stddev 7, median 0).
 The worst-case increase was 57 type errors, which is very high
 but exceptional.
 In another exception, upgrading modes removed three type errors
-(presumably due to the increased precision of \mstrict{} mode
-\FILL{} Alan, sounds plausible?).
+% (presumably due to the increased precision of \mstrict{} mode
+% \FILL{} Alan, sounds plausible?).
+% My guess as to what;s going on
+(possibly due to ther edits being rolled in with the
+mode change).
 
 Similarly, mode downgrades have only a small negative effect on the
 number of errors (mean -0.3, stddev 4, median 0, max -48).
