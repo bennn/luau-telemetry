@@ -937,6 +937,41 @@ well typed, or close to it.
 \subsection{Type Errors vs. Program Edits}
 \label{s:type-error-survival}
 
+\begin{table}[t]
+  \caption{Number of records that add, keep, or drop (remove) specific type errors from their edit range.}
+  \label{t:type-error-survival}
+  \begin{tabular}{lr@{}r@{}rr@{}r@{}rr@{}r@{}r}
+    & \zerowidth{\mnocheck{}} & & & \zerowidth{\mnonstrict{}} & & & \zerowidth{\mstrict{}} & & \\
+    & \rbox{Add} & \ybox{Keep} & \gbox{Drop} & \rbox{Add} & \ybox{Keep} & \gbox{Drop} & \rbox{Add} & \ybox{Keep} & \gbox{Drop} \\\midrule
+    \code{CannotCallNonFunction} & {0} & {0} & {0} & {17} & {4} & {20} & {1} & {0} & {1} \\
+    \code{CannotExtendTable} & {0} & {0} & {0} & {7} & {9} & {10} & {0} & {0} & {1} \\
+    \code{CannotInferBinaryOperation} & {0} & {0} & {0} & {1} & {2} & {1} & {7} & {6} & {9} \\
+    \code{CountMismatch} & {0} & {0} & {0} & {223} & {48} & {269} & {12} & {2} & {17} \\
+    \code{DuplicateTypeDefinition} & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
+    \code{ExtraInformation} & {0} & {0} & {0} & {48} & {7} & {39} & {2} & {0} & {1} \\
+    \code{FunctionDoesNotTakeSelf} & {0} & {0} & {0} & {4} & {6} & {5} & {0} & {0} & {0} \\
+    \code{FunctionExitsWithoutReturning} & {0} & {0} & {0} & {9} & {3} & {6} & {11} & {5} & {8} \\
+    \code{GenericError} & {0} & {0} & {0} & {206} & {52} & {203} & {8} & {1} & {9} \\
+    \code{IllegalRequire} & {0} & {0} & {0} & {16} & {3} & {33} & {0} & {0} & {2} \\
+    \code{IncorrectGenericParameterCount} & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
+    \code{MissingProperties} & {0} & {0} & {0} & {11} & {3} & {11} & {6} & {4} & {6} \\
+    \code{MissingUnionProperty} & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
+    \code{ModuleHasCyclicDependency} & {0} & {0} & {0} & {20} & {9} & {15} & {0} & {0} & {1} \\
+    \code{NotATable} & {0} & {0} & {0} & {7} & {2} & {8} & {2} & {0} & {1} \\
+    \code{OccursCheckFailed} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {1} \\
+    \code{OnlyTablesCanHaveMethods} & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
+    \code{OptionalValueAccess} & {0} & {0} & {0} & {40} & {52} & {27} & {6} & {2} & {7} \\
+    \code{SyntaxError} & {8349} & {314} & {19220} & {983} & {46} & {2658} & {16} & {0} & {71} \\
+    \code{TypeMismatch} & {0} & {0} & {0} & {159} & {62} & {129} & {21} & {10} & {28} \\
+    \code{TypesAreUnrelated} & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {1} \\
+    \code{UnknownPropButFoundLikeProp} & {0} & {0} & {0} & {26} & {18} & {21} & {1} & {0} & {1} \\
+    \code{UnknownProperty} & {0} & {0} & {0} & {347} & {180} & {385} & {19} & {19} & {35} \\
+    \code{UnknownRequire} & {0} & {0} & {0} & {91} & {39} & {85} & {12} & {3} & {4} \\
+    \code{UnknownSymbol} & {0} & {0} & {0} & {2348} & {496} & {2973} & {49} & {19} & {55}
+  \end{tabular}
+
+\end{table}
+
 Equipped with an overall picture of the dataset and the skewed usage
 of \mnocheck{}, \mnonstrict{}, and \mstrict{} modes, we are ready to explore
 the type error data.
@@ -969,89 +1004,89 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
 \paragraph{Observations}
 
 %% \paragraph{Most Type Errors are Typos}
-One striking aspect of~\cref{t:type-error-survival} is the large number
-of \code{SyntaxError}s and the related errors \code{UnknownSymbol} and
-\code{UnknownProperty}.
-Most type errors in the data are likely due to typos.
-\Cref{s:type-error-count} discusses this point in detail.
-For now, we remark that \code{SyntaxError} is the only possible error
-in \mnocheck{} mode (by design) and observe that these errors are
-usually in the Drop column and seldom in the Keep column.
+\begin{itemize}
+  \item
+    One striking aspect of~\cref{t:type-error-survival} is the large number
+    of \code{SyntaxError}s and the related errors \code{UnknownSymbol} and
+    \code{UnknownProperty}.
+    Most type errors in the data are likely due to typos.
+    \Cref{s:type-error-count} discusses this point in detail.
+    For now, we remark that \code{SyntaxError} is the only possible error
+    in \mnocheck{} mode (by design) and observe that these errors are
+    usually in the Drop column and seldom in the Keep column.
 
-A second observation is that there are relatively few errors that overlap
-with the edit range; the numbers are low in general.
-The highest value in the \mstrict{} columns is 71, meaning 71 records
-drop a syntax error.
-This number is very small relative to the total number of \mstrict{} records
-from~\cref{f:dataset-overview} (6,505), and similarly for
-the \mnonstrict{} and \mnocheck{} modes.
-%% FILL show percentages for all three modes?
-Edits seldom overlap with type errors.
-\FILL{} what does this mean? Not sure if bad, or inconclusive.
+  \item
+    The numbers are relatively low in general, which means that
+    few errors in the dataset overlap with the edit range
+    The highest value in the \mstrict{} columns is 71, meaning 71 records
+    out of 6,505 total~(\cref{f:dataset-overview} drop a syntax error.
+    The \mnonstrict{} and \mnocheck{} columns are similar.
+    %% FILL show percentages for all three modes?
+    \FILL{} what does this mean? Not sure if bad, or inconclusive.
 
-When edits do overlap, however, ... good?
+  \item
+    %% Drop >= Add >= Rem ~= 27 triples
+    %% other nonzero      ~= 13 triples
+    When type errors overlap with the edit range,
+    we would hope the number of Adds and Drops is roughly
+    equal and the number of Keeps is low.
+    This is indeed the case.
+    In most Add/Keep/Drop triples, the Drop column has the highest
+    value and the Keep column has the lowest value.
+    The optimistic conclusion is that creators are fixing the code
+    highlighted by errors.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \item
+    After the syntax errors, \code{CountMismatch},
+    \code{TypeMismatch}, and \code{GenericError} are the most common
+    \mnonstrict{} and \mstrict{} errors.
+    \FILL{} so what.
+
+  \item
+    \FILL{} which errors break the Drop > Add > Keep hope?
+
+  \item
+    (NOTE may want to save relative popularity for next section.)
+    Some errors occur more often in \mnonstrict{} than \mstrict{}:
+    \code{CannotCallNonFunction},
+    \code{CannotExtendTable},
+    \code{ExtraInformation},
+    \code{FunctionDoesNotTakeSelf},
+    \code{IllegalRequire},
+    \code{ModuleHasCyclicDependency},
+    \code{OptionalValueAccess},
+    \code{UnknownPropButFoundLikeProp}.
+    \FILL{} is this surprising, or expected from the bigger number of
+    \mnonstrict{} records?
+
+  \item
+    A few errors are more common in \mstrict{} than \mnonstrict{}:
+    \code{CannotInferBinaryOperation},
+    \code{FunctionExitsWithoutReturning},
+    \code{IncorrectGenericParameterCount}.
+    \FILL{} so what.
+
+\end{itemize}
 
 
 \paragraph{Do Error Highlights Help?}
 
+\FILL{} data seems to say yes.
+
 
 \paragraph{Do Types Improve Quality of Life?}
 
-%% use the ... percent of all records??
-%% total 1.3M nocheck, 156K nonstrict, 6K strict
-%% ... uhhh wow so few errors!
-
-
-\begin{table}[t]
-  \caption{Type error survival}
-  \label{t:type-error-survival}
-
-    \begin{tabular}{lr@{}r@{}rr@{}r@{}rr@{}r@{}r}
-      & \zerowidth{\mnocheck{}} & & & \zerowidth{\mnonstrict{}} & & & \zerowidth{\mstrict{}} & & \\
-      & \rbox{Add} & \ybox{Keep} & \gbox{Drop} & \rbox{Add} & \ybox{Keep} & \gbox{Drop} & \rbox{Add} & \ybox{Keep} & \gbox{Drop} \\\midrule
-      \code{CannotCallNonFunction} & {0} & {0} & {0} & {17} & {4} & {20} & {1} & {0} & {1} \\
-      \code{CannotExtendTable} & {0} & {0} & {0} & {7} & {9} & {10} & {0} & {0} & {1} \\
-      \code{CannotInferBinaryOperation} & {0} & {0} & {0} & {1} & {2} & {1} & {7} & {6} & {9} \\
-      \code{CountMismatch} & {0} & {0} & {0} & {223} & {48} & {269} & {12} & {2} & {17} \\
-      \code{DuplicateTypeDefinition} & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
-      \code{ExtraInformation} & {0} & {0} & {0} & {48} & {7} & {39} & {2} & {0} & {1} \\
-      \code{FunctionDoesNotTakeSelf} & {0} & {0} & {0} & {4} & {6} & {5} & {0} & {0} & {0} \\
-      \code{FunctionExitsWithoutReturning} & {0} & {0} & {0} & {9} & {3} & {6} & {11} & {5} & {8} \\
-      \code{GenericError} & {0} & {0} & {0} & {206} & {52} & {203} & {8} & {1} & {9} \\
-      \code{IllegalRequire} & {0} & {0} & {0} & {16} & {3} & {33} & {0} & {0} & {2} \\
-      \code{IncorrectGenericParameterCount} & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
-      \code{MissingProperties} & {0} & {0} & {0} & {11} & {3} & {11} & {6} & {4} & {6} \\
-      \code{MissingUnionProperty} & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
-      \code{ModuleHasCyclicDependency} & {0} & {0} & {0} & {20} & {9} & {15} & {0} & {0} & {1} \\
-      \code{NotATable} & {0} & {0} & {0} & {7} & {2} & {8} & {2} & {0} & {1} \\
-      \code{OccursCheckFailed} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {1} \\
-      \code{OnlyTablesCanHaveMethods} & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
-      \code{OptionalValueAccess} & {0} & {0} & {0} & {40} & {52} & {27} & {6} & {2} & {7} \\
-      \code{SyntaxError} & {8349} & {314} & {19220} & {983} & {46} & {2658} & {16} & {0} & {71} \\
-      \code{TypeMismatch} & {0} & {0} & {0} & {159} & {62} & {129} & {21} & {10} & {28} \\
-      \code{TypesAreUnrelated} & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {1} \\
-      \code{UnknownPropButFoundLikeProp} & {0} & {0} & {0} & {26} & {18} & {21} & {1} & {0} & {1} \\
-      \code{UnknownProperty} & {0} & {0} & {0} & {347} & {180} & {385} & {19} & {19} & {35} \\
-      \code{UnknownRequire} & {0} & {0} & {0} & {91} & {39} & {85} & {12} & {3} & {4} \\
-      \code{UnknownSymbol} & {0} & {0} & {0} & {2348} & {496} & {2973} & {49} & {19} & {55}
-    \end{tabular}
-
-\end{table}
+\FILL{} compare \mnonstrict{} and \mstrict{}.
+Can't compare to \mnocheck{} with this table, though, so maybe it make sense to
+put this question later.
 
 
 \subsection{Type Error Popularity}
 \label{s:type-error-count}
-
-FILL type error popularity
-Mostly syntax errors though!
-Estimate \pct{40} are substantial type errors rather than syntax
-errors based on the edit range type errors~(\cref{s:type-error-count})
-but unfortunately we cannot get an exact number for the overall
-or per-module type error counts.
-
-FILL N errors never showed up.
-Nothing for \code{CodeTooComplex} or \code{UnificationTooComplex} is great news.
-But what about the others? FILL
 
 \begin{table}[t]\centering
   %% NOTE: popularity looks similar when [over all records] vs. [restricted to module switch records]
@@ -1112,10 +1147,63 @@ But what about the others? FILL
   \end{tabular}
 \end{table}
 
+On a coarser level, \cref{t:type-error-count} reports the percent of
+type errors that overlap with the edit range.
+For each error type that ever overlaps, the table
+shows what percentage it takes relative to all overlaps.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%  STOP!  ROUGH TEXT BELOW     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The table does not report \mnocheck{} because all its type errors are
+by definition \code{SyntaxError}s.
+
+\paragraph{Observations}
+
+\begin{itemize}
+  \item
+    The most popular errors are syntax errors.
+    This is undoubtedly due to the stochiastic nature
+    of our telemetry, which has no way to avoid
+    reporting edits that happen in the middle of things.
+    For example, a creator who writes a method call
+    \code{bucket.countFish()} letter-by-letter will
+    get type analysis to find errors like \code{UnknownSymbol(buck)}
+    and \code{UnknownProperty(bucket.c)}.
+    These are transient issues, but telemetry may catch them.
+
+  \item
+    \FILL{} relative mismatches between NS and S?
+
+  \item
+    \FILL{} which errors that NEVER showed up?
+
+FILL N errors never showed up.
+Nothing for \code{CodeTooComplex} or \code{UnificationTooComplex} is great news.
+But what about the others? FILL
+
+\end{itemize}
+
+\paragraph{Internal Limits, Code Too Complex}
+%% data = out/ctc-info.txt
+
+To deal with pathologies such as the worst-case time for ML-style type
+inference~\cite{m-popl-1990,ktu-caap-1990}, the typechecker
+has internal limits that restrict the problems it will attempt to solve.
+Hitting a limit triggers one of the following errors:
+\code{CodeTooComplex},
+\code{NormalizationTooComplex}, or
+\code{UnificationTooComplex}.
+A casual user should never see these errors.
+
+Fortunately, the data rarely contains too-complex errors.
+There are zero \code{UnificationTooComplex} errors and only a
+handful of \code{CodeTooComplex} errors.
+%% 26 total
+It is entirely possible that the \code{CodeTooComplex} errors came from
+a single user, as they appear in eleven records (out of 1.5 million)
+spread across three sessions.
+At any rate, the overall number is low enough to suggest that the internal
+limits are not posing barriers to typechecker adoption.
+
+
 
 \subsection{Analysis 2}
 
@@ -1266,29 +1354,6 @@ TODO correlations, compare modes!!!
 
 FILL hope to never see \code{InternalError}.
 Have zero, yay!
-
-
-\subsection{Dead Ends: Too Complex}
-%% data = out/ctc-info.txt
-
-To deal with pathologies such as the worst-case time for ML-style type
-inference~\cite{m-popl-1990,ktu-caap-1990}, the typechecker
-has internal limits that restrict the problems it will attempt to solve.
-Hitting a limit triggers one of the following errors:
-\code{CodeTooComplex},
-\code{NormalizationTooComplex}, or
-\code{UnificationTooComplex}.
-A casual user should never see these errors.
-
-Fortunately, the data rarely contains too-complex errors.
-There are zero \code{UnificationTooComplex} errors and only a
-handful of \code{CodeTooComplex} errors.
-%% 26 total
-It is entirely possible that the \code{CodeTooComplex} errors came from
-a single user, as they appear in eleven records (out of 1.5 million)
-spread across three sessions.
-At any rate, the overall number is low enough to suggest that the internal
-limits are not posing barriers to typechecker adoption.
 
 
 \subsection{TBD}
