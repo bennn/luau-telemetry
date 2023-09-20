@@ -1136,11 +1136,17 @@ put this question later.
   \end{tabular}
 \end{table}
 
-On a coarser level, \cref{t:type-error-count} reports the percent of
+\Cref{t:type-error-count} reports the percent of
 type errors that overlap with the edit range.
-For each error type that ever overlaps, the table
-shows what percentage it takes relative to all overlaps.
+This table is based on the same data as the previous table~(\cref{t:type-error-survival}),
+but focuses on the overall popularity of type errors
+rather than their relation to edits.
+The left column in each row names one kind of type error
+that overlaps with an edit region.
+The right column shows what percentage of all overlapping
+errors the current error took up.
 
+There are two subtables, for \mnonstrict{} and \mstrict{} mode.
 The table does not report \mnocheck{} because all its type errors are
 by definition \code{SyntaxError}s.
 
@@ -1148,7 +1154,8 @@ by definition \code{SyntaxError}s.
 
 \begin{itemize}
   \item
-    The most popular errors are syntax errors.
+    As we noted above, the most popular errors are syntax errors
+    (\pct{FILL} \mnonstrict{}, \pct{FILL} \mstrict{})..
     This is undoubtedly due to the stochiastic nature
     of our telemetry, which has no way to avoid
     reporting edits that happen in the middle of things.
@@ -1159,14 +1166,27 @@ by definition \code{SyntaxError}s.
     These are transient issues, but telemetry may catch them.
 
   \item
-    \FILL{} relative mismatches between NS and S?
+    \code{TypeMismatch} is far more common in \mstrict{} (\pct{20.46})
+    than \mnonstrict{} (\pct{2.44}) because \mstrict{} mode
+    has additional type constraints.
+    Several other errors have higher \mstrict{} percentages for the
+    same reason, for example, \code{CannotInferBinaryOperation}.
+
+  \item
+    Two errors that appear in the \mstrict{} records
+    never appear in \mnonstrict{}: \code{OccursCheckFailed} and \code{IncorrectGenericParameterCount}.
+    We attribute these to more advanced uses of types in \mstrict{} mode.
+
+  \item
+    Four errors from the \mnonstrict{} records never appeared in \mstrict{} mode:
+    \code{DuplicateTypeDefinition}, \code{OnlyTablesCanHaveMethods},
+    \code{MissingUnionProperty}, and \code{FunctionDoesNotTakeSelf}.
+    (\FILL{} Alan is this interesting, or just a result of having less strict data?)
 
   \item
     \FILL{} which errors that NEVER showed up?
-
-FILL N errors never showed up.
-Nothing for \code{CodeTooComplex} or \code{UnificationTooComplex} is great news.
-But what about the others? FILL
+    Nothing for \code{CodeTooComplex} or \code{UnificationTooComplex} is great news.
+    But what about the others? FILL
 
 \end{itemize}
 
@@ -1183,42 +1203,17 @@ Hitting a limit triggers one of the following errors:
 A casual user should never see these errors.
 
 Fortunately, the data rarely contains too-complex errors.
-There are zero \code{UnificationTooComplex} errors and only a
-handful of \code{CodeTooComplex} errors.
-%% 26 total
-It is entirely possible that the \code{CodeTooComplex} errors came from
-a single user, as they appear in eleven records (out of 1.5 million)
-spread across three sessions.
-At any rate, the overall number is low enough to suggest that the internal
-limits are not posing barriers to typechecker adoption.
+None of these errors appear in edit regions~(\cref{t:type-error-count}).
+For the specific case of \code{CodeTooComplex}, our telemetry tracked project-wide
+counts and found only 26 of these errors, which were spread across eleven
+records in three sessions.
+It is entirely possible that all these errors came from one creator who
+deliberately pushed the limits of type analysis.
+Whatever the reason, the overall number is low enough to suggest that the
+internal limits are not posing barriers to typechecker adoption.
 
 
-
-\subsection{Analysis 2}
-
-TODO work this into the above or below.
-
-What can we learn from the telemetry? We have 1.5 million records from Feb 22
-to April 14 (roughly 27K records per day).
-They mention +70 million type errors.
-(Some records point to a large number of errors. FILL median, max. Could be cascading,
-which makes the 70million number uninterpretable.)
-What takeaways are there??!
-
-First,
-users rarely switch type analysis mode. There are 3 modes available and users
-are free to switch between them, or to mix modes in a codebase, but we rarely
-detect these events:
-
-\pct{99} of sessions use a single mode
-
-\pct{0.2} of sessions use different modes in different modules. (More
-precisely, the user switched to a module --- triggering a telemetry record ---
-that used a different mode than the previous one.)
-
-\pct{0.2} of records show a mode switch (equally split between upgrades and
-downgrades, 341 and 320)
-
+\subsection{NEXT}
 
 Second,
 the stronger analysis modes are roughly 10x less popular than weaker ones
