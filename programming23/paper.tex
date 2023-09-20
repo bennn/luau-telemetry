@@ -1243,7 +1243,59 @@ Otherwise people will forget they exist in the data.
   \medskip
   \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
+  \caption{Changes over time (seconds) to type error density (total errors / lines in project)}
+  \label{f:error-density}
+\end{figure}
 
+\FILL{} what does the FS plot look like? is that a better nocheck-vs-rest comparison??
+
+Moving on to type errors across the projects, and not just in the edit range,
+a first interesting question is to study how the overall number of errors
+changes over time.
+But, the sheer number of errors can be skewed by codebase size.
+To give a better basis for project-to-project comparisons, we focus
+on the density of errors rather than the count, where \emph{density} is
+the total number of type errors divided by the lines of code in the project.
+
+\Cref{f:error-density} presents a zoomed-in view of type error density as it
+changes over time in every session of the dataset.
+The x-axis counts time in seconds from the start of the session.
+The y-axis shows the change in density from the previous telemetry record
+in the session to the next.
+Changes can be positive or negative depending on whether the edits added
+or removed errors.
+The plots cut off at \pm{}50 density and 150 seconds.to focus on the
+bulk of the data.
+%% Sadly even with the zoom, it's too hard to follow one session ... the plot only gives a big-picture impression.
+
+
+\paragraph{Observations}
+
+Due to the relative adoption of type analysis, there is much more
+data for the weak \mnocheck{} mode than for \mnonstrict{},
+and in turn for \mnonstrict{} relative to \mstrict{}.
+Still, the plots reveal interesting points:
+
+\begin{itemize}
+  \item
+    All three plots are roughly balanced,
+    with equal ``mass'' above and below the x-axis.
+    The next section explores this point in detail.
+
+  \item
+    After the 40-second mark, changes to type error density become much
+    smaller.
+    Why?
+    There are also fewer sessions (\mstrict{} makes that very clear).
+
+  \item
+    \mnonstrict{} has the biggest number of up/down deltas in the 10+ range.
+\end{itemize}
+
+
+\subsection{Changes to Errors by Mode}
+
+\begin{figure}[t]\centering
   % TODO use bars instead, percent only, don't care about counts
   \begin{tabular}{lr@{}rr@{}rr@{}r}
     & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
@@ -1251,10 +1303,11 @@ Otherwise people will forget they exist in the data.
     \mnonstrict{} & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
     \mstrict{} & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
   \end{tabular}
-  \caption{FILL error density}
-  \label{f:error-delta}
+  \caption{How often do edits increase, maintain, or decrease the total number of type errors?}
+  \label{f:error-changes}
 \end{figure}
 
+\FILL{}
 
 Fifth,
 Increases and decreases to the number of type errors are evenly balanced across
@@ -1265,6 +1318,7 @@ In nonstrict mode, \pct{14} increase errors, \pct{15} decrease, and \pct{71}
 keep it constant
 This plot is for nonstrict. X-axis = time since start of session, cut off at 30
 seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
+
 
 
 \subsection{Data Model}
@@ -1284,6 +1338,8 @@ seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
   \caption{FILL Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
   \label{f:tefs}
 \end{figure}
+
+\FILL{}
 
 % -\subsection{Asset Creation vs Scripting}
 % -
@@ -1316,12 +1372,12 @@ is true (blue) and false (yellow).
 Data model awareness, call for future work.
 
 
-\subsection{Timeline}
+\subsection{Session Timelines}
 
 \begin{figure}[t]\centering
-  %% TODO can we 
-  \mnonstrict{}\\
-  \includegraphics[width=\columnwidth]{img/timeline-nonstrict.pdf}
+  %% TODO any way to cluster timelines to avoid the "creepiness" of spying on one user?
+%  \mnonstrict{}\\
+%  \includegraphics[width=\columnwidth]{img/timeline-nonstrict.pdf}
 
   \medskip{}
   \mstrict{}\\
@@ -1331,7 +1387,26 @@ Data model awareness, call for future work.
   \label{f:indy-session}
 \end{figure}
 
-TODO correlations, compare modes!!!
+Another insightful visualization that the telemetry supports is plots of individual sessions
+over time.
+\Cref{f:indy-session} shows the type errors, forced strict errors, and module switches
+in two \mstrict{} mode sessions.
+The x-axis shows time in seconds from the start of the session.
+The y-axis counts errors.
+Type errors appear as orange plus marks.
+Forced strict errors appear as green x marks.
+The vertical lines show module switches.
+
+In the first plot, the error counts are low until about the 3,000s mark,
+at which point an edit (not a module switch) leads to 15 errors.
+These 15 errors disappear two records later.
+Then, after two module switches and some edits, the number of errors spikes again.
+In the second plot, the number of errors spikes in the beginning due to edits,
+then remains low for the next few thousand seconds.
+
+A general observation is that the number of type errors is always less than the number of forced strict
+errors, though the numbers are close.
+This should happen in \mstrict{} mode.
 
 
 \section{Discussion}
