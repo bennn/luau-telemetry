@@ -669,8 +669,6 @@ This is likely due to the user deleting a large block of code.
 Since the issue affects so few records, we omit the negative ranges
 from analysis (but, we do use other parts of the records; for example
 the timestamps influence~\cref{f:records-per-hour}).
-%% (\FILL{} Alan, double-check reasoning)
-%% Seems fine by me
 
 \subsection{Overall Size and Shape}
 
@@ -737,6 +735,7 @@ The high number of files may be because creators define many components to
 build a Roblox experience and put these components in separate files.
 (\FILL{} still that's a lot of components ... any better guesses?)
 
+(\FILL{} doublecheck file sizes)
 % That seems way off, not sure we're seeing so many files :/
 
 \paragraph{Session Size}
@@ -878,13 +877,6 @@ tiny fraction (\pct{0.4}) use \mstrict{}.
 The per-session data is similar: \pct{9} use \mnonstrict{} exclusively
 and \pct{0.2} use \mstrict{}.
 
-% I think this is too negative!
-%% These adoption numbers are concerning.
-%% Creators either do not know about type analysis, or they choose not
-%% to use it in the code they are currently maintaining.
-%% Uncovering the reason for low adaption is an important topic for future work on
-%% Luau that has implications for the gradual typing community~(\cref{s:discussion}).
-
 These adoption numbers indicate that there is a communication gap;
 as long as type checking is opt-in, most developers stay opted out.
 Once Luau type checking is opt-out rather than opt-in, it will be interesting
@@ -921,10 +913,7 @@ type errors (stddev 7, median 0).
 The worst-case increase was 57 type errors, which is very high
 but exceptional.
 In another exception, upgrading modes removed three type errors
-% (presumably due to the increased precision of \mstrict{} mode
-% \FILL{} Alan, sounds plausible?).
-% My guess as to what;s going on
-(possibly due to ther edits being rolled in with the
+(possibly due to other edits being rolled in with the
 mode change).
 
 Similarly, mode downgrades have only a small negative effect on the
