@@ -435,6 +435,7 @@ the type system, it is possible for these edits to introduce type errors.
 
 \begin{table}
   \caption{Selected Error Labels}
+  % https://github.com/Roblox/luau/blob/master/Analysis/include/Luau/Error.h
   %% from type analysis, but they're not all really type errors
   %% TODO review selection after analyzing the full data
   \label{t:type-error-labels}
@@ -923,6 +924,20 @@ Creators apparently tend switch modes only when the code is already
 well typed, or close to it.
 
 
+%% \paragraph{Module Switches vs Errors}
+%% FILL need \%s out of all module switches.
+%% How many module switches exit a module with errors?
+%% > OLD DATA
+%% > \mnocheck{} 24, \mnonstrict{} 9, \mstrict{} 3.
+%% > Rare?
+%% > More common for forcedstrict:
+%% >  \mnocheck{} 190, \mnonstrict{} 16, \mstrict{} 2.
+%% >
+%% > How many module switches go to a module with errors?
+%% > \mnocheck{} 70, nonstrict 9, strict 4
+%% > For FS: \mnocheck{} 400, \mnonstrict{} 39, \mstrict{} 6.
+
+
 \subsection{Type Errors vs. Program Edits}
 \label{s:type-error-survival}
 
@@ -1067,13 +1082,6 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
 \FILL{} data seems to say yes.
 
 
-\paragraph{Do Types Improve Quality of Life?}
-
-\FILL{} compare \mnonstrict{} and \mstrict{}.
-Can't compare to \mnocheck{} with this table, though, so maybe it make sense to
-put this question later.
-
-
 \subsection{Type Error Popularity}
 \label{s:type-error-count}
 
@@ -1155,7 +1163,7 @@ by definition \code{SyntaxError}s.
 \begin{itemize}
   \item
     As we noted above, the most popular errors are syntax errors
-    (\pct{FILL} \mnonstrict{}, \pct{FILL} \mstrict{})..
+    (\FILL{} \pct{0} \mnonstrict{}, \pct{0} \mstrict{})..
     This is undoubtedly due to the stochiastic nature
     of our telemetry, which has no way to avoid
     reporting edits that happen in the middle of things.
@@ -1186,7 +1194,9 @@ by definition \code{SyntaxError}s.
   \item
     \FILL{} which errors that NEVER showed up?
     Nothing for \code{CodeTooComplex} or \code{UnificationTooComplex} is great news.
-    But what about the others? FILL
+    But what about the others?
+    \code{DynamicPropertyLookupOnClassesUnsafe}?
+    \code{SwappedGenericTypeParameter}?
 
 \end{itemize}
 
@@ -1213,35 +1223,38 @@ Whatever the reason, the overall number is low enough to suggest that the
 internal limits are not posing barriers to typechecker adoption.
 
 
-\subsection{NEXT}
+\subsection{Forced Strict Errors}
 
-Second,
-the stronger analysis modes are roughly 10x less popular than weaker ones
-(across the \pct{99} of sessions that stick with one mode):
-
-\pct{90} of sessions use nocheck mode
-\pct{9.8} use nonstrict mode
-\pct{0.2} use strict mode
-
-Third,
-In the edit range, we know exactly which errors showed up. This leads to a few
-takeaways, such as:
-
-Only 3 sessions (out of +300K) hit the typechecker's internal limits on problem
-size --- CodeTooComplex errors. Good!
-
-About \pct{90} of type errors are probably due to typos (SyntaxError, UnknownSymbol,
-UnknownProperty). These are not propoer type errors.
-
-10 errors never showed up. These include DynamicPropertyLookupOnClassesUnsafe and
-SwappedGenericTypeParameter
+\FILL{} I (ben) think we need to talk more about forced strict errors here, or soon.
+Otherwise people will forget they exist in the data.
+(But if they're not useful to us, remove them!)
 
 
-Fourth,
-Codebase size and session length tend to follow a power law. 
-One aspect of size for nonstrict sessions: the number of
-lines in the edit range. Over 80 sessions have 20-line ranges, about 40 have a
-30-line range, etc.
+\subsection{Type Error Density}
+
+\begin{figure}[t]\centering
+  % TODO try diff vs first record instead of previous?
+
+  \mnocheck{}
+  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
+  \medskip
+  \mnonstrict{}
+  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
+  \medskip
+  \mstrict{}
+  \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
+
+  % TODO use bars instead, percent only, don't care about counts
+  \begin{tabular}{lr@{}rr@{}rr@{}r}
+    & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
+    \mnocheck{} & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
+    \mnonstrict{} & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
+    \mstrict{} & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
+  \end{tabular}
+  \caption{FILL error density}
+  \label{f:error-delta}
+\end{figure}
+
 
 Fifth,
 Increases and decreases to the number of type errors are evenly balanced across
@@ -1253,29 +1266,32 @@ keep it constant
 This plot is for nonstrict. X-axis = time since start of session, cut off at 30
 seconds. Y-axis = change in num errors since last record, cut off at +/- 100.
 
+
+\subsection{Data Model}
+
 \begin{figure}[t]\centering
-% TODO diff vs 1st, not previous
-
-  \mnocheck{}
-  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
-  \medskip
-  \mnonstrict{}
-  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
-  \medskip
-  \mstrict{}
-  \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
-
-  TODO bars instead, percent only, don't care about counts
-
-  \begin{tabular}{lr@{}rr@{}rr@{}r}
-    & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
-    \mnocheck{} & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
-    \mnonstrict{} & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
-    \mstrict{} & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
+  %% TODO
+  %% - thin bars
+  %% - colors for good , bad (disagree) , neutral
+  \begin{tabular}{lll}
+    \mnocheck{} & \mnonstrict{} & \mstrict{} \\
+    \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
+    &
+    \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
+    &
+    \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
   \end{tabular}
-  \caption{FILL error density}
-  \label{f:error-delta}
+  \caption{FILL Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
+  \label{f:tefs}
 \end{figure}
+
+% -\subsection{Asset Creation vs Scripting}
+% -
+% -Data model. Point to discussion above.
+% -
+% -Big fluctuations in errors.
+% -FS disagrees with TE.
+% -Probably data model!
 
 Sixth, DM story.
 FS has: 1 all dependencies in strict, 2 data-model awareness (DM turns into
@@ -1296,24 +1312,11 @@ within a session (bars are higher on the left because we have lots more short
 sessions than long ones). Y-axis counts the number of records where num TE <= num FS
 is true (blue) and false (yellow).
 
-\begin{figure}[t]\centering
-  %% TODO
-  %% - thin bars
-  %% - colors for good , bad (disagree) , neutral
-  \begin{tabular}{lll}
-    \mnocheck{} & \mnonstrict{} & \mstrict{} \\
-    \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
-    &
-    \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
-    &
-    \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
-  \end{tabular}
-  \caption{FILL Are there fewer type errors than forcedstrict errors? Expect true always, but that is not the case.}
-  \label{f:tefs}
-\end{figure}
-
 \Cref{f:tefs}~FILL story is edits to DM vs edits to code.
 Data model awareness, call for future work.
+
+
+\subsection{Timeline}
 
 \begin{figure}[t]\centering
   %% TODO can we 
@@ -1331,23 +1334,31 @@ Data model awareness, call for future work.
 TODO correlations, compare modes!!!
 
 
-\section{Interpretation}
+\section{Discussion}
+\label{s:discussion}
 
-\subsection{Internal Error}
-%% out/te-editrange-*
+\FILL{} good things first,
+then regrets about the noisy stochiastic telemetry,
+then lessons?
+then threats.
+
+\paragraph{Good: No Internal Error}
 
 FILL hope to never see \code{InternalError}.
 Have zero, yay!
 
 
-\subsection{TBD}
+\paragraph{Do Types Improve Quality of Life?}
 
-Error 1000 = type mismatch (subtyping etc);
-1001 = unknown symbol;
-\ldots
+\FILL{} compare \mnonstrict{} and \mstrict{}.
+Use edit range~(\cref{t:type-error-survival} for NS vs S)
+and error density~(\cref{f:error-delta})
 
-% https://github.com/Roblox/luau/blob/master/Analysis/include/Luau/Error.h
+TODO nocheck accumulated fs errors?
 
+
+
+\paragraph{Bad: Noisy Data}
 
 \begin{verbatim}
  require(foobar)
@@ -1359,45 +1370,8 @@ Error 1000 = type mismatch (subtyping etc);
 \end{verbatim}
 
 
-\subsection{Module Switches}
 
-FILL why study, what implications?
-
-FILL need \%s out of all module switches.
-
-How many module switches exit a module with errors?
-\mnocheck{} 24, \mnonstrict{} 9, \mstrict{} 3.
-Rare?
-More common for forcedstrict:
- \mnocheck{} 190, \mnonstrict{} 16, \mstrict{} 2.
-
-How many module switches go to a module with errors?
-\mnocheck{} 70, nonstrict 9, strict 4
-For FS: \mnocheck{} 400, \mnonstrict{} 39, \mstrict{} 6.
-
-
-\subsection{Types and Quality of Life}
-
-FILL error density: number vs range size
-
-TODO nocheck accumulated errors?
-
-
-\subsection{Example Sessions}
-
-FILL example sessions.
-
-
-\subsection{Asset Creation vs Scripting}
-
-Data model. Point to discussion above.
-
-Big fluctuations in errors.
-FS disagrees with TE.
-Probably data model!
-
-
-\section{Threats to Validity}
+\subsection{Threats to Validity}
 \label{s:threats}
 
 Error counts per-project and per-module include syntax errors.
@@ -1556,9 +1530,11 @@ Mind your language~\cite{mfk-onward-2011}.
   \label{t:telemetry-design}
 
   \begin{tabular}{l@{~}cccccc}
-    &             & PII       & Session ID & Deterministic & Private Data \\\midrule
+    &             & PII       & Session ID & Deterministic & Private Data (???) \\\midrule
     & Transparent & \chkNo    & \chkNo     & \chkYes       & \chkNo      \\
   * & Us          & \chkNo    & \chkYes    & \chkNo        & \chkYes     \\
+    & Diff.Priv   & $\epsilon$ & \chkYes   & \chkYes       & \chkYes     \\
+    & Liblit      & ?         & ?          & ?             & ?           \\
     & \code{.NET} & \chkMaybe & \chkYes    & \chkYes       & \chkYes     \\
     & VS Code     & \chkYes   & \chkYes    & \chkYes       & \chkYes     \\
   \end{tabular}
@@ -1601,11 +1577,10 @@ deterministic.
 
 
 
-\section{Discussion}
+\section{Conclusion}
 \label{s:conclusion}
-\label{s:discussion}
 
-Findings:
+Quickly summarize findings:
 
 \begin{itemize}
   \item
@@ -1621,7 +1596,7 @@ Findings:
   \item
 \end{itemize}
 
-FILL regrets, lessons learned, advice for next time
+Quick regrets, lessons learned, advice for next time
 
 \paragraph{Future work: Low adaption}
 
@@ -1650,7 +1625,8 @@ grows and grows the number of type errors then shrinks and shrinks down to zero.
 
 \acks
 
-Thanks to Benjamin Chung for feedback on plots and data analysis advice.
+Thanks to Benjamin Chung for several helpful discussions about data analysis
+and effective plotting.
 Greenman was supported by
 grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
 to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
