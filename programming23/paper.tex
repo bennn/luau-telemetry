@@ -151,49 +151,52 @@
   The creators form a broad group, ranging from novices writing
   their first script to professional developers, thus Luau
   must support a wide audience.
-  As part of its efforts to support all kinds programmers, Luau includes a
-  gradual type system and goes to great lengths to minimize false positive
-  errors.
+  As part of its efforts to support all kinds programmers, Luau includes an
+  optional, gradual type system and goes to great lengths to minimize false
+  positive errors.
 
   \paragraph{Inquiry}
   %% What problem or question does the paper
   %% address? How has this problem or question been
   %% addressed by others (if at all)?
-  Since Luau is in the hands of many creators, we want to collect their feedback
-  and ultimately improve the language design (in particular, the type system).
-  We want feedback at a large scale, as creators work on their actual projects,
-  which suggests the deployment of client-side telemetry.
-  %% ^ awkward
-  However, we must respect creators privacy.
+  Since Luau is currently being used by many creators, we want to collect their feedback
+  to improve the language and, in particular, the type system.
+  The standard way to collect feedback at a large scale from creators working on
+  realistic projects is to deploy client-side telemetry; however, we must do
+  so in a way that respects creators' privacy.
   Whatever telemetry we use to study the Luau language cannot include
   personally-identifiable information.
   For example, we cannot monitor source code or error messages as they
   may contain personal data.
   Finding ways to harness telemetry in a private way is the central research challenge.
+  %% TODO awkward
 
   \paragraph{Approach}
   %% What was done that unveiled new knowledge?
-  We designed and implemented a privacy-preserving telemetry system for Luau.
-  Telemetry records include a timestamp, a (randomized) session id, a reason
-  for sending, and a sequence of counter values summarizing the results of type
-  analysis.
+  We designed and implemented a pseudonymized telemetry system for Luau.
+  Telemetry records include a timestamp, a session id, a reason for sending,
+  and a numeric summary of the most recent type analysis.
+  This information lets us follow type analysis over time within a codebase
+  without revealing private information.
   Over four months in Spring 2023, we deployed the telemetry system and collected
   1.5 million telemetry records.
-  We analyzed the data to improve Luau.
 
   \paragraph{Knowledge}
   %% What new facts were uncovered? If the
   %% research was not results oriented, what new
   %% capabilities are enabled by the work?
-  We present several findings about Luau:
-  some confirm hypotheses by the Luau team, others are rather surprising, but
-  all findings support our claim that privacy-preserving telemetry is a useful
-  way to collect feedback.
-  One expected finding is that types are unpopular; there is an order-of-maginitude
-  difference in the number of sessions that use different type analysis modes.
-  One surprise is that the strict type analysis mode evidently makes it difficult
-  to connect a script with data assets.
-  Lastly, one reassuring finding is that type analysis rarely hits its internal
+  We present several findings about Luau.
+  Some confirm hypotheses by the Luau team while others are rather surprising,
+  but all findings support our claim that pseudonymized telemetry is a
+  useful way to collect feedback.
+  One of the less-surprising findings is that types are unpopular:
+  there is an 100x gap between the number of untyped Luau sessions and the number
+  of typed ones.
+  One surprise is that the strict mode for type analysis is very conservative
+  about interactions with data assets.
+  Instead of using the flexible dynamic type, it uses a top type and requires
+  creators to down-cast assets.
+  Lastly, a reassuring finding is that type analysis rarely hits its internal
   limits on problem size.
 
   \paragraph{Grounding}
@@ -222,17 +225,20 @@
 
 {Roblox} is a platform for {shared virtual experiences}, with
 65~million Daily Active Users, and 14~billion hours of engagement in
-April--June 2023; there are 3~million creators using {Roblox Studio},
-creating 5~million experiences~\cite{corp.roblox.com}.
+April--June 2023.
+There are over 5~million experiences available on the platform thanks to a
+worldwide community of 3~million creators~\cite{corp.roblox.com}.
 
-{Roblox experiences} are scripted using the 
+Creators build experiences using the
 {Luau} programming language~\cite{luau-lang.org},
 an extension of {Lua~5.1~\cite{lua}}.
-The main extension is the addition of a static type system, which uses
-type inference to synthesize types for user code on the fly.
+The main addition in Luau is a static type system, which infers
+types for all Luau programs on the fly, as creators modify the code.
 These types are used primarily in type-driven tooling such as autocomplete and
-API documentation~\cite{luau-autocomplete}, but creators can also opt in to
-receiving type error reports.
+API documentation~\cite{luau-autocomplete}; the typical creator is unaware
+that a type system powers these tools.
+However, creators may write their own types, and they can opt in
+to receiving ype error reports.
 
 As discussed in~\cite{bfj-hatra-2021},
 the goals of the {Luau} type system are rather different from
@@ -241,9 +247,12 @@ a traditional type system, which focuses on compilation and memory safety.
 students in code camps to professional development studios. These
 creators have quite different needs, with different emphases on
 enabling rapid creation and ensuring software quality.
-{Luau} therefore supports three typing modes---\mstrict{} types,
-relaxed (\mnonstrict{}) types, and no types (\mnocheck{})---and lets users switch
-between modes gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
+{Luau} therefore supports three typing modes for user code:
+the hands-off default \mnocheck{},
+a relaxed \mnonstrict{} mode,
+and a rigorous \mstrict{} mode.
+Creators can switch between modes
+gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
 
 In this paper, we investigate methods for measuring the effectiveness
 of the {Luau} type system in the development of {Roblox} scripts.
@@ -274,7 +283,7 @@ Telemetry records are correlated by session, using a pseudonymized
 session identifier.
 
 Most users of {Roblox Studio} do not opt in to type error
-reporting, and so they do not see the ``squiggly underlining'' that
+reporting (\pct{90},~\cref{s:data}), and so they do not see the ``squiggly underlining'' that
 indicates a type error site. Nonetheless, the type inference system
 still runs in the background (since it drives autocomplete and other
 type-based tools), letting us see which type errors would have
@@ -340,17 +349,14 @@ FILL can stats answer questions that point-by-point analysis cannot?
 
 \end{itemize}
 
-Analysis pipeline to be freely available.
-Data may be available, depends on Roblox.
+The data and the analysis pipeline are freely available.
+\FILL{} link.
 
 
 \section{{Roblox} Context}
 % https://create.roblox.com/docs/scripting/luau
 
-FILL table = object
-
-\begin{figure}
-
+\begin{figure}[t]\centering
   \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
   \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
 
@@ -358,9 +364,11 @@ FILL table = object
   \label{fig:roblox-studio}
 \end{figure}
 
-Creators of {Roblox experiences} use {Roblox Studio},
-which combines {3D creation} tools as well as an Integrated
-Developer Environment (IDE), as seen in Fig.~\ref{fig:roblox-studio}.
+%% \FILL{} explain the name "creators"?
+
+{Roblox Studio} is a workbench that
+combines {3D creation} tools and an Integrated
+Developer Environment (IDE), as seen in \Cref{fig:roblox-studio}.
 The IDE includes an optional ``Script Analysis'' widget, which
 reports syntax errors, type errors, and problems identified by
 lint tools. The script editor also (optionally) highlights
@@ -430,11 +438,14 @@ The state of the world in a {Roblox} experience is captured by
 the \emph{data model}, which is a tree of \emph{instances}, such as
 parts, models, meshes, effects, lighting, audio assets, and physics
 constraints such as forces, springs and joints.
-The data model can be seen in the Explorer view of~\Cref{fig:roblox-studio}.
+%% The data model can be seen in the Explorer view of~\Cref{fig:roblox-studio}.
+%% ben: where is it? very hard to see
 While an experience is under development, it is typical for the data
 model to be edited (for example instances to be added, deleted, moved
 or renamed). Since the initial shape of the data model tree is reflected in
 the type system, it is possible for these edits to introduce type errors.
+
+%% FILL table = object
 
 \begin{table}
   \caption{Selected Error Labels}
@@ -447,7 +458,7 @@ the type system, it is possible for these edits to introduce type errors.
   \begin{tabular}{ll}
     Label & Interpretation \\\midrule
     \code{CodeTooComplex} & Type analysis failed, cannot understand the code\!\!\! \\
-    \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit\!\!\! \\
+    %% \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit\!\!\! \\
     \code{SyntaxError} & Basic parse error, e.g., \code{for if end} \\
 
     \code{CountMismatch} & Arity mismatch for a function \\
@@ -568,20 +579,21 @@ In order to find how file-switching correlated with type errors, we additionally
   \item
     every run of the typechecker in an enrolled session which switched file generated a telemetry record.
 \end{itemize}
-Each telemetry record contains:
-\begin{description}
-  \item[D1] metadata: a psedonymized session identifier, timestamp and session duration,
-  \item[D2] mode of the current file: (\mnocheck{}, \mnonstrict{}, or \mstrict{}),
-  \item[D3] reason for sending: (random selection, or file switch),
-  \item[D4] size of codebase: number of files, and number of lines of code type checked,
-  \item[D5] size of edit range
-  \item[D6] overall type errors: for previous and current states, we have the total number, the nunber in the current file, and number in the edit range,
-  \item[D7] specific errors in the edit range: for the previous and current states, for each type error code, the number type errors in the edit range,
+Each telemetry record contains nine kinds of data:
+record 
+\begin{enumerate}
+  \item metadata: a psedonymized session identifier, timestamp and session duration,
+  \item mode of the current file: (\mnocheck{}, \mnonstrict{}, or \mstrict{}),
+  \item reason for sending: (random selection, or file switch),
+  \item size of codebase: number of files, and number of lines of code type checked,
+  \item size of edit range
+  \item overall type errors: for previous and current states, we have the total number, the nunber in the current file, and number in the edit range,
+  \item specific errors in the edit range: for the previous and current states, for each type error code, the number type errors in the edit range,
     \FILL{} explain previous/current in detail, explain that this data takes up most of the telemetry record
-  \item[D8] forced strict errors: specific errors for the
+  \item forced strict errors: specific errors for the
     edit range computed as if the user had strict mode enabled.
-  \item[D9] TooComplexErrors: project-wide count for this one specific error type
-\end{description}
+  \item TooComplexErrors: project-wide count for this one specific error type
+\end{enumerate}
 To track the edit range, we record a start and end position, which we
 update appropriately on every edit. This can result in very large edit
 ranges, for example, if the user edits at the beginning and end of the
@@ -745,7 +757,7 @@ build a Roblox experience and put these components in separate files.
 \paragraph{Session Size}
 %\label{s:session-size}
 
-\begin{figure}[t]
+\begin{figure}[t]\centering
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
 
   \begin{tabular}{l@{}r@{~}l@{}r@{~}l} \\
