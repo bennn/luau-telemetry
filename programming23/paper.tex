@@ -580,7 +580,6 @@ In order to find how file-switching correlated with type errors, we additionally
     every run of the typechecker in an enrolled session which switched file generated a telemetry record.
 \end{itemize}
 Each telemetry record contains nine kinds of data:
-record 
 \begin{enumerate}
   \item metadata: a psedonymized session identifier, timestamp and session duration,
   \item mode of the current file: (\mnocheck{}, \mnonstrict{}, or \mstrict{}),
@@ -742,16 +741,21 @@ For example, the x-axis of the first plot ranges from 0 to 1,000 files and
 the y-axis counts up to 1,000 telemetry records.
 
 There is a huge amount of variation across projects.
-The largest ones have over 50k files (!) and 50k lines of code, and %50kLoC and 50k files????
+The largest ones have over 50,000 files, and
 there are many small ones with 1 file and/or 1 line of code.
 Unsurprisingly, the numbers come with large standard deviations.
 The median values are more reasonable, with roughly 3,000 lines of code
 and 1,000 lines in edit ranges, but still have a large number of files: over 7,000.
-The high number of files may be because creators define many components to
-build a Roblox experience and put these components in separate files.
-(\FILL{} still that's a lot of components ... any better guesses?)
+One source of variation is that some developers use Luau scripts as a way
+to store data, writing a module that exports one huge array, typically
+defined on a single line. Such data storage scripts provide a challenge for
+script tooling.
 
-(\FILL{} doublecheck file sizes)
+%% The high number of files may be because creators define many components to
+%% build a Roblox experience and put these components in separate files.
+%% (\FILL{} still that's a lot of components ... any better guesses?)
+
+%% (\FILL{} doublecheck file sizes)
 % That seems way off, not sure we're seeing so many files :/
 
 \paragraph{Session Size}
@@ -793,7 +797,7 @@ A typical session runs on the order of minutes and consists of a few dozen event
 The median session time is approximately 14 minutes.
 The median number of
 records is 138.
-These numbers are reasonable.
+% These numbers are reasonable.
 
 
 \paragraph{Number of Type Analysis Errors}
