@@ -1559,17 +1559,107 @@ creator sentiment, but provide complementary data at scale.
 \section{Related Work}
 \label{s:related}
 
-Liblit dissertation~\cite{liblit-thesis}
+\begin{table}[t]\centering
+  \caption{Comparing telemetry systems}
+  \label{t:telemetry-design}
+
+  \FILL{}
+
+  \begin{tabular}{l@{~}cccccc}
+    &               & Code      & Session ID & Timestamp     & Deterministic (???) & Private Data (???) \\\midrule
+    & Transparent   & \chkNo    & \chkNo     & \chkNo        & \chkYes       & \chkNo      \\
+  * & Roblox Studio & \chkNo    & \chkYes    & \chkNo        & \chkNo        & \chkYes     \\
+%% orthogonal %%    & Diff.Priv     & $\epsilon$ & \chkYes   & \chkYes       & \chkYes       & \chkYes     \\
+%% orthogonal %%    & CBI           & \chkMaybe & \chkMaybe  & \chkNo        & \chkNo        & ?           \\
+    & Classic       & \chkYes   & \chkYes    & \chkYes       & \chkYes       & \chkYes     \\
+  \end{tabular}
+\end{table}
+
+% kindle track every tap (page turn etc),
+% enables whispersync feature,
+% drove design of navigation tools,
+% opt-out possible~\cite{kindle-telemetry}
+
+Type error telemetry in Roblox Studio has two distinguishing characteristics:
+it includes no personal information (PII), and it sends data on
+randomly-selected runs of the type checker rather than specific events of interest.
+To the best of our knowledge, this design occupies a unique position relative to prior
+work~(\cref{t:telemetry-design}).
+
+In other professional-grade IDEs, such as VSCode~\cite{vscode-telemetry}
+and \code{.NET}~\cite{dotnet-telemetry}, telemetry may include all sorts of
+data: error reports, source code fragments, timestamps, and filepaths.
+Users may be able to opt out of some telemetry, but the details depend on the
+license agreement.
+Furthermore, at least in VSCode, IDE extensions can report their own telemetry.
+While this data can be invaluable for discovering bugs in production, it
+must be handled with extreme care.
+
+The BlackBox project similarly collects telemetry in broad strokes.
+Every Java program submitted for compilation goes into the BlackBox database (minus
+any comments above the main class) along with the compiler's response~\cite{bkmu-sigcse-2014}.
+Though somewhat intrusive, the millions of programs in the BlackBox dataset
+have enabled dozens of contributions to the area of CS
+education~\cite{bask-icer-2018}, ranging from categorization of novice
+errors~\cite{mk-fie-2014,m-masters-2016} to analyses of error frequency and
+time-to-fix~\cite{ab-sigcse-2015}.
+
+At the opposite end of the privacy spectrum, Go's design for \emph{transparent
+telemetry} reports only counter values~\cite{transparent-telemetry}.
+Unlike Roblox Studio, transparent telemetry includes no timestamps and no 
+session ids.
+The data is useful for learning about the frequency of specific events and the
+distribution of events across clients (e.g., how many \code{CodeTooComplex}
+errors arise? what is the average number of type errors?).
+However, the lack of timestamps and ids means that it cannot track edits
+over time (a feature that is quite useful to us, for example, in~\cref{f:error-density}).
+% In~\cref{f:error-density}, for example, we see that increases to the number
+% of type errors are quickly followed by decreases.
+% Without timestamps, we would be unable to rule out the possibility that users
+% build up a mountain of type errors and then slowly reduce them to zero.
+
+One way to futher strengthen the privacy of any telemetry design, including
+transparent telemetry, is to fuzz the data using techniques from
+differential privacy~\cite{zhlbr-cc-2020,epk-ccs-2014,wblj-usenix-2017}.
+Recent work on fuzzing traces~\cite{zhlbr-cc-2020},
+accounting for known relationships between events~\cite{zhlbr-oopsla-2020},
+and performing the fuzzing on the client side~\cite{hlzbr-ecoop-2021} is
+especially relevant to the session-based data that Roblox Studio collects.
+Applying differential privacy is subtle, however.
+While we can likely fuzz the total number of type errors, if we were to
+fuzz the number of \code{CodeTooComplex} errors carelessly, it might drastically
+affect our conclusions.
+
+Lastly, cooperative bug isolation is a related method for designing
+telemetry systems~\cite{liblit-thesis}.
+%% \FILL{} adaptive bug isolation~\cite{nl-icse-2010}, search on the control dependence graph.
+%% 1\% overhead vs 87\% for sampling and 300\% for binary instrumentation
+The focus is not on privacy, but rather on how to collect a small amount of
+data from each user and perform statistically-sound analyses.
+Each feature of interest \emph{within} a user's codebase has a uniform-random
+probability of contributing telemetry.
+The system-builder can analyze this telemetry with predicates to identify
+notable events and logistic regression to narrow down nondeterministic bugs.
+There is a high burden on designers to decide what to capture,
+but a careful design can minimize the data from each individual user.
+%% more in diss: how to deal with native compilers, threads, dynamic loading
+%% ... privacy is future work, can maybe avoid private data with a type system
+
+
+\paragraph{Telemetry Rates}
+
+We chose randomly, uniform distribution.
+
+\cite{lnsmc-usenix-2018} blame-proportional logging,
+scale up ``near'' points of interest,
+could be useful for us in the future.
+\cite{fnm-sigmod-2020} ditto, faster than statistical at finding root-cause,
+deterministic.
+
+
+\paragraph{TBD}
 
 RAMSS workshop series.
-
-Differential privacy for coverage analysis of software traces,
-adds noise to traces,
-hard because infinitely many traces,
-use CFG abstraction of possible behaviors for callgraph analysis,
-count sketch data structure~\cite{hlzbr-ecoop-2021}.
-
-Nasko~\cite{zhlbr-cc-2020,zhlbr-oopsla-2020,hlzbr-ecoop-2021}
 
 %% - zfstt-ieeesensors-2022
 %% - lit review, benefits of static types
@@ -1586,45 +1676,38 @@ Nasko~\cite{zhlbr-cc-2020,zhlbr-oopsla-2020,hlzbr-ecoop-2021}
 %% - Choppella Haynes IU TR 426
 %% - Tip Dinesh tosem 2001
 
-\cite{bgimgm-cse-2016}
-study Java compiler error messages after an intervention, counting num errors,
-counting repeats, counting per user
-
-\cite{anna-russo-kennedy-ms-2006}
-BitFit, web-based java ide log num hint requests num, result of check answer
-requests num compile, num run, no code?! good we have the same constraint
-
-\cite{ab-sigcse-2015}
-frequency, time-to-fix, spread of errors
- (we can't do time)
-parsing compile error + source code
- sometimes with custom parsers
-
-\cite{m-masters-2016}
-study errors in blackbox dataset,
- overwhelmingly syntax
-
-\cite{bkmu-sigcse-2014}
-blackbox, 100k users
-source code, diffs
-error line, column, message;
-keep all comments EXCEPT one above the class declaration
 
 
-\cite{bask-icer-2018}
-2TB data, Java programs
-18 publications survey, technical challenges in analysis
- most pubs analyze errors;
-nobody asked:
- which exns do students encounter (what?! mccall kolling 2014)
- execution / editing timelines
-(blackbox analysis tutorial in sigcse 2020 on a mini dataset, to help researchers start writing an analysis)
+
+\paragraph{Contrast: User Studies and Types and/or Proofs}
+
+\cite{h-dissertiation-2005}
+heeren
+constraint-based type inference;
+general te criteria:
+- target audience (novice / expert)
+- output format (text / viz)
+- interactivity (yes / no)
+- heuristics (yes / no)
+- primary-or-external (most type errors are easy, some could really use dedicated help)
+
+\cite{sscwj-oopsla-2017}
+learning to blame localizing type errors
+NATE numerical analysis of type errors
+5000 labeled programs
+ errors from class, first fix
+
+\cite{sjw-jfp-2018}
+type error witness generation
+4500 ill-typed student programs
+ \pct{85} of time, synthesis works
+ \pct{70} of time, locate source
 
 
-\cite{t-hatra-2021}
-plan for a large user-centered study 
-... not very deep, look at edit sequences, replay for errors
 
+\cite{rsgl-cpp-2020}
+user study coq proof assistant
+N devs, XXX
 
 \cite{cdhhjklwya-hatra-2020}
 evaluating the PLIERS design process (Coblenz etal 202X)
@@ -1632,7 +1715,6 @@ teaching students to use PLIERS; everyone ran a user study!
 6 languages
  3 ran usability studies
 recommend talk-alouds
-
 
 \cite{gstf-hatra-2021}
 liquid types for java
@@ -1652,100 +1734,56 @@ ill-suited for things like (let x = e1 in ....),
  use typechecker feedback to guide edits;
 small data!
 
-
 \cite{w-popl-1986}
 reporting source, not detection
 tested on 9 type errors
  all \emph{deletions}, such as forgetting to inject in an enum
 
-\cite{sscwj-oopsla-2017}
-NATE numerical analysis of type errors
-5000 labeled programs
- errors from class, first fix
-
-
-\cite{sjw-jfp-2018}
-type error witness generation
-4500 ill-typed student programs
- \pct{85} of time, synthesis works
- \pct{70} of time, locate source
-
-
-\cite{h-dissertiation-2005}
-constraint-based type inference;
-general te criteria:
-- target audience (novice / expert)
-- output format (text / viz)
-- interactivity (yes / no)
-- heuristics (yes / no)
-- primary-or-external (most type errors are easy, some could really use dedicated help)
-
-
 \cite{hw-scp-2004}
+haack wells
 location of type error as a slice,
  not a srcloc,
  not a subtree
 
 
-
-\paragraph{Research on Errors}
-
-TODO Liblit dissertiation
+\paragraph{Errors}
 
 Mind your language~\cite{mfk-onward-2011}.
+60 students (from 120, self-selected),
+50 min per week for 6 weeks,
+edit sequences,
+followup interviews,
+huge problem: vocabulary (function body, arity),
+problem: semantics of highlight,
+
+\cite{anna-russo-kennedy-ms-2006}
+BitFit, web-based java ide log num hint requests num, result of check answer
+requests num compile, num run, no code?! good we have the same constraint
+115 bitfit users, 728 sessions
+
+\cite{bgimgm-cse-2016}
+user study,
+study Java compiler error messages after an intervention, counting num errors,
+counting repeats, counting per user
+changing errors helps
+
+\cite{dlc-citicse-2014}
+enhanced stx error seems ineffectual
 
 
-\paragraph{Telemetry}
-
-\begin{table}[t]
-  \caption{Comparing telemetry systems}
-  \label{t:telemetry-design}
-
-  \begin{tabular}{l@{~}cccccc}
-    &             & PII       & Session ID & Deterministic & Private Data (???) \\\midrule
-    & Transparent & \chkNo    & \chkNo     & \chkYes       & \chkNo      \\
-  * & Us          & \chkNo    & \chkYes    & \chkNo        & \chkYes     \\
-    & Diff.Priv   & $\epsilon$ & \chkYes   & \chkYes       & \chkYes     \\
-    & Liblit      & ?         & ?          & ?             & ?           \\
-    & \code{.NET} & \chkMaybe & \chkYes    & \chkYes       & \chkYes     \\
-    & VS Code     & \chkYes   & \chkYes    & \chkYes       & \chkYes     \\
-  \end{tabular}
-\end{table}
-
-Transparent telemetry: explain what it is and contrast our approach.
-What essential, non-transparent things did we collect?
-
-counting only, public decisions about what to count, public data,
-collected weekly for a sample of clients, LastWeek field = prior day when
-system gathered any data;
-eg command invocations, lib stack frames, 
-no user ID, no machine ID,
-no time-ordered traces~\cite{transparent-telemetry}.
-
-kindle track every tap (page turn etc),
-enables whispersync feature,
-drove design of navigation tools,
-opt-out possible~\cite{kindle-telemetry}
-
-vscode: usage data, crash reports, error data (not a crash but unexpected);
-save file, open terminal, copy-paste, autocomplete offered, git queries, machine id,
-session id, timestamp,
-opt-out may be possible, but not for all usage data (per license, sec 2a) and
-every extension can do its own thing~\cite{vscode-telemetry}
-
-.NET SDK and .NET CLI:
-crash reports, command invoked, args, hashed cwd, timings;
-more listed online;
-custom builds beware inadvertant disclosure, keep your filepaths clear;
-data published in aggregate under CC-BY;
-opt-out possible~\cite{dotnet-telemetry}
+- - -
 
 
-\cite{lnsmc-usenix-2018} blame-proportional logging,
-scale up ``near'' points of interest,
-could be useful for us in the future.
-\cite{fnm-sigmod-2020} ditto, faster than statistical at finding root-cause,
-deterministic.
+
+\cite{t-hatra-2021}
+plan for a large user-centered study of proof assistants,
+events: up, down, to cursor, interrupt, reset.
+... not very deep, look at edit sequences, replay for errors
+
+\cite{wk-koli-2020,lgk-pj-2022} 
+even more edit sequences
+b2t2, examplar, ... must be others outside brown!!
+
 
 
 
