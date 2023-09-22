@@ -6,6 +6,8 @@
 \documentclass[english,submission,cleveref]{programming}
 %% use 'submission' for initial submission, remove it for camera-ready (see 5.1)
 
+\usepackage{todonotes}
+
 %%\overfullrule=1mm
 
 %% BEGIN tobias pape 2021-11-06
@@ -615,7 +617,7 @@ Roughly two-thirds of records are due to keystrokes.
 
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 Each vertical bar counts the number of records generated per hour according to
-a client-side timestamp.
+a client-side timestamp.\todo{Do we need all this detail?}
 The bars are labeled with a California time zone because that is the locale of
 the Roblox servers, which parsed the timestamps.
 Most buckets contain roughly one thousand records, but some have very few
@@ -652,7 +654,8 @@ as Roblox has a significant school-aged creator community.
 \label{s:data-cleaning}
 
 A close inspection of the data revealed a few anomalies.
-For the most part, we omit the strange data from futher analysis.
+For the most part, we omit the strange data from futher
+analysis.\todo{I'm inclined to rewrite this to be much more concise.}
 
 First, some records have odd timestamps according to the server's records.
 Every telemetry record comes with two timestamps: a client-side timestamp
@@ -668,7 +671,9 @@ margin: up to one week behind and up to one day ahead of the server.
 We attribute the large delays to issues when sending telemetry (lost internet
 connection, etc.) and smaller offsets to incorrect time settings on the client
 machine.
-In any event, we do not filter these records from further analysis.
+In any event, we do not filter these records from further
+analysis.\todo{To be clear, you do NOT filter? Because the section is
+  about what you DO filter.}
 
 Second, some records have identical (client) timestamps.
 This can happen legitimately if type analysis runs several times
@@ -688,13 +693,13 @@ the timestamps influence~\cref{f:records-per-hour}).
 
 \subsection{Overall Size and Shape}
 
-The first step toward understanding the data is to have a sense of what
-is in it.
-Three important characteristics are the size of the codebases in the data,
-the length of the sessions we captured, and the number of type analysis
+Three important characteristics of the recorded data are the size of the codebases,
+the length of the sessions, and the number of type
 errors.
 We discuss these in turn.
-Codebase size and session length follow power-law distributions, with
+Codebase size and session length follow power-law
+distributions,\todo{Please confirm w/ a statistical test. See Clauset
+  et al.: arXiv:0706.1062.} with
 many small items and a few very large items.
 The number of type analysis errors is somewhat low~(explained in the next
 section), but sufficient to proceed with futher analysis.
@@ -729,13 +734,14 @@ section), but sufficient to proceed with futher analysis.
 
   \end{tabular}
 
-  \caption{Size of analyzed code: number of files, number of lines , and lines in edit range}
+  \caption{Size of analyzed code: number of files, number of lines, and lines in edit range}
   \label{f:codebase-size}
 \end{figure}
 
 \Cref{f:codebase-size} summarizes the size of projects in the dataset.
 The top half of the figure reports the mean, standard deviation, median,
-and \percentile{99} for the number of files, lines, and lines in edit range.
+and \percentile{99} for the number of files,\todo{There are
+  1000s of files?!? More files than lines? Makes no sense.} lines, and lines in edit range.
 The bottom half shows zoomed-in distributions of the file, line, and edit range
 numbers.
 For example, the x-axis of the first plot ranges from 0 to 1,000 files and
@@ -744,13 +750,14 @@ the y-axis counts up to 1,000 telemetry records.
 There is a huge amount of variation across projects.
 The largest ones have over 50,000 files, and
 there are many small ones with 1 file and/or 1 line of code.
-Unsurprisingly, the numbers come with large standard deviations.
+Unsurprisingly, the numbers come with large standard
+deviations.\todo{Which is not shown!}
 The median values are more reasonable, with roughly 3,000 lines of code
 and 1,000 lines in edit ranges, but still have a large number of files: over 7,000.
 One source of variation is that some developers use Luau scripts as a way
 to store data, writing a module that exports one huge array, typically
 defined on a single line. Such data storage scripts provide a challenge for
-script tooling.
+script tooling.\todo{No idea what's said here.}
 
 %% The high number of files may be because creators define many components to
 %% build a Roblox experience and put these components in separate files.
@@ -786,7 +793,8 @@ There are two useful notions of size: real time in seconds (between the first
 and last record) and the total number of records.
 The top of~\cref{f:session-size} reports the mean, standard deviation,
 median, and \percentile{99}; the bottom shows size distributions, zoomed in
-to focus on at most 1,000 units (x-axis) and 1,000 sessions (y-axis).
+to focus on at most 1,000 units (x-axis) and 1,000 sessions
+(y-axis).\todo{Again, confused.}
 
 Similar to the data on project size, there is huge variation in session
 length.
@@ -806,12 +814,12 @@ records is 138.
 
 \begin{figure}[t]
   \begin{tabular}[t]{ll} \\
-    \begin{tabular}[t]{l@{~~}r@{~}l}
+    \begin{tabular}[t]{r@{~~}r@{~}l}
       595,137 & type errors \\
       289,698 & in current module & [\pct{48.68}] \\
        30,924 & in edit range & [\pct{5.20}]
     \end{tabular}
-    \begin{tabular}[t]{l@{~~}r@{~}l}
+    \begin{tabular}[t]{r@{~~}r@{~}l}
       72,235,735 & {forced strict errors} \\
       37,027,281 & in current module & [\pct{51.26}] \\
        1,111,178 & in edit range & [\pct{1.54}]
@@ -830,7 +838,8 @@ These appeared in modules that opted in to typechecking with either the
 \mnonstrict{} or \mstrict{} mode.
 The number of forced strict errors is much larger, 72M, because this analysis
 ran on every module using strict type.
-(Furthermore, forced strict runs silently, so creators have no incentive to
+(Furthermore, forced strict runs silently, so creators have no
+awareness of or incentive to
 fix these errors.)
 Approximately half the analysis errors occurred in the current module,
 and a small fraction overlapped with the current edit range~(\pct{5} for
@@ -866,7 +875,7 @@ persist through nearby edits.
 
   \begin{subfigure}[t]{\columnwidth}
     \begin{tabular}[t]{ll} \\
-      \begin{tabular}[t]{l@{~~}r@{~}l}
+      \begin{tabular}[t]{r@{~~}r@{~}r}
         313,509 & \mnocheck{}   & [\pct{90.19}] \\
          32,902 & \mnonstrict{} & [\pct{ 9.47}] \\
             545 & \mstrict{}    & [\pct{ 0.16}] \\
@@ -908,7 +917,8 @@ Most sessions (\pct{99.82}) stick to a single analysis mode.
 These sessions never change the mode in the current module and never switch
 focus to a module with a different analysis mode.
 Among the mixed-mode sessions, most (\pct{80}) switch to modules with
-a different mode, about half contain at least one edit that upgrades the
+a different mode, about half contain at least one edit that upgrades
+the typing strictness in the
 current mode, and about half contain a downgrade.
 There are 619 upgrades in total and 583 downgrades.
 \FILL{} Ben check how often the downgrades follow the upgrades.
@@ -925,7 +935,7 @@ There are 619 upgrades in total and 583 downgrades.
 A possible explanation for the low adoption of \mnonstrict{} and
 \mstrict{} mode is that upgrading to these modes leads to a large
 number of type errors.
-Creators might get discouraged by a high error count and revert to
+Creators might get discouraged or overwhelmed by a high error count and revert to
 \mnocheck{} mode.
 
 The data does not support this explanation.
@@ -941,7 +951,7 @@ Similarly, mode downgrades have only a small negative effect on the
 number of errors (mean -0.3, stddev 4, median 0, max -48).
 %% curious outlier: downgrade added 30 errors!
 Creators apparently tend switch modes only when the code is already
-well typed, or close to it.
+well typed, or close to it.\todo{What incentive is there to do so?}
 
 
 %% \paragraph{Module Switches vs Errors}
@@ -1000,7 +1010,9 @@ Equipped with an overall picture of the dataset and the skewed usage
 of \mnocheck{}, \mnonstrict{}, and \mstrict{} modes, we are ready to explore
 the type error data.
 Our main focus is on the intersection between type errors
-and edits to the programs.
+and edits to the programs.\todo{The next two sentences are in some
+  sense our main RQs, right? I would call them out more explicitly and
+  w/ more justification.}
 When a type error highlights part of the code and the next edit range includes
 that code, we want to know whether the error survives the edit.
 Similarly, we want to know when an edit introduces a type error.
@@ -1037,7 +1049,7 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
     \Cref{s:type-error-count} discusses this point in detail.
     For now, we remark that \code{SyntaxError} is the only possible error
     in \mnocheck{} mode (by design) and observe that these errors are
-    usually in the Drop column and seldom in the Keep column.
+    usually in the Drop column and seldom in the Keep column.\todo{So?}
 
   \item
     The numbers are relatively low in general, which means that
@@ -1230,7 +1242,8 @@ Hitting a limit triggers one of the following errors:
 \code{CodeTooComplex},
 \code{NormalizationTooComplex}, or
 \code{UnificationTooComplex}.
-A casual user should never see these errors.
+A casual user should never see these errors.\todo{IDEALLY never see?
+  They CAN see them, right?}
 
 Fortunately, the data rarely contains too-complex errors.
 None of these errors appear in edit regions~(\cref{t:type-error-count}).
