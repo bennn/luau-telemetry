@@ -1524,7 +1524,7 @@ Have zero, yay!
 
 \FILL{} compare \mnonstrict{} and \mstrict{}.
 Use edit range~(\cref{t:type-error-survival} for NS vs S)
-and error density~(\cref{f:error-delta})
+and error density~(\cref{f:error-density})
 
 TODO nocheck accumulated fs errors?
 
@@ -1656,7 +1656,7 @@ of magnitude relative to naive binary instrumentation.
 Blame-proportional logging starts with lightweight telemetry to recognize
 defects, assigns ranks to methods estimating their likelihood as root causes,
 and uses the ranks and future observations to narrow down the cause.
-Deep transfer learning is another promising way to automatically hone in on events of
+Deep transfer learning is another promising way to hone in on events of
 interest~\cite{zfstt-ieeesensors-2022}.
 
 %% \cite{fnm-sigmod-2020}
@@ -1667,133 +1667,84 @@ interest~\cite{zfstt-ieeesensors-2022}.
 %% \cite{op-ramss-2003,op-ramss-2004}
 
 
-\paragraph{User Studies: Errors and Type Errors}
+\paragraph{User Studies, Errors, and Type Errors}
 
-Foundational:
+Our approach to data analysis is inspired by Marceau
+et~al.~\cite{mfk-onward-2011,mfk-sigcse-2011}, who used keystroke-level data
+collected over 6 weeks to analyze students' responses to runtime errors
+in DrRacket~\cite{fcffksf-jfp-2002}.
+Similarly, Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021} capture
+edit sessions from the online Alloy4Fun editor and present several automated
+analyses.
+A major challenge in our setting, however, is that edit sequences are
+incomplete---there may be minutes-long gaps between two telemetry records.
+Several more-recent works have studied edit sequences
+to draw conclusions about errors and intent, e.g.,~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
 
-Mind your language~\cite{mfk-onward-2011}.
-60 students (from 120, self-selected),
-50 min per week for 6 weeks,
-edit sequences,
-followup interviews,
-huge problem: vocabulary (function body, arity),
-problem: semantics of highlight,
+The BitFit project collects data about beginning students interactions with a
+Java IDE~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}; however, unlike Blackbox, it does
+not collect source code.
+BitFit data consists of a timestamp, a session id, and counter values showing
+the number of attempts at a question, the number of hints requested, the number
+of compiles and runs, and the number of submission attempts.
+On one hand, this data is more informative than Roblox Studio's because it
+targets specific events rather than random keystrokes.
+On the other hand, there are no details about errors to show what students
+struggled with.
+Other logging-based studies of Java programs use the full error message to
+draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}.
+Roblox Studio cannot follow this approach because strings in errors may leak
+personal information.
 
-\cite{wk-koli-2020,lgk-pj-2022,mcpcspss-abz-2020}
-more edit sequences
-
-
-Ballpark:
-
-\cite{t-hatra-2021}
-plan for a large user-centered study of proof assistants,
-events: up, down, to cursor, interrupt, reset.
-... not very deep, look at edit sequences, replay for errors
-
-\cite{anna-russo-kennedy-ms-2006}
-BitFit, web-based java ide log num hint requests num, result of check answer
-requests num compile, num run, no code?! good we have the same constraint
-115 bitfit users, 728 sessions
-
-\cite{bgimgm-cse-2016}
-user study,
-study Java compiler error messages after an intervention, counting num errors,
-counting repeats, counting per user
-changing errors helps
-
-\cite{dlc-citicse-2014}
-enhanced stx error seems ineffectual
-
-\cite{h-dissertiation-2005}
-heeren
-constraint-based type inference;
-general te criteria:
-- target audience (novice / expert)
-- output format (text / viz)
-- interactivity (yes / no)
-- heuristics (yes / no)
-- primary-or-external (most type errors are easy, some could really use dedicated help)
-
-\cite{sscwj-oopsla-2017}
-learning to blame localizing type errors
-NATE numerical analysis of type errors
-5000 labeled programs
- errors from class, first fix
-
-\cite{sjw-jfp-2018}
-type error witness generation
-4500 ill-typed student programs
- \pct{85} of time, synthesis works
- \pct{70} of time, locate source
-
-\cite{rsgl-cpp-2020}
-user study coq proof assistant
-N devs, XXX
-
-\cite{cdhhjklwya-hatra-2020}
-evaluating the PLIERS design process (Coblenz etal 202X)
-teaching students to use PLIERS; everyone ran a user study!
-6 languages
- 3 ran usability studies
-recommend talk-alouds
-
-\cite{gstf-hatra-2021}
-liquid types for java
-30 devs user study
- zoom
-
-\cite{lfgc-pldi-2007}
-typechecker never errors,
- calls a helper that looks for nearby programs that do typecheck
-tested on
- 10 students, 2yrs professional experience
- 5 hw assignments
- 2122 files collected;
-won \pct{19}, lost \pct{17};
-ill-suited for things like (let x = e1 in ....),
- change e1,
- use typechecker feedback to guide edits;
-small data!
-
-\cite{w-popl-1986}
-reporting source, not detection
-tested on 9 type errors
- all \emph{deletions}, such as forgetting to inject in an enum
-
-\cite{hw-scp-2004}
-haack wells
-location of type error as a slice,
- not a srcloc,
- not a subtree
-
-bibliography of static type studies:
-http://danluu.com/empirical-pl/
+Much work on the benefits of static types focuses on a small number
+of case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
+inverviews~\cite{cdhhjklwya-hatra-2020,gstf-hatra-2021,cams-oopsla-2020},
+or static corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019,bmvv-arxiv-2019}
+(for literature reviews, see~\cite{empirical-types,heeren-thesis}).
+Controlled experiments, for example comparing statically-typed Java and dynamically-typed
+Groovy~\cite{khrts-icpc-2012}, are a notable exception.
+Lerner et~al.~\cite{lfgc-pldi-2007} apply type error repair tool on over two thousand
+of programs written during five homework exercises.
+Seidel et~al.~\cite{sscwj-oopsla-2017,sjw-jfp-2018} use five thousand programs
+to train data-driven methods for localizing errors.
+These large studies with several thousands of programs are
+nevertheless on a much smaller scale than Roblox Studio.
 
 
-
-
-
-\paragraph{TBD}
-
-thomas kennedy .... generic usage monitoring ascilite 2003
-
-ahmadzadeh elliman higgins iticse 2005
-
-buffardi etal 2014 adaptive and social mechanisms
-
-bddf-icse-2016
- sh edwards and jason snyder icer 2009 comparing effective and ineffective grading platform
-
-murphy etal sigcse 2009 Retina: helping students
-
-Choppella Haynes IU TR 426
-
-Tip Dinesh tosem 2001
+%\paragraph{TBD}
+%
+%thomas kennedy .... generic usage monitoring ascilite 2003
+%
+%ahmadzadeh elliman higgins iticse 2005
+%
+%buffardi etal 2014 adaptive and social mechanisms
+%
+%bddf-icse-2016
+% sh edwards and jason snyder icer 2009 comparing effective and ineffective grading platform
+%
+%murphy etal sigcse 2009 Retina: helping students
+%
+%Choppella Haynes IU TR 426
 
 % ESP workshop on empirical studies of programming
 % https://dl.acm.org/doi/proceedings/10.1145/266399
 % nothing sounds big ... empirical yes, large no
 % https://link.springer.com/content/pdf/10.1023/a:1008040416962.pdf
+
+% \cite{}
+% heeren
+% constraint-based type inference;
+% general te criteria:
+% - target audience (novice / expert)
+% - output format (text / viz)
+% - interactivity (yes / no)
+% - heuristics (yes / no)
+% - primary-or-external (most type errors are easy, some could really use dedicated help)
+
+% \cite{t-hatra-2021}
+% plan for a large user-centered study of proof assistants,
+% events: up, down, to cursor, interrupt, reset.
+% ... not very deep, look at edit sequences, replay for errors
 
 
 \section{Conclusion}
@@ -1834,10 +1785,10 @@ Telemetry would be even more private without them.
 Do we need them?
 
 Timestamps are not the focus of our analysis, but they do play a critical role.
-Consider~\cref{f:error-delta}.
+Consider~\cref{f:error-density}.
 With timestamps, it is clear that error density stays close to zero.
 Without timestamps, we would be left with the counts at the bottom
-of~\cref{f:error-delta}.
+of~\cref{f:error-density}.
 Many distributions could fit those counts, such as a ``mountain'' session that first
 grows and grows the number of type errors then shrinks and shrinks down to zero.
 

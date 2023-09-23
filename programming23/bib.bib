@@ -162,15 +162,24 @@
   pages = {3--18},
   year = {2011},
 }
-  %publisher = {ACM},
+
+@inproceedings{mfk-sigcse-2011,
+  author       = {Guillaume Marceau and Kathi Fisler and Shriram Krishnamurthi},
+  title        = {Measuring the Effectiveness of Error Messages Designed for Novice Programmers},
+  booktitle    = {{SIGCSE}},
+  pages        = {499--504},
+  publisher    = {{ACM}},
+  doi          = {10.1145/1953163.1953308},
+  year         = {2011}
+}
 
 @inproceedings{ko-learning-barriers,
   title = {Six Learning Barriers in End-User Programming Systems},
   author = {Andrew J. Ko and Brad A. Myers and Htet Htet Aung},
   booktitle = vlhcc,
-  year = {2004},
+  publisher = {IEEE},
+  year = {2004}
 }
-  %publisher = {IEEE},
 
 @inproceedings{crowdsource-bug-fixes,
   title = {What Would Other Programmers Do?
@@ -272,6 +281,13 @@
   title = {Visual Program Simulation in Introductory Programming Education},
   school = {{A}alto {U}niversity},
   year = {2012}
+}
+
+@phdthesis{heeren-thesis,
+  author = {Bastiaan Heeren},
+  title = {Top Quality Type Error Messages},
+  school = {{Utrecht University}},
+  year = {2005}
 }
 
 @article{misconceptions-bayman,
@@ -1359,6 +1375,16 @@ year={2013},
   year={2022}
 }
 
+@article{lgk-pj-2022,
+  author={Kuang-Chen Lu and Ben Greenman and Shriram Krishnamurthi},
+  title={Types for Tables: A Language Design Benchmark},
+  journal={Programming},
+  volume={6},
+  number={2},
+  pages={8:1--8:30},
+  year={2022}
+}
+
 @article{lgfd-icfp-2021,
   author={Lukas Lazarek and Ben Greenman and Matthias Felleisen and Christos Dimoulas},
   title={How to Evaluate Blame for Gradual Types},
@@ -1503,6 +1529,21 @@ year={2013},
   year      = {1994}
 }
 
+@article{fcffksf-jfp-2002,
+  author="Robert Bruce Findler and John Clements and
+    Cormac Flanagan and Matthew Flatt
+    and Shriram Krishnamurthi and Paul Steckler and
+    Matthias Felleisen",
+  title="{DrScheme}: A Programming Environment for
+    {S}cheme",
+  volume = "12",
+  number = "2",
+  journal={{Journal of Functional Programming}},
+  pages = "159--182",
+    doi          = {10.1017/S0956796801004208},
+  year="2002"
+}
+
 @inproceedings{cf-pldi-1991,
   author    = {Robert Cartwright and Mike Fagan},
   title     = {Soft Typing},
@@ -1548,16 +1589,6 @@ year={2013},
   title =     {Script Editor: {Luau}-Powered Autocomplete \& Language Features Beta},
   year =      {2021},
   note =      {\url{https://devforum.roblox.com/t/script-editor-luau-powered-autocomplete-language-features-beta/1406701}},
-}
-
-@InProceedings{bfj-hatra-2021,
-  author =       {Lily Brown and Andy Friesen and Alan Jeffrey},
-  title =        {Goals of the {Luau} Type System},
-  booktitle = {Human Aspects of Types and Reasoning Assistants},
-  publisher = {{ACM}},
-  year =      {2021},
-  numpages = {7},
-  note =    {\url{https://arxiv.org/abs/2109.11397}}
 }
 
 @misc{kindle-telemetry,
@@ -1709,6 +1740,14 @@ year={2013},
   url = {https://github.com/golang/go/discussions/58409},
 }
 
+@misc{empirical-types,
+  author =       {Dan Luu},
+  title =        {Literature Review on the Benefits of Static Types},
+  year =         {2023},
+  note =         {Accessed: 2023-09-23},
+  url = {http://danluu.com/empirical-pl/},
+}
+
 @inproceedings{zhlbr-cc-2020,
 author = {Zhang, Hailong and Hao, Yu and Latif, Sufian and Bassily, Raef and Rountev, Atanas},
 title = {A Study of Event Frequency Profiling with Differential Privacy},
@@ -1822,5 +1861,239 @@ year         = {2020}
   year         = {2015}
 }
 
+@inproceedings{mcpcsprs-abz-2020,
+  author       = {Nuno Macedo and
+                  Alcino Cunha and
+                  Jos{\'{e}} Pereira and
+                  Renato Carvalho and
+                  Ricardo Silva and
+                  Ana C. R. Paiva and
+                  Miguel Sozinho Ramalho and
+                  Daniel Castro Silva},
+  title        = {Experiences on Teaching Alloy with an Automated Assessment Platform},
+  booktitle    = {{ABZ}},
+  pages        = {61--77},
+  publisher    = {Springer},
+  doi          = {10.1007/978-3-030-48077-6\_5},
+  year         = {2020}
+}
 
+@article{mcpcsprs-scp-2021,
+  author       = {Nuno Macedo and Alcino Cunha and Jos{\'{e}} Pereira and Renato Carvalho and Ricardo Silva and Paiva, Ana C. R. and Ramalho, Miguel Sozinho and Silva, Daniel Castro},
+  title        = {Experiences on Teaching Alloy with an Automated Assessment Platform},
+  journal      = {Science of Computer Programming},
+  volume       = {211},
+  number       = {102690},
+  pages = {1--21},
+  doi          = {10.1016/j.scico.2021.102690},
+  year         = {2021}
+}
+
+@article{td-tosem-2001,
+  author       = {Frank Tip and T. B. Dinesh},
+  title        = {A Slicing-Based Approach for Locating Type Errors},
+  journal      = {Transactions on Software Engineering Methodology},
+  volume       = {10},
+  number       = {1},
+  pages        = {5--55},
+  doi          = {10.1145/366378.366379},
+  year         = {2001}
+}
+
+@inproceedings{ekc-wccce-2016,
+  author       = {Anthony Estey and
+                  Anna Russo Kennedy and
+                  Yvonne Coady},
+  title        = {{BitFit}: If You Build It, They Will Come!},
+  booktitle    = {{WCCCE}},
+  pages        = {3:1--3:6},
+  publisher    = {{ACM}},
+  doi          = {10.1145/2910925.2910944},
+  year         = {2016}
+}
+
+@mastersthesis{anna-russo-kennedy-ms-2006,
+  author = {Kennedy, Anna Russo},
+  title = {Towards a Data-Driven Analysis of Programming Tutorials' Telemetry to Improve the Educational Experience in Introductory Programming Courses},
+  school = {University of Victoria},
+  year = {2006}
+}
+
+@article{bmvv-arxiv-2019,
+  author       = {Emery D. Berger and Petr Maj and Olga Vitek and Jan Vitek},
+  title        = {{FSE/CACM} Rebuttal\({}^{\mbox{2}}\): Correcting {A} Large-Scale Study of Programming Languages and Code Quality in GitHub},
+  journal      = {CoRR},
+  volume       = {abs/1911.11894},
+  url          = {http://arxiv.org/abs/1911.11894},
+  eprinttype   = {arXiv},
+  eprint       = {1911.11894},
+  year         = {2019}
+}
+
+@inproceedings{rppd-fse-2014,
+  author       = {Baishakhi Ray and
+                  Daryl Posnett and
+                  Vladimir Filkov and
+                  Premkumar T. Devanbu},
+  title        = {A Large Lcale Study of Programming Languages and Code Quality in {GitHub}},
+  booktitle    = {{FSE}},
+  pages        = {155--165},
+  publisher    = {{ACM}},
+  doi          = {10.1145/2635868.2635922},
+  year         = {2014},
+}
+
+@inproceedings{khrts-icpc-2012,
+author       = {Sebastian Kleinschmager and Stefan Hanenberg and Romain Robbes and {\'{E}}ric Tanter and Andreas Stefik},
+title        = {Do Static Type Systems Improve the Maintainability of Software Systems?  An Empirical Study},
+booktitle    = {{ICPC}},
+pages        = {153--162},
+publisher    = {{IEEE}},
+doi          = {10.1109/ICPC.2012.6240483},
+year         = {2012}
+}
+
+@article{bhmvv-toplas-2019,
+author       = {Emery D. Berger and Celeste Hollenbeck and Petr Maj and Olga Vitek and Jan Vitek},
+title        = {On the Impact of Programming Languages on Code Quality: {A} Reproduction Study},
+journal      = {Transactions on Programming Languages and Systems},
+volume       = {41},
+number       = {4},
+pages        = {21:1--21:24},
+doi          = {10.1145/3340571},
+year         = {2019}
+}
+
+@inproceedings{rsgl-cpp-2020,
+  author       = {Talia Ringer and Alex Sanchez{-}Stern and Dan Grossman and Sorin Lerner},
+  title        = {REPLica: {REPL} instrumentation for Coq analysis},
+  booktitle    = {{CPP}},
+  pages        = {99--113},
+  publisher    = {{ACM}},
+  doi          = {10.1145/3372885.3373823},
+  year         = {2020}
+}
+
+@article{cams-oopsla-2020,
+  author       = {Michael J. Coblenz and Jonathan Aldrich and Brad A. Myers and Joshua Sunshine},
+  title        = {Can Advanced Type Systems be Usable? An Empirical Study of Ownership, Assets, and Typestate in {Obsidian}},
+  journal      = {{PACMPL}},
+  volume       = {4},
+  number       = {{OOPSLA}},
+  pages        = {132:1--132:28},
+  doi          = {10.1145/3428200},
+  year         = {2020}
+}
+
+@InProceedings{bfj-hatra-2021,
+  author =       {Lily Brown and Andy Friesen and Alan Jeffrey},
+  title =        {Goals of the {Luau} Type System},
+  booktitle = {{HATRA}},
+  year =      {2021},
+  numpages = {7},
+  note =    {\url{https://arxiv.org/abs/2109.11397}}
+}
+
+@inproceedings{cdhhjklwya-hatra-2020,
+  title={User-Centered Programming Language Design: A Course-Based Case Study},
+  author={Michael Coblenz and Ariel Davis and Megan Hofmann and Vivian Huang and Siyue Jin and Max Krieger and Kyle Liang and Brian Wei and Mengchen Sam Yong and Jonathan Aldrich},
+  booktitle={{HATRA}},
+  pages={1--7},
+  url={https://arxiv.org/abs/2011.07565},
+  urldate={2023-09-23},
+  year={2020}
+}
+
+@inproceedings{gstf-hatra-2021,
+  author       = {Catarina Gamboa and Paulo Alexandre Santos and Christopher Steven Timperley and Alcides Fonseca},
+  title        = {User-driven Design and Evaluation of Liquid Types in Java},
+  booktitle={{HATRA}},
+  pages       = {1--9},
+  url          = {https://arxiv.org/abs/2110.05444},
+  urldate       = {2023-09-23},
+  year         = {2021}
+}
+
+@inproceedings{lfgc-pldi-2007,
+  author       = {Benjamin S. Lerner and Matthew Flower and Dan Grossman and Craig Chambers},
+  title        = {Searching for Type-Error Messages},
+  booktitle    = {{PLDI}},
+  pages        = {425--434},
+  publisher    = {{ACM}},
+  doi          = {10.1145/1250734.1250783},
+  year         = {2007}
+}
+
+@inproceedings{w-popl-1986,
+  author       = {Mitchell Wand},
+  title        = {Finding the Source of Type Errors},
+  booktitle    = {{POPL}},
+  pages        = {38--43},
+  publisher    = {{ACM}},
+  doi          = {10.1145/512644.512648},
+  year         = {1986}
+}
+
+@article{hw-scp-2004,
+  author       = {Christian Haack and Joe B. Wells},
+  title        = {Type Error Slicing in Implicitly Typed Higher-Order Languages},
+  journal      = {Science of Computer Programming},
+  volume       = {50},
+  number       = {1-3},
+  pages        = {189--224},
+  doi          = {10.1016/j.scico.2004.01.004},
+  year         = {2004}
+}
+
+@article{sjw-jfp-2018,
+  author       = {Eric L. Seidel and Ranjit Jhala and Westley Weimer},
+  title        = {Dynamic Witnesses for Static Type Errors (or, Ill-Typed Programs Usually Go Wrong)},
+  journal      = {{Journal of Functional Programming}},
+  volume       = {28},
+  pages        = {e13},
+  doi          = {10.1017/S0956796818000126},
+  year         = {2018}
+}
+
+@article{sscwj-oopsla-2017,
+  author       = {Eric L. Seidel and Huma Sibghat and Kamalika Chaudhuri and Westley Weimer and Ranjit Jhala},
+  title        = {Learning to Blame: Localizing Novice Type Errors with Data-Driven Diagnosis},
+  journal      = {{PACMPL}},
+  volume       = {1},
+  number       = {{OOPSLA}},
+  pages        = {60:1--60:27},
+  doi          = {10.1145/3138818},
+  year         = {2017}
+}
+
+@inproceedings{dlc-iticse-2014,
+  author       = {Paul Denny and Andrew Luxton{-}Reilly and Dave Carpenter},
+  title        = {Enhancing Syntax Error Messages Appears Ineffectual},
+  booktitle    = {{ITiCSE}},
+  pages        = {273--278},
+  publisher    = {{ACM}},
+  doi          = {10.1145/2591708.2591748},
+  year         = {2014}
+}
+
+@article{bgimgm-cse-2016,
+  author       = {Brett A. Becker and Graham Glanville and Ricardo Iwashima and Claire McDonnell and Kyle Goslin and Catherine Mooney},
+  title        = {Effective Compiler Error Message Enhancement for Novice Programming Students},
+  journal      = {Computer Science Education},
+  volume       = {26},
+  number       = {2-3},
+  pages        = {148--175},
+  doi          = {10.1080/08993408.2016.1225464},
+  year         = {2016}
+}
+
+@inproceedings{wk-koli-2020,
+  author    = {John Wrenn and Shriram Krishnamurthi},
+  title     = {Will Students Write Tests Early Without Coercion?},
+  booktitle = {{Koli Calling}},
+  pages     = {27:1--27:5},
+  publisher = {{ACM}},
+  doi       = {10.1145/3428029.3428060},
+  year      = {2020}
+}
 
