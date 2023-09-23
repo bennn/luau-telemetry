@@ -1563,15 +1563,13 @@ creator sentiment, but provide complementary data at scale.
   \caption{Comparison of telemetry designs}
   \label{t:telemetry-design}
 
-  \FILL{}
-
-  \begin{tabular}{l@{~}cccccc}
-    &               & Code      & Session ID & Timestamp     & Deterministic (???) & Private Data (???) \\\midrule
-    & Transparent   & \chkNo    & \chkNo     & \chkNo        & \chkYes       & \chkNo      \\
-  * & Roblox Studio & \chkNo    & \chkYes    & \chkNo        & \chkNo        & \chkYes     \\
-%% orthogonal %%    & Diff.Priv     & $\epsilon$ & \chkYes   & \chkYes       & \chkYes       & \chkYes     \\
-%% orthogonal %%    & CBI           & \chkMaybe & \chkMaybe  & \chkNo        & \chkNo        & ?           \\
-    & Classic       & \chkYes   & \chkYes    & \chkYes       & \chkYes       & \chkYes     \\
+  \begin{tabular}{l@{~~}c@{~~}c@{~~}c@{~~}c@{~~}c}
+    ~             & Event Counts & Random  & Timestamps & Error Msgs. & Source Code \\\midrule
+    Roblox Studio & \chkYes      & \chkYes & \chkYes    & \chkNo        & \chkNo    \\
+    Transparent   & \chkYes      & \chkNo  & \chkNo     & \chkNo        & \chkNo    \\
+    Classic       & \chkYes      & \chkNo  & \chkYes    & \chkYes       & \chkYes   \\
+%% orthogonal %%    & Diff.Priv
+%% orthogonal %%    & CBI
   \end{tabular}
 \end{table}
 
