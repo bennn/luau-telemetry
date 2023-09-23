@@ -1560,7 +1560,7 @@ creator sentiment, but provide complementary data at scale.
 \label{s:related}
 
 \begin{table}[t]\centering
-  \caption{Comparing telemetry systems}
+  \caption{Comparison of telemetry designs}
   \label{t:telemetry-design}
 
   \FILL{}
@@ -1595,10 +1595,10 @@ Furthermore, at least in VSCode, IDE extensions can report their own telemetry.
 While this data can be invaluable for discovering bugs in production, it
 must be handled with extreme care.
 
-The BlackBox project similarly collects telemetry in broad strokes.
-Every Java program submitted for compilation goes into the BlackBox database (minus
+The Blackbox project similarly collects telemetry in broad strokes.
+Every Java program submitted for compilation goes into the Blackbox database (minus
 any comments above the main class) along with the compiler's response~\cite{bkmu-sigcse-2014}.
-Though somewhat intrusive, the millions of programs in the BlackBox dataset
+Though somewhat intrusive, the millions of programs in the Blackbox dataset
 have enabled dozens of contributions to the area of CS
 education~\cite{bask-icer-2018}, ranging from categorization of novice
 errors~\cite{mk-fie-2014,m-masters-2016} to analyses of error frequency and
@@ -1618,22 +1618,24 @@ over time (a feature that is quite useful to us, for example, in~\cref{f:error-d
 % Without timestamps, we would be unable to rule out the possibility that users
 % build up a mountain of type errors and then slowly reduce them to zero.
 
+
+\paragraph{Telemetry Enhancements: What and How to Sample}
+
 One way to futher strengthen the privacy of any telemetry design, including
-transparent telemetry, is to fuzz the data using techniques from
-differential privacy~\cite{zhlbr-cc-2020,epk-ccs-2014,wblj-usenix-2017}.
-Recent work on fuzzing traces~\cite{zhlbr-cc-2020},
-accounting for known relationships between events~\cite{zhlbr-oopsla-2020},
-and performing the fuzzing on the client side~\cite{hlzbr-ecoop-2021} is
-especially relevant to the session-based data that Roblox Studio collects.
+transparent telemetry, is to systematically add noise to the data using
+techniques from differential
+privacy~\cite{zhlbr-cc-2020,epk-ccs-2014,wblj-usenix-2017}.
+Recent work that is especially relevant to the session-based data collected
+by Roblox Studio shows how to add noise to traces~\cite{zhlbr-cc-2020},
+how to account for known relationships between events~\cite{zhlbr-oopsla-2020},
+and how to choose the noise amount on the client side~\cite{hlzbr-ecoop-2021}.
 Applying differential privacy is subtle, however.
 While we can likely fuzz the total number of type errors, if we were to
-fuzz the number of \code{CodeTooComplex} errors carelessly, it might drastically
+fuzz the number of \code{CodeTooComplex} errors, it might drastically
 affect our conclusions.
 
-Lastly, cooperative bug isolation is a related method for designing
+Cooperative bug isolation is a method for designing
 telemetry systems~\cite{liblit-thesis}.
-%% \FILL{} adaptive bug isolation~\cite{nl-icse-2010}, search on the control dependence graph.
-%% 1\% overhead vs 87\% for sampling and 300\% for binary instrumentation
 The focus is not on privacy, but rather on how to collect a small amount of
 data from each user and perform statistically-sound analyses.
 Each feature of interest \emph{within} a user's codebase has a uniform-random
@@ -1645,41 +1647,63 @@ but a careful design can minimize the data from each individual user.
 %% more in diss: how to deal with native compilers, threads, dynamic loading
 %% ... privacy is future work, can maybe avoid private data with a type system
 
+Two further refinements, which reduce the burden on experts to
+select points of interest, are adaptive bug isolation~\cite{nl-icse-2010}
+and blame-proportional logging~\cite{lnsmc-usenix-2018}.
+Adaptive bug isolation starts with a set of predicates, studies which are
+most correlated with failures, and experiments with adding telemetry to nearby
+predicates; this technique can reduce the overhead of telemetry by two orders
+of magnitude relative to naive binary instrumentation.
+Blame-proportional logging starts with lightweight telemetry to recognize
+defects, assigns ranks to methods estimating their likelihood as root causes,
+and uses the ranks and future observations to narrow down the cause.
+Deep transfer learning is another promising way to automatically hone in on events of
+interest~\cite{zfstt-ieeesensors-2022}.
 
-\paragraph{Telemetry Rates}
+%% \cite{fnm-sigmod-2020}
+%% adaptive interventional debugging
+%% failure -> correlated predicates -> temporal properties to overapprox relationships -> fault injection to discover true relationships
 
-We chose randomly, uniform distribution.
-
-\cite{lnsmc-usenix-2018} blame-proportional logging,
-scale up ``near'' points of interest,
-could be useful for us in the future.
-\cite{fnm-sigmod-2020} ditto, faster than statistical at finding root-cause,
-deterministic.
-
-
-\paragraph{TBD}
-
-RAMSS workshop series.
-
-%% - zfstt-ieeesensors-2022
-%% - lit review, benefits of static types
-%%   http://danluu.com/empirical-pl/
-%% - thomas kennedy .... generic usage monitoring ascilite 2003
-%% - ahmadzadeh elliman higgins iticse 2005
-%% - buffardi etal 2014 adaptive and social mechanisms
-%% - bddf-icse-2016
-%% -  sh edwards and jason snyder icer 2009 comparing effective and ineffective grading platform
-%% - murphy etal sigcse 2009 Retina: helping students
-%% - ESP workshop on empirical studies of programming
-%%   https://dl.acm.org/doi/proceedings/10.1145/266399
-%%   nothing sounds big ... empirical yes, large no
-%% - Choppella Haynes IU TR 426
-%% - Tip Dinesh tosem 2001
+%% RAMSS workshop (remote measurement), sounds related but i haven't found proceedings
+%% \cite{op-ramss-2003,op-ramss-2004}
 
 
+\paragraph{User Studies: Errors and Type Errors}
+
+Foundational:
+
+Mind your language~\cite{mfk-onward-2011}.
+60 students (from 120, self-selected),
+50 min per week for 6 weeks,
+edit sequences,
+followup interviews,
+huge problem: vocabulary (function body, arity),
+problem: semantics of highlight,
+
+\cite{wk-koli-2020,lgk-pj-2022,mcpcspss-abz-2020}
+more edit sequences
 
 
-\paragraph{Contrast: User Studies and Types and/or Proofs}
+Ballpark:
+
+\cite{t-hatra-2021}
+plan for a large user-centered study of proof assistants,
+events: up, down, to cursor, interrupt, reset.
+... not very deep, look at edit sequences, replay for errors
+
+\cite{anna-russo-kennedy-ms-2006}
+BitFit, web-based java ide log num hint requests num, result of check answer
+requests num compile, num run, no code?! good we have the same constraint
+115 bitfit users, 728 sessions
+
+\cite{bgimgm-cse-2016}
+user study,
+study Java compiler error messages after an intervention, counting num errors,
+counting repeats, counting per user
+changing errors helps
+
+\cite{dlc-citicse-2014}
+enhanced stx error seems ineffectual
 
 \cite{h-dissertiation-2005}
 heeren
@@ -1702,8 +1726,6 @@ type error witness generation
 4500 ill-typed student programs
  \pct{85} of time, synthesis works
  \pct{70} of time, locate source
-
-
 
 \cite{rsgl-cpp-2020}
 user study coq proof assistant
@@ -1745,46 +1767,34 @@ location of type error as a slice,
  not a srcloc,
  not a subtree
 
-
-\paragraph{Errors}
-
-Mind your language~\cite{mfk-onward-2011}.
-60 students (from 120, self-selected),
-50 min per week for 6 weeks,
-edit sequences,
-followup interviews,
-huge problem: vocabulary (function body, arity),
-problem: semantics of highlight,
-
-\cite{anna-russo-kennedy-ms-2006}
-BitFit, web-based java ide log num hint requests num, result of check answer
-requests num compile, num run, no code?! good we have the same constraint
-115 bitfit users, 728 sessions
-
-\cite{bgimgm-cse-2016}
-user study,
-study Java compiler error messages after an intervention, counting num errors,
-counting repeats, counting per user
-changing errors helps
-
-\cite{dlc-citicse-2014}
-enhanced stx error seems ineffectual
-
-
-- - -
+bibliography of static type studies:
+http://danluu.com/empirical-pl/
 
 
 
-\cite{t-hatra-2021}
-plan for a large user-centered study of proof assistants,
-events: up, down, to cursor, interrupt, reset.
-... not very deep, look at edit sequences, replay for errors
-
-\cite{wk-koli-2020,lgk-pj-2022} 
-even more edit sequences
-b2t2, examplar, ... must be others outside brown!!
 
 
+\paragraph{TBD}
+
+thomas kennedy .... generic usage monitoring ascilite 2003
+
+ahmadzadeh elliman higgins iticse 2005
+
+buffardi etal 2014 adaptive and social mechanisms
+
+bddf-icse-2016
+ sh edwards and jason snyder icer 2009 comparing effective and ineffective grading platform
+
+murphy etal sigcse 2009 Retina: helping students
+
+Choppella Haynes IU TR 426
+
+Tip Dinesh tosem 2001
+
+% ESP workshop on empirical studies of programming
+% https://dl.acm.org/doi/proceedings/10.1145/266399
+% nothing sounds big ... empirical yes, large no
+% https://link.springer.com/content/pdf/10.1023/a:1008040416962.pdf
 
 
 \section{Conclusion}
@@ -1841,27 +1851,27 @@ Greenman was supported by
 grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
 to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
-\newpage
-
-\appendix
-
-\section{Data Details}
-
-Tips for interpreting the data:
-
-\begin{itemize}
-  \item
-    Edit ranges are non-negative because we
-    implemented the interval arithmetic for them using unsigned integers.
-    To filter out negative edit ranges, we removed all ranges
-    greater than 4 billion.
-
-  \item
-  \item
-  \item
-\end{itemize}
-
-\newpage
+%\newpage
+%
+%\appendix
+%
+%\section{Data Details}
+%
+%Tips for interpreting the data:
+%
+%\begin{itemize}
+%  \item
+%    Edit ranges are non-negative because we
+%    implemented the interval arithmetic for them using unsigned integers.
+%    To filter out negative edit ranges, we removed all ranges
+%    greater than 4 billion.
+%
+%  \item
+%  \item
+%  \item
+%\end{itemize}
+%
+%\newpage
 
 \bibliography{bib}
 
