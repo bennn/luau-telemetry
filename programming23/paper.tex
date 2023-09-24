@@ -111,7 +111,8 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 \newcommand{\mnonstrict}{\modefont{nonstrict}}
 \newcommand{\mstrict}{\modefont{strict}}
 \newcommand{\zerowidth}[1]{\makebox[0pt][l]{#1}}
-\newcommand{\stddev}[1]{[#1\textsc{k}]}
+\newcommand{\nK}[1]{#1\textsc{k}}
+\newcommand{\stddev}[1]{[\nK{#1}]}
 \newcommand{\gcell}[1]{\cellcolor{green!20}#1}
 \newcommand{\ycell}[1]{\cellcolor{yellow!18}#1}
 \newcommand{\ocell}[1]{\cellcolor{orange!29}#1}
@@ -468,7 +469,7 @@ the type system, it is possible for these edits to introduce type errors.
     \code{SyntaxError} & Basic parse error, e.g., \code{for if end} \\
 
     \code{CountMismatch} & Arity mismatch for a function \\
-    \code{IncorrectGenericParameterCount} & Arity mismatch for a generic type \\
+    \code{IncorrectGenericParamCount} & Arity mismatch for a generic type \\
     \code{UnknownProperty} & Referenced an invalid field or method  \\
     \code{OnlyTablesCanHaveMethods} & Tried to attach a method to a non-table \\
     \code{CannotCallNonFunction} & Called a value that is not a function \\
@@ -490,12 +491,12 @@ the type system, it is possible for these edits to introduce type errors.
 %    FunctionRequiresSelf &  \\
 %    OccursCheckFailed &  \\
 %    UnknownRequire &  \\
-%    UnknownPropButFoundLikeProp &  \\
+%    UnknownPropButGotLikeProp &  \\
 %    InternalError &  \\
 %    DeprecatedApiUsed &  \\
 %    ModuleHasCyclicDependency &  \\
 %    IllegalRequire &  \\
-%    FunctionExitsWithoutReturning &  \\
+%    FunctionExitsWithoutReturn &  \\
 %    DuplicateGenericParameter &  \\
 %    CannotInferBinaryOperation &  \\
 %    MissingProperties &  \\
@@ -567,6 +568,8 @@ typechecker:
 \label{s:telemetry-records}
 
 \begin{figure}
+  \fbox{
+  }
   \begin{tabular}{|l|l|l|l|l|l|l|l|l|}\midrule
     meta & size & te count & fs count & te 0 & te 1 & te 2 \ldots
     \\\midrule
@@ -993,9 +996,9 @@ What about type errors, same distribution?!
 \label{s:type-error-survival}
 
 \begin{table}[t]
-  \caption{Number of records that add, keep, or drop (remove) specific type errors from their edit range.}
+  \caption{Number of telemetry records that add, keep, or drop (remove) specific type errors from their edit range.}
   \label{t:type-error-survival}
-  \begin{tabular}{lr@{}r@{}rr@{}r@{}rr@{}r@{}r}
+  \begin{tabular}{l@{}r@{}r@{}rr@{}r@{}rr@{}r@{}r}
     & \zerowidth{\mnocheck{}} & & & \zerowidth{\mnonstrict{}} & & & \zerowidth{\mstrict{}} & & \\
     & \rbox{Add} & \ybox{Keep} & \gbox{Drop} & \rbox{Add} & \ybox{Keep} & \gbox{Drop} & \rbox{Add} & \ybox{Keep} & \gbox{Drop} \\\midrule
     \code{CannotCallNonFunction} & {0} & {0} & {0} & {17} & {4} & {20} & {1} & {0} & {1} \\
@@ -1003,12 +1006,12 @@ What about type errors, same distribution?!
     \code{CannotInferBinaryOperation} & {0} & {0} & {0} & {1} & {2} & {1} & {7} & {6} & {9} \\
     \code{CountMismatch} & {0} & {0} & {0} & {223} & {48} & {269} & {12} & {2} & {17} \\
     \code{DuplicateTypeDefinition} & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
-    \code{ExtraInformation} & {0} & {0} & {0} & {48} & {7} & {39} & {2} & {0} & {1} \\
     \code{FunctionDoesNotTakeSelf} & {0} & {0} & {0} & {4} & {6} & {5} & {0} & {0} & {0} \\
-    \code{FunctionExitsWithoutReturning} & {0} & {0} & {0} & {9} & {3} & {6} & {11} & {5} & {8} \\
+    \code{FunctionExitsWithoutReturn} & {0} & {0} & {0} & {9} & {3} & {6} & {11} & {5} & {8} \\
     \code{GenericError} & {0} & {0} & {0} & {206} & {52} & {203} & {8} & {1} & {9} \\
+    \code{GenericExtraInformation} & {0} & {0} & {0} & {48} & {7} & {39} & {2} & {0} & {1} \\
     \code{IllegalRequire} & {0} & {0} & {0} & {16} & {3} & {33} & {0} & {0} & {2} \\
-    \code{IncorrectGenericParameterCount} & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
+    \code{IncorrectGenericParamCount} & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
     \code{MissingProperties} & {0} & {0} & {0} & {11} & {3} & {11} & {6} & {4} & {6} \\
     \code{MissingUnionProperty} & {0} & {0} & {0} & {1} & {0} & {2} & {0} & {0} & {0} \\
     \code{ModuleHasCyclicDependency} & {0} & {0} & {0} & {20} & {9} & {15} & {0} & {0} & {1} \\
@@ -1019,7 +1022,7 @@ What about type errors, same distribution?!
     \code{SyntaxError} & {8349} & {314} & {19220} & {983} & {46} & {2658} & {16} & {0} & {71} \\
     \code{TypeMismatch} & {0} & {0} & {0} & {159} & {62} & {129} & {21} & {10} & {28} \\
     \code{TypesAreUnrelated} & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {1} \\
-    \code{UnknownPropButFoundLikeProp} & {0} & {0} & {0} & {26} & {18} & {21} & {1} & {0} & {1} \\
+    \code{UnknownPropButGotLikeProp} & {0} & {0} & {0} & {26} & {18} & {21} & {1} & {0} & {1} \\
     \code{UnknownProperty} & {0} & {0} & {0} & {347} & {180} & {385} & {19} & {19} & {35} \\
     \code{UnknownRequire} & {0} & {0} & {0} & {91} & {39} & {85} & {12} & {3} & {4} \\
     \code{UnknownSymbol} & {0} & {0} & {0} & {2348} & {496} & {2973} & {49} & {19} & {55}
@@ -1111,20 +1114,20 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
     Some errors occur more often in \mnonstrict{} than \mstrict{}:
     \code{CannotCallNonFunction},
     \code{CannotExtendTable},
-    \code{ExtraInformation},
+    \code{GenericExtraInformation},
     \code{FunctionDoesNotTakeSelf},
     \code{IllegalRequire},
     \code{ModuleHasCyclicDependency},
     \code{OptionalValueAccess},
-    \code{UnknownPropButFoundLikeProp}.
+    \code{UnknownPropButGotLikeProp}.
     \QALAN{} are any of these surprising, or expected from the bigger number of
     \mnonstrict{} records?
 
   \item
     A few errors are more common in \mstrict{} than \mnonstrict{}:
     \code{CannotInferBinaryOperation},
-    \code{FunctionExitsWithoutReturning},
-    \code{IncorrectGenericParameterCount}.
+    \code{FunctionExitsWithoutReturn},
+    \code{IncorrectGenericParamCount}.
     \FILL{} so what.
 
 \end{itemize}
@@ -1154,15 +1157,15 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
       \code{CountMismatch} & \pct{2.26} \\
       \code{OptionalValueAccess} & \pct{2.07} \\
       \code{GenericError} & \pct{2.06} \\
-      \code{UnknownPropButFoundLikeProp} & \pct{0.44} \\
+      \code{UnknownPropButGotLikeProp} & \pct{0.44} \\
       \code{CannotExtendTable} & \pct{0.42} \\
-      \code{ExtraInformation} & \pct{0.32} \\
+      \code{GenericExtraInformation} & \pct{0.32} \\
       \code{ModuleHasCyclicDependency} & \pct{0.23} \\
       \code{IllegalRequire} & \pct{0.20} \\
       \code{NotATable} & \pct{0.15} \\
       \code{CannotCallNonFunction} & \pct{0.15} \\
       \code{MissingProperties} & \pct{0.09} \\
-      \code{FunctionExitsWithoutReturning} & \pct{0.07} \\
+      \code{FunctionExitsWithoutReturn} & \pct{0.07} \\
       \code{FunctionDoesNotTakeSelf} & \pct{0.07} \\
       \code{MissingUnionProperty} & \pct{0.02} \\
       \code{CannotInferBinaryOperation} & \pct{0.02} \\
@@ -1180,13 +1183,13 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
       \code{MissingProperties} & \pct{4.04} \\
       \code{CountMismatch} & \pct{2.99} \\
       \code{OptionalValueAccess} & \pct{2.99} \\
-      \code{FunctionExitsWithoutReturning} & \pct{2.99} \\
+      \code{FunctionExitsWithoutReturn} & \pct{2.99} \\
       \code{UnknownRequire} & \pct{2.37} \\
       \code{GenericError} & \pct{2.28} \\
       \code{NotATable} & \pct{1.32} \\
-      \code{ExtraInformation} & \pct{0.35} \\
-      \code{UnknownPropButFoundLikeProp} & \pct{0.26} \\
-      \code{IncorrectGenericParameterCount} & \pct{0.18} \\
+      \code{GenericExtraInformation} & \pct{0.35} \\
+      \code{UnknownPropButGotLikeProp} & \pct{0.26} \\
+      \code{IncorrectGenericParamCount} & \pct{0.18} \\
       \code{CannotCallNonFunction} & \pct{0.18} \\
       \code{IllegalRequire} & \pct{0.18} \\
       \code{ModuleHasCyclicDependency} & \pct{0.09} \\
@@ -1235,7 +1238,7 @@ by definition \code{SyntaxError}s.
 
   \item
     Two errors that appear in the \mstrict{} records
-    never appear in \mnonstrict{}: \code{OccursCheckFailed} and \code{IncorrectGenericParameterCount}.
+    never appear in \mnonstrict{}: \code{OccursCheckFailed} and \code{IncorrectGenericParamCount}.
     We attribute these to more advanced uses of types in \mstrict{} mode.
 
   \item
