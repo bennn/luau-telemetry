@@ -560,8 +560,17 @@ typechecker:
     whether the Script Analysis widget is visible.
 \end{itemize}
 
-\subsection{Telemetry records}
+\subsection{Telemetry Records}
 \label{s:telemetry-records}
+
+\begin{figure}
+  \begin{tabular}{|l|l|l|l|l|l|l|l|l|}\midrule
+    meta & size & te count & fs count & te 0 & te 1 & te 2 \ldots
+    \\\midrule
+  \end{tabular}
+  \caption{Struture of a telemetry record}
+  \label{f:tdata}
+\end{figure}
 
 The telemetry for a Roblox Studio session is gathered as a series of
 telemtry records, all with the same psedonynimized session
@@ -708,7 +717,7 @@ section), but sufficient to proceed with futher analysis.
 \paragraph{Codebase Size}
 %\label{s:codebase-size}
 
-\begin{figure}[t]
+\begin{figure}[t]\centering
   % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
   % ;; percentile* = 0.95 -- 0.99
   % #hash((editrange . (1156036 926 3007043/817 30975.40553032358 (0.95 8220) (0.96 9858) (0.97 13656) (0.98 18956) (0.99 34725)))
@@ -722,14 +731,20 @@ section), but sufficient to proceed with futher analysis.
   %% - session "330,172,870,224,081" 
   %% (2nd biggest has 41K files "31,650,473,913,529")
 
-  \begin{tabular}{l@{}r@{~}l@{}r@{~}l@{}r@{~}l}
-                 & Files  &              &     Lines &             &    Edit Range & \\
-    Mean [std]   & 11,911 & \stddev{12}  &     6,497 & \stddev{22} &         3,680 & \stddev{31} \\
-    Median       &  7,678 &              &     3,115 &             &           926 & \\
-    \pct{99}     & 51,761 &              &    50,547 &             &        34,725 & \\
+%% Files has HUGE numbers thanks to data assets. Forget it.
+% Files  &              &
+% 11,911 & \stddev{12}  &
+%  7,678 &              &
+% 51,761 &              &
+%   & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
+
+  \begin{tabular}{l@{}r@{~}l@{}r@{~}l}
+                 &  Lines &             &    Edit Range & \\
+    Mean [std]   &  6,497 & \stddev{22} &         3,680 & \stddev{31} \\
+    Median       &  3,115 &             &           926 & \\
+    \pct{99}     & 50,547 &             &        34,725 & \\
     %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
-    & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
-    & & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
+      & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
     & & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
 
   \end{tabular}
@@ -740,31 +755,25 @@ section), but sufficient to proceed with futher analysis.
 
 \Cref{f:codebase-size} summarizes the size of projects in the dataset.
 The top half of the figure reports the mean, standard deviation, median,
-and \percentile{99} for the number of files,\todo{There are
-  1000s of files?!? More files than lines? Makes no sense.} lines, and lines in edit range.
-The bottom half shows zoomed-in distributions of the file, line, and edit range
-numbers.
-For example, the x-axis of the first plot ranges from 0 to 1,000 files and
+and \percentile{99} for the number of lines
+and lines in edit range.\footnote{The data also contains the number of files in
+each project, but these numbers are difficult to relate to typechecking because
+projects may contain hundreds of files that define data assets.  For the
+record, the median file count is 7,678 and the 99th percentile is 51,761 files.
+}
+The bottom half shows zoomed-in distributions of the line and edit range
+sizes.
+For example, the x-axis of the first plot ranges from 0 to 1,000 lines and
 the y-axis counts up to 1,000 telemetry records.
 
 There is a huge amount of variation across projects.
-The largest ones have over 50,000 files, and
-there are many small ones with 1 file and/or 1 line of code.
+The largest ones have over 50,000 lines of code
+while the smallest have merely 1 line of code.
 Unsurprisingly, the numbers come with large standard
-deviations.\todo{Which is not shown!}
+deviations~([std] in~\cref{f:codebase-size}).
 The median values are more reasonable, with roughly 3,000 lines of code
-and 1,000 lines in edit ranges, but still have a large number of files: over 7,000.
-One source of variation is that some developers use Luau scripts as a way
-to store data, writing a module that exports one huge array, typically
-defined on a single line. Such data storage scripts provide a challenge for
-script tooling.\todo{No idea what's said here.}
+and 1,000 lines in edit ranges.
 
-%% The high number of files may be because creators define many components to
-%% build a Roblox experience and put these components in separate files.
-%% (\FILL{} still that's a lot of components ... any better guesses?)
-
-%% (\FILL{} doublecheck file sizes)
-% That seems way off, not sure we're seeing so many files :/
 
 \paragraph{Session Size}
 %\label{s:session-size}
@@ -966,6 +975,15 @@ well typed, or close to it.\todo{What incentive is there to do so?}
 %% > How many module switches go to a module with errors?
 %% > \mnocheck{} 70, nonstrict 9, strict 4
 %% > For FS: \mnocheck{} 400, \mnonstrict{} 39, \mstrict{} 6.
+
+
+\subsection{Forced Strict Errors by Mode}
+
+FILL
+
+How do the 72 million forced strict divide across modes?
+
+What about type errors, same distribution?!
 
 
 \subsection{Type Errors vs. Program Edits}
@@ -1254,12 +1272,6 @@ It is entirely possible that all these errors came from one creator who
 deliberately pushed the limits of type analysis.
 Whatever the reason, the overall number is low enough to suggest that the
 internal limits are not posing barriers to typechecker adoption.
-
-
-\subsection{Forced Strict Errors}
-
-\FILL{} I (ben) think we need to talk more about forced strict errors here, or soon.
-Otherwise people will forget they exist in the data.
 
 
 \subsection{Type Error Density}
