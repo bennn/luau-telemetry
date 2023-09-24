@@ -1012,11 +1012,13 @@ In another exception, upgrading modes removed three type errors
 (possibly due to other edits being rolled in with the
 mode change).
 
-Similarly, mode downgrades have only a small negative effect on the
+In the other direction, mode downgrades have only a small negative effect on the
 number of errors (mean -0.3, stddev 4, median 0, max -48).
 %% curious outlier: downgrade added 30 errors!
-Creators apparently tend switch modes only when the code is already
-well typed, or close to it.\todo{What incentive is there to do so?}
+We would see a much larger effect here if creators used downgrades
+as a quick way to silence the typechecker.
+But, creators evidently switch modes only when the code is already
+in well-typed shape.
 
 
 %% \paragraph{Module Switches vs Errors}
@@ -1888,7 +1890,7 @@ nevertheless on a much smaller scale than Roblox Studio.
 % ... not very deep, look at edit sequences, replay for errors
 
 
-\section{Conclusion}
+\section{Lessons Learned}
 \label{s:conclusion}
 
 Quickly summarize findings:
