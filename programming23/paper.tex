@@ -720,7 +720,7 @@ as Roblox has a significant school-aged creator community.
 
 A close inspection of the data revealed a few anomalies.
 For the most part, we omit the strange data from futher
-analysis.\todo{I'm inclined to rewrite this to be much more concise.}
+analysis.\todo{I'm inclined to rewrite this to be much more concise.}\todo{agreed}
 
 First, some records have odd timestamps according to the server's records.
 Every telemetry record comes with two timestamps: a client-side timestamp
@@ -1051,6 +1051,13 @@ in well-typed shape.
   %% 
   %%  fs total 7546175
   %%  mean 48.6 std 270.60578740369266 med 3 max 16712
+  %%
+  %% nocheck
+  %%  te total 176309
+  %%  mean 0.13 std 1.9040337635815197 med 0 max 289
+  %% 
+  %%  fs total 63784284
+  %%  mean 47.7 std 885.8225471699477 med 1 max 251131
 
   \begin{tabular}{l}
     600K type errors         = \pct{35} \mnocheck{}, \pct{61} \mnonstrict{}, \pct{4} \mstrict{}
@@ -1081,6 +1088,13 @@ data~(\cref{f:dataset-overview}): almost \pct{90} for \mnocheck{},
 Type analysis finds a large number of errors in \mnocheck{} code;
 unfortunately, we have no insight into whether those errors are true
 positives or whether the analysis led to useful IDE suggestions.
+
+\FILL{} average number of FS errors is
+worst in \mnonstrict{}, 49, vs 48 nocheck and 7 strict.
+median is 3 NS, 1 nocheck, 1 strict.
+We might optimistically think that nocheck accumulates
+lots of errors, but no that does not seem to be the case,
+NS and nocheck both apparently fine with latent FS errors.
 
 
 \subsection{Type Errors vs. Program Edits}
@@ -1148,6 +1162,7 @@ All three counts are imprecise because our telemetry does not track the exact
 identity of a type error.
 Suppose a creator removes one \code{CannotCallNonFunction} error but then
 immediately introduces another on a different line.
+\FILL{} beware, don't say this same thing Nx throughout the paper.
 \Cref{t:type-error-survival} reports this pair of edits as a Keep rather than
 an Add and a Remove because we cannot distinguish two errors of the same kind.
 
@@ -1629,6 +1644,14 @@ then threats.
 FILL hope to never see \code{InternalError}.
 Have zero, yay!
 
+... very concerning if this is the top takeaway
+
+
+\paragraph{Good: No Apparent Turmoil With Upgrades / Downgrades}
+
+But, mode switches are very rare!
+Really too soon to draw any conclusion, this is only a lack of bad.
+
 
 \paragraph{Do Types Improve Quality of Life?}
 
@@ -1637,7 +1660,19 @@ Use edit range~(\cref{t:type-error-survival} for NS vs S)
 and error density~(\cref{f:error-density})
 
 TODO nocheck accumulated fs errors?
+Need this (density fs) to say more about whether errors get fixed,
+same goes for fig 10.
 
+
+\paragraph{... Something About Add/Drop in Edit Range}
+
+\paragraph{Bad: Strict too Strict}
+
+Comparing NS vs S, the syntax error \% is about the same (15 vs 9)
+but the type mismatch \% is far off (2 vs 20).
+S is probably noisy.
+
+Data model is probably part of this.
 
 
 \paragraph{Bad: Noisy Data}
@@ -1651,6 +1686,13 @@ TODO nocheck accumulated fs errors?
   - 
 \end{verbatim}
 
+
+\paragraph{Big Bad: Low Adoption}
+
+poor advertising,
+unclear value proposition,
+nocheck code is apparently doing fine despite lots of forced strict errors,
+... can we say this outright?!
 
 
 \subsection{Threats to Validity}
