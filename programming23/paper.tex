@@ -567,14 +567,12 @@ typechecker:
 \subsection{Telemetry Records}
 \label{s:telemetry-records}
 
-\begin{figure}
-  \fbox{
-  }
-  \begin{tabular}{|l|l|l|l|l|l|l|l|l|}\midrule
-    meta & size & te count & fs count & te 0 & te 1 & te 2 \ldots
-    \\\midrule
+\begin{figure}[t]\centering
+  \begin{tabular}{|l|l|l|l|l|l|l|}\hline
+    ID & Time & Mode & Reason & Size Info & Overall Counts & Edit Range Counts
+    \\\toprule
   \end{tabular}
-  \caption{Struture of a telemetry record}
+  \caption{Structure of a telemetry record. There are 13 overall counts and up to 70 edit range counts in each record.}
   \label{f:tdata}
 \end{figure}
 
@@ -597,10 +595,20 @@ In order to find how file-switching correlated with type errors, we additionally
   \item
     every run of the typechecker in an enrolled session which switched file generated a telemetry record.
 \end{itemize}
-Each telemetry record contains nine kinds of data:
+Each telemetry record contains seven kinds of data.
+Refer to~\cref{f:tdata} for an illustration:
 \begin{enumerate}
-  \item metadata: a psedonymized session identifier, timestamp and session duration,
-  \item mode of the current file: (\mnocheck{}, \mnonstrict{}, or \mstrict{}),
+  \item
+    ID: a psedonynimized identifier for the current session
+  \item
+    Time: one timestamp from the client and one from the server.
+    %% timestamp explanation \cref{s:data-cleaning}
+  \item
+    Mode: type analysis mode of the current file, which is either \mnocheck{},
+    \mnonstrict{}, or \mstrict{}.
+%% Reason & Size Info & Overall Counts & Edit Range Counts
+
+
   \item reason for sending: (random selection, or file switch),
   \item size of codebase: number of files, and number of lines of code type checked,
   \item size of edit range
@@ -610,6 +618,7 @@ Each telemetry record contains nine kinds of data:
   \item forced strict errors: specific errors for the
     edit range computed as if the user had strict mode enabled.
   \item TooComplexErrors: project-wide count for this one specific error type
+     \cref{s:code-too-complex}
 \end{enumerate}
 To track the edit range, we record a start and end position, which we
 update appropriately on every edit. This can result in very large edit
@@ -1257,6 +1266,7 @@ by definition \code{SyntaxError}s.
 \end{itemize}
 
 \paragraph{Internal Limits, Code Too Complex}
+\label{s:code-too-complex}
 %% data = out/ctc-info.txt
 
 To deal with pathologies such as the worst-case time for ML-style type
