@@ -1033,13 +1033,52 @@ well typed, or close to it.\todo{What incentive is there to do so?}
 %% > For FS: \mnocheck{} 400, \mnonstrict{} 39, \mstrict{} 6.
 
 
-\subsection{Forced Strict Errors by Mode}
+\subsection{Errors by Mode}
 
-FILL
+\begin{figure}[t]
+  %% strict
+  %%  te total 22771
+  %%  mean 6.9 std 26.24592591869705 med 1 max 385
+  %% 
+  %%  fs total 114259
+  %%  mean 34.9 std 155.41955823164017 med 1 max 4789
+  %% 
+  %% nonstrict
+  %%  te total 362964
+  %%  mean 2.3 std 66.44456626891912 med 0 max 13511
+  %% 
+  %%  fs total 7546175
+  %%  mean 48.6 std 270.60578740369266 med 3 max 16712
 
-How do the 72 million forced strict divide across modes?
+  \begin{tabular}{l}
+    600K type errors         = \pct{35} \mnocheck{}, \pct{61} \mnonstrict{}, \pct{4} \mstrict{}
+    \\
+    72M forced scrict errors = \pct{89} \mnocheck{}, \pct{10} \mnonstrict{}, \pct{1} \mstrict{}
+    %% really 0.16 strict, very low!!!
+  \end{tabular}
+  \caption{}
+  \label{f:error-by-mode}
+\end{figure}
 
-What about type errors, same distribution?!
+\Cref{f:error-by-mode} shows how the type errors and forced strict errors
+in the data are split across type analysis modes.
+\FILL{} add averages.
+
+Most type errors come from \mnonstrict{} mode, despite it having an order
+of magnitude fewer users that \mnocheck{}.
+This is unsurprising because \mnocheck{} reports only syntax errors,
+whereas \mnonstrict{} reports several others kinds~(detailed in the next section).
+Finally, \mstrict{} mode accounts for a small fraction of type errors, despite
+being more picky, because so few creators use it.
+
+Forced strict analysis applies the same typechecker to every module, regardless
+of mode, in the hope of enabling IDE tools.
+Consequently, the breakdown of forced strict errors matches the overall usage
+data~(\cref{f:dataset-overview}): almost \pct{90} for \mnocheck{},
+\pct{10} for \mnonstrict{}, and \pct{1} for \mstrict{}.
+Type analysis finds a large number of errors in \mnocheck{} code;
+unfortunately, we have no insight into whether those errors are true
+positives or whether the analysis led to useful IDE suggestions.
 
 
 \subsection{Type Errors vs. Program Edits}
@@ -1316,8 +1355,9 @@ Hitting a limit triggers one of the following errors:
 \code{CodeTooComplex},
 \code{NormalizationTooComplex}, or
 \code{UnificationTooComplex}.
-A casual user should never see these errors.\todo{IDEALLY never see?
-  They CAN see them, right?}
+These errors can appear in Script Analysis just like any other
+error, but one design goal of Luau is that code rarely hits the limits.
+A typical creator should never see these errors.
 
 Fortunately, the data rarely contains too-complex errors.
 None of these errors appear in edit ranges~(\cref{t:type-error-count}).
