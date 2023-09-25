@@ -110,6 +110,7 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 \newcommand{\mnocheck}{\modefont{nocheck}}
 \newcommand{\mnonstrict}{\modefont{nonstrict}}
 \newcommand{\mstrict}{\modefont{strict}}
+\newcommand{\FS}{background}
 \newcommand{\zerowidth}[1]{\makebox[0pt][l]{#1}}
 \newcommand{\nK}[1]{#1\textsc{k}}
 \newcommand{\stddev}[1]{[\nK{#1}]}
@@ -262,6 +263,8 @@ and a rigorous \mstrict{} mode.
 Creators can switch between modes
 gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
 
+%% TODO migratory
+
 In this paper, we investigate methods for measuring the effectiveness
 of the {Luau} type system in the development of {Roblox} scripts.
 We want to collect measurements at a large scale, with thousands
@@ -269,6 +272,7 @@ of participants, and we must do so in a way that protects creators' privacy.
 In comparison to prior work~(\cref{s:related}), which
 with few exceptions~\cite{zhlbr-cc-2020,zhlbr-oopsla-2020,hlzbr-ecoop-2021} is either small in scale
 or collects personally identifiable information~(PII),
+%% TODO careful, proprietary matters too!!!
 we performed a large-scale study using \panon{} \emph{telemetry}.
 
 {Roblox Studio} has a telemetry system, which is used to gauge
@@ -364,6 +368,16 @@ The data and the analysis pipeline are freely available.
 \section{{Roblox} Context}
 \label{s:context}
 % https://create.roblox.com/docs/scripting/luau
+
+% TODO
+% \begin{table}
+%   \caption{Modes and analyses}
+%   \label{t:mode-analyze}
+% 
+%   Mode: nocheck ...
+%   Analysis: nocheck ... forced strict
+% 
+% \end{table}
 
 \begin{figure}[t]\centering
   \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
@@ -1932,52 +1946,96 @@ nevertheless on a much smaller scale than Roblox Studio.
 % ... not very deep, look at edit sequences, replay for errors
 
 
-\section{Lessons Learned}
+\section{Reflections and Lessons Learned}
 \label{s:conclusion}
 
-Quickly summarize findings:
+This paper presents the first large-scale analysis of developers' interactions with
+an industrial strength typechecker.
+With +1.5 million telemetry records from over three hundred thousand sessions
+that took place during a three-month timespan, the data has plenty to say about
+type errors and their overlap with program edits.
+At the same time, the data is carefully restricted to avoid leaking personal
+and proprietary information: we know the number and kind of type errors
+that occurred, but nothing about the line(s) of code that the typechecker
+complained about.
 
+On the object level, the analysis offers several lessons for the Luau
+developers and other maintainers of gradually-typed languages:
 \begin{itemize}
   \item
-    \pct{50} of errors in current module, so probably errors appear locally (not in a distant module);
-    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
+    Nearly all creators (\pct{90}) use the default ``no check''
+    typechecking mode~(\cref{f:dataset-overview}).
+    Since the next typing mode (\mnonstrict{}) requires no annotations and is
+    very conservative about the errors it reports, we conjecture that
+    developers would have no objections to using it and are simply unaware that
+    this mode exists.
+    \QALAN{} nonstrict requires no annotations, right?
+%  \item
+%    \pct{50} of all errors are in current module, so probably errors appear locally (not in a distant module);
+%    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
   \item
-    \pct{90} \mnocheck{},  \pct{10} \mnonstrict{},  \pct{0.1} \mstrict{}, wow.
+    Creators tend to fix them immediately rather than dealing with them in a batch
+    or ignoring the errors altogether~(\cref{f:error-density,f:error-changes}).
+    % Changes to the number of errors balance one another~(\cref{f:error-density});
+    % edits are equally likely to add or remove errors~(\cref{f:error-changes}).
   \item
-  \item
-  \item
-    DM awareness is an important and surprising gap between strict
-    and forced strict, undoubtedly a usability barrier for \mstrict{}.
-  \item
+    All Luau scripts interact with data assets, but no typechecking mode
+    has a precise view of the data.
+    Improving precision is an important direction for future work.
+    Until then, the \mstrict{} mode clearly needs to relax its data-asset
+    analysis because it raises even more errors than \FS{} checking~(\cref{f:tefs-compass}).
 \end{itemize}
 
-Quick regrets, lessons learned, advice for next time
 
-\paragraph{Future work: Low adaption}
+On the meta level, the main takeaway is that the lightweight, counter-based telemetry
+in Roblox Studio supports a variety of useful analyses:
+\begin{itemize}
+  \item
+    Counting specific type errors helps to identify trends and to confirm that
+    undesirable events rarely happen (e.g.,\code{UnificationTooComplex}).
+  \item
+    Testing the relationship between two counts can yield insights;
+    in~\cref{f:tefs-compass}, the gap between \mstrict{} vs \FS{} errors
+    revealed an issue with \mstrict{} checking.
+  \item
+    Reporting the overlap between type errors and the current (approximate) edit
+    range lets us assess the outcome of edits without revealing any source code.
+    It was especially useful to know the overlap for old and for current type errors.
+  \item
+    Timestamps give useful, low-level insights about the frequency of keystrokes,
+    the length of sessions, and actions over time~(\cref{f:indy-session}).
+    The event ordering that timestamps provide was invaluable; e.g., for learning
+    that error deltas bounce up and down~(\cref{f:error-density}).
+\end{itemize}
 
-why so few using nonstrict and strict?
-needs advertising?
-needs usability?
+One aspect of the telemetry that we would change for next time is to provide
+more metadata.
+Luau recently adopted semantic subtyping to reduce false-positive type
+errors~\cite{luau-subt}, but there is no way to tell if this
+internal extension is enabled without an extra metadata field.
+Two other aspects are worth rethinking.
+First, it would be useful to have fine-grained counts for \FS{} analysis
+errors and to know the specific reason behind errors such as \code{TypeMismatch}.
+But, this additional data could double the size of telemetry records.
+Second, tracking edit ranges made the telemetry system much more difficult to
+build and maintain.
+It would be much easier to track old and current errors at the module level,
+but it remains to be seen how coarse of an approximation that would be.
+
+In future work, it would be interesting to build statistical models of
+the ``average'' programmer using each typing mode and compare their error
+rates.
+It would be possible to start modeling with our \mnocheck{} and \mnonstrict{}
+data, but we have too few \mstrict{} records at the moment due to our uniform
+sampling rate.
+More data is needed  for a robust model of \mstrict{} programmers.
 
 
-\paragraph{Do we need timestamps?}
 
-FILL these were helpful for the overview
-
-Our telemetry records include timestamps.
-While timestamps are not personal data per se, they are in the ballpark.
-Telemetry would be even more private without them.
-Do we need them?
-
-Timestamps are not the focus of our analysis, but they do play a critical role.
-Consider~\cref{f:error-density}.
-With timestamps, it is clear that error density stays close to zero.
-Without timestamps, we would be left with the counts at the bottom
-of~\cref{f:error-density}.
-Many distributions could fit those counts, such as a ``mountain'' session that first
-grows and grows the number of type errors then shrinks and shrinks down to zero.
+%% PS downloading from Kibana was a HUGE pain and source of errors. Awful!
 
 
+%% -----------------------------------------------------------------------------
 \acks
 
 Thanks to Benjamin Chung for several helpful discussions about data analysis
