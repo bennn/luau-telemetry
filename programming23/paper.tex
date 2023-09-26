@@ -672,7 +672,7 @@ Refer to~\cref{f:tdata} for an illustration:
     \end{itemize}
 \end{enumerate}
 
-\paragraph{Reflections}
+\paragraph{NOTES} %% FILL
 This kind of telemetry data is coarse-grained.
 For instance, it does not let us distinguish between edits that ignore a type
 error from edits that remove one error while introducing another.
@@ -1486,11 +1486,15 @@ Still, the plots reveal interesting points:
   % FS mod: nocheck & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
   % FS mod: nonstrict & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
   % FS mod: strict & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
-  \begin{tabular}{lr@{}rr@{}rr@{}r}
-    & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
-    \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
-    \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
-    \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
+  \begin{tabular}{l@{~}lr@{}rr@{}rr@{}r}
+    & & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
+    type err. & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
+              & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
+              & \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
+    \\
+    \FS       & \mnocheck{}   & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
+              & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
+              & \mstrict{}    & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
   \end{tabular}
   \caption{How often do edits increase, maintain, or decrease the number of errors?}
   \label{f:error-changes}
@@ -1665,17 +1669,17 @@ This should happen in \mstrict{} mode.
 \section{Discussion}
 \label{s:discussion}
 
-\FILL{} good things first,
-then regrets about the noisy stochiastic telemetry,
-then lessons?
-then threats.
+To sum up, the data supports the following conclusions:
+
+
+\subsection{The Good News}
 
 \paragraph{Good: No Internal Error}
 
 FILL hope to never see \code{InternalError}.
 Have zero, yay!
 
-... very concerning if this is the top takeaway
+um ... very concerning if this is the top takeaway
 
 
 \paragraph{Good: No Apparent Turmoil With Upgrades / Downgrades}
@@ -1690,14 +1694,19 @@ Really too soon to draw any conclusion, this is only a lack of bad.
 Use edit range~(\cref{t:type-error-survival} for NS vs S)
 and error density~(\cref{f:error-density})
 
-TODO nocheck accumulated fs errors?
-Need this (density fs) to say more about whether errors get fixed,
-same goes for fig 10.
+Uh oh, no accumulated FS errors in nocheck.
+Edits vs FS counts are the same in all three modes.
 
 
 \paragraph{... Something About Add/Drop in Edit Range}
 
+\FILL{}
+
+\subsection{The Bad News}
+
 \paragraph{Bad: Strict too Strict}
+
+\FILL{}
 
 Comparing NS vs S, the syntax error \% is about the same (15 vs 9)
 but the type mismatch \% is far off (2 vs 20).
@@ -1705,17 +1714,6 @@ S is probably noisy.
 
 Data model is probably part of this.
 
-
-\paragraph{Bad: Noisy Data}
-
-\begin{verbatim}
- require(foobar)
-  foobar is a module script in the data model
- require(foo.bar.b)
-  - could be edit in progress
-  - could be renamed module
-  - 
-\end{verbatim}
 
 
 \paragraph{Big Bad: Low Adoption}
@@ -1742,7 +1740,7 @@ Depends how they type.
 Scripted interactions that generate a large number of keystrokes per second
 can swamp our data and are hard to distinguish from genuine interactions.
 Copy paste might just look like a bot.
-\QALAN{} I think you said a paste counts as 1 keystroke; is that right?
+%% \QALAN{} I think you said a paste counts as 1 keystroke; is that right?
 
 We have no knowledge whatsoever about interesting events like save run publish.
 Publish events are private.
@@ -1986,7 +1984,6 @@ developers and other maintainers of gradually-typed languages:
     very conservative about the errors it reports, we conjecture that
     developers would have no objections to using it and are simply unaware that
     this mode exists.
-    \QALAN{} nonstrict requires no annotations, right?
 %  \item
 %    \pct{50} of all errors are in current module, so probably errors appear locally (not in a distant module);
 %    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
@@ -2028,16 +2025,22 @@ in Roblox Studio supports a variety of useful analyses:
 One aspect of the telemetry that we would change for next time is to provide
 more metadata.
 Luau recently adopted semantic subtyping to reduce false-positive type
-errors~\cite{luau-subt}, but there is no way to tell if this
-internal extension is enabled without an extra metadata field.
-Two other aspects are worth rethinking.
+errors~\cite{luau-subt}, but the current telemetry has no way to tell if this
+internal extension is enabled or not.
+Three other aspects are worth rethinking.
 First, it would be useful to have fine-grained counts for \FS{} analysis
 errors and to know the specific reason behind errors such as \code{TypeMismatch}.
 But, this additional data could double the size of telemetry records.
-Second, tracking edit ranges made the telemetry system much more difficult to
-build and maintain.
-It would be much easier to track old and current errors at the module level,
-but it remains to be seen how coarse of an approximation that would be.
+Second, although tracking edit ranges was useful, it made the telemetry system
+much more difficult to build and maintain.
+Tracking old and current errors at the module level would be more maintainable,
+but there is a risk that it is too coarse.
+Third, the massive number of syntax errors begs the question of how to reduce
+them.
+Shifting focus from arbitrary keystrokes to selected ones, such as closing
+parentheses or whitespaces, might increase the likelihood of well-formed
+code without losing the ``middle of things'' nature of the data.
+Another option is to ignore records that have a syntax error in the edit range.
 
 In future work, it would be interesting to build statistical models of
 the ``average'' programmer using each typing mode and compare their error
@@ -2046,6 +2049,17 @@ While one could start modeling with the \mnocheck{} and \mnonstrict{}
 data, but there are too few \mstrict{} records at the moment due to our uniform
 sampling rate.
 More data is needed to experiment with models of \mstrict{}-mode programmers.
+
+% \paragraph{Bad: Noisy Data}
+% 
+% \begin{verbatim}
+%  require(foobar)
+%   foobar is a module script in the data model
+%  require(foo.bar.b)
+%   - could be edit in progress
+%   - could be renamed module
+%   - 
+% \end{verbatim}
 
 
 
