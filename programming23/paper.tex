@@ -224,6 +224,7 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
   for adoption and ergonomics in other gradual languages.
   %% mention Elixir, Verse?
   FILL specifics.
+  %% TODO remove semantic subtyping
   Our telemetry design is of broad interest, as it gathers useful
   data without exposing personal information.
 
@@ -263,7 +264,7 @@ and a rigorous \mstrict{} mode.
 Creators can switch between modes
 gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
 
-%% TODO migratory
+%% TODO Luau is migratory, clearer about this
 
 In this paper, we investigate methods for measuring the effectiveness
 of the {Luau} type system in the development of {Roblox} scripts.
@@ -369,7 +370,7 @@ The data and the analysis pipeline are freely available.
 \label{s:context}
 % https://create.roblox.com/docs/scripting/luau
 
-% TODO
+% TODO quick reference table
 % \begin{table}
 %   \caption{Modes and analyses}
 %   \label{t:mode-analyze}
@@ -1404,7 +1405,9 @@ internal limits are not posing barriers to typechecker adoption.
 \subsection{Type Error Density}
 
 \begin{figure}[t]\centering
-  % TODO try diff vs first record instead of previous?
+  %% FS plots look similar
+  %% - much higher densities, same basic story
+  %% - nocheck indeed the highest > NS > S
 
   \mnocheck{}
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
@@ -1414,11 +1417,10 @@ internal limits are not posing barriers to typechecker adoption.
   \medskip
   \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
-  \caption{Changes over time (seconds) to type error density (total errors / lines in project).}
+  \caption{Changes in type error density (errors in module / lines in module) over time (seconds).}
   \label{f:error-density}
 \end{figure}
 
-\FILL{} what does the FS plot look like? is that a better nocheck-vs-rest comparison??
 
 Moving on to type errors across the projects, and not just in the edit range,
 a first interesting question is to study how the overall number of errors
@@ -1468,14 +1470,29 @@ Still, the plots reveal interesting points:
 
 \begin{figure}[t]\centering
   % TODO use bars instead, percent only, don't care about counts
-  %% TODO old version had +-20% add/drop and a bigger % of keeps. What changed?
+
+  % TE: nocheck & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
+  % TE: nonstrict & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
+  % TE: strict & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
+  %
+  % TE mod: nocheck & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
+  % TE mod: nonstrict & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
+  % TE mod: strict & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
+  %
+  % FS: nocheck & 270763 & [\pct{36.99}] & 238696 & [\pct{32.61}] & 222588 & [\pct{30.41}] \\
+  % FS: nonstrict & 35330 & [\pct{37.28}] & 29483 & [\pct{31.11}] & 29955 & [\pct{31.61}] \\
+  % FS: strict & 574 & [\pct{33.71}] & 561 & [\pct{32.94}] & 568 & [\pct{33.35}] \\
+  %
+  % FS mod: nocheck & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
+  % FS mod: nonstrict & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
+  % FS mod: strict & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
   \begin{tabular}{lr@{}rr@{}rr@{}r}
     & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
-    \mnocheck{} & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
-    \mnonstrict{} & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
-    \mstrict{} & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
+    \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
+    \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
+    \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
   \end{tabular}
-  \caption{How often do edits increase, maintain, or decrease the number of type errors?}
+  \caption{How often do edits increase, maintain, or decrease the number of errors?}
   \label{f:error-changes}
 \end{figure}
 
@@ -1946,7 +1963,7 @@ nevertheless on a much smaller scale than Roblox Studio.
 % ... not very deep, look at edit sequences, replay for errors
 
 
-\section{Reflections and Lessons Learned}
+\section{Lessons Learned and Reflections}
 \label{s:conclusion}
 
 This paper presents the first large-scale analysis of developers' interactions with
@@ -2025,14 +2042,16 @@ but it remains to be seen how coarse of an approximation that would be.
 In future work, it would be interesting to build statistical models of
 the ``average'' programmer using each typing mode and compare their error
 rates.
-It would be possible to start modeling with our \mnocheck{} and \mnonstrict{}
-data, but we have too few \mstrict{} records at the moment due to our uniform
+While one could start modeling with the \mnocheck{} and \mnonstrict{}
+data, but there are too few \mstrict{} records at the moment due to our uniform
 sampling rate.
-More data is needed  for a robust model of \mstrict{} programmers.
+More data is needed to experiment with models of \mstrict{}-mode programmers.
 
 
 
-%% PS downloading from Kibana was a HUGE pain and source of errors. Awful!
+%% PS
+%% - downloading from Kibana was a HUGE pain and source of errors. Awful!
+%% - worth finding ways to reduce / ignore syntax errors?
 
 
 %% -----------------------------------------------------------------------------

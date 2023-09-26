@@ -1,4 +1,5 @@
 #lang racket
+  \t
 
 (require
   "base.rkt"
@@ -8,7 +9,7 @@
 
 ;; ---
 
-(define out-kind 'pdf)
+(define out-kind 'png)
 
 (define (row->te x) (first x))
 (define (row->fs x) (second x))
@@ -22,7 +23,11 @@
 (define (row->ctime x) (tenth x))
 
 (define (simple-go mode)
-  (go-counts row->te mode))
+  (printf "TE~n") (go-counts row->te mode)
+  (printf "FS~n") (go-counts row->fs mode)
+  (printf "TE mod~n") (go-counts row->te-mod mode)
+  (printf "FS mod~n") (go-counts row->fs-mod mode)
+  (void))
 
 (define (go-counts getter mode)
   (define row** (file->value (build-path data-dir (format "error-density-ss-~a.rktd" mode))))
@@ -44,7 +49,7 @@
   (define-values [pct-up pct-same pct-down]
     (let ((bot (+ num-up num-down num-same)))
       (apply values (map (lambda (n) (pct n bot)) (list num-up num-same num-down)))))
-  (printf "  ~a & ~a & (\\pct{~a}) & ~a & (\\pct{~a}) & ~a & (\\pct{~a}) \\\\~n"
+  (printf "  ~a & ~a & (\\pct{~a}) & ~a & [\\pct{~a}] & ~a & [\\pct{~a}] \\\\~n"
           mode num-up pct-up
                num-same pct-same
                num-down pct-down)
@@ -52,12 +57,15 @@
           (object-name getter) mode num-up num-same num-down)
   (void))
 
-(define (row->te-density rr)
+(define ((row->X-density row->X) rr)
   (define N (row->lines rr))
   (if (zero? N)
     #;(raise-arguments-error 'row->te-density "zero lines what to do" "row" rr)
     #f
-    (/ (row->te-mod rr) N)))
+    (/ (row->X rr) N)))
+
+(define row->te-density (row->X-density row->te-mod))
+(define row->fs-density (row->X-density row->fs-mod))
 
 (define (plot-error-count mode)
   (one-line-plot mode row->te))
@@ -82,6 +90,22 @@
 (define (plot-error-density mode)
   (one-line-plot mode row->te-density))
 
+;(define (row->X-density-diff row->X)
+;  (let ((prev (box #f)))
+;    (lambda (rr)
+;      (if (eq? rr 'reset)
+;        (begin (set-box! prev #f) #f)
+;        (let ()
+;          (define olde (unbox prev))
+;          (define curr (row->X rr))
+;          (set-box! prev curr)
+;          (if (and olde curr)
+;            (- curr olde)
+;            #f))))))
+;
+;(define (row->te-density-diff rr) ((row->X-density-diff row->te-density) rr))
+;(define (row->fs-density-diff rr) ((row->X-density-diff row->fs-density) rr))
+
 (define row->te-density-diff
   (let ((prev (box #f)))
     (lambda (rr)
@@ -95,11 +119,28 @@
             (- curr olde)
             #f))))))
 
+(define row->fs-density-diff
+  (let ((prev (box #f)))
+    (lambda (rr)
+      (if (eq? rr 'reset)
+        (begin (set-box! prev #f) #f)
+        (let ()
+          (define olde (unbox prev))
+          (define curr (row->fs-density rr))
+          (set-box! prev curr)
+          (if (and olde curr)
+            (- curr olde)
+            #f))))))
+
 (define (plot-error-density-diff mode)
   (row->te-density-diff 'reset)
   (one-line-plot mode row->te-density-diff))
 
-(define (one-line-plot mode row->y)
+(define (plot-fs-density-diff mode)
+  (row->te-density-diff 'reset)
+  (one-line-plot mode row->fs-density-diff #:point 'times))
+
+(define (one-line-plot mode row->y #:point [point-sym 'plus])
   (define row** (file->value (build-path data-dir (format "error-density-ss-~a.rktd" mode))))
   (define row->x row->ctime)
   (define my-lines
@@ -115,7 +156,7 @@
             (define x (row->x rr))
             (define y (row->y rr))
             (and x y (vector x y))))
-        #:size 10 #:color ii #:alpha 0.5 #:sym 'plus)))
+        #:size 10 #:color ii #:alpha 0.5 #:sym point-sym)))
   (parameterize ([plot-x-far-ticks no-ticks]
                  [plot-y-far-ticks no-ticks]
                  [plot-x-ticks (linear-major-y-ticks 4)]
@@ -146,17 +187,17 @@
 (define (plot-go mode)
   #;(plot-error-count mode)
   #;(plot-error-density mode)
-  (plot-error-diff mode)
+  #;(plot-error-diff mode)
   (plot-error-density-diff mode)
+  (plot-fs-density-diff mode)
   (void))
 
 ;; ---
 
 (module+ main
   (printf "error-count, density~n")
-  #;(for-each simple-go roblox-mode*)
-  ;; TODO try smaller bounds
-  (for-each plot-go (values #;cddr roblox-mode*))
+  (for-each simple-go roblox-mode*)
+  #;(for-each plot-go (values #;cddr roblox-mode*))
   (void))
 
 
