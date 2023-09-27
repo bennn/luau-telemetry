@@ -171,136 +171,123 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
   Since Luau is currently being used by many creators, we want to collect their feedback
   to improve the language and, in particular, the type system.
   The standard way to collect feedback at a large scale from creators working on
-  realistic projects is to deploy client-side telemetry; however, we must do
-  so in a way that respects creators' privacy.
-  Whatever telemetry we use to study the Luau language cannot include
-  personally-identifiable information.
-  For example, we cannot monitor source code or error messages as they
-  may contain personal data.
-  Finding ways to harness telemetry in a private way is the central research challenge.
-  %% TODO awkward
+  real projects is to deploy client-side telemetry; however, we cannot
+  scrape personal data or proprietary information, which means we cannot
+  collect source code fragments, error messages, or even filepaths.
+  The research questions are thus how to design a safe telemetry system
+  and whether it can provide useful insights about type errors.
 
   \paragraph{Approach}
   %% What was done that unveiled new knowledge?
-  We designed and implemented a pseudonymized telemetry system for Luau.
+  We designed and implemented a pseudonymized, randomized telemetry system for Luau.
   Telemetry records include a timestamp, a session id, a reason for sending,
-  and a numeric summary of the most recent type analysis.
-  This information lets us follow type analysis over time within a codebase
-  without revealing private information.
-  Over four months in Spring 2023, we deployed the telemetry system and collected
-  1.5 million telemetry records.
+  and a numeric summary of the most recent type analyses.
+  This information lets us study type errors over time
+  without revealing private data.
+  We deployed the system in Roblox Studio during Spring 2023
+  and collected over 1.5 million telemetry records from over 340,000 sessions.
 
   \paragraph{Knowledge}
   %% What new facts were uncovered? If the
   %% research was not results oriented, what new
   %% capabilities are enabled by the work?
-  We present several findings about Luau.
-  Some confirm hypotheses by the Luau team while others are rather surprising,
-  but all findings support our claim that pseudonymized telemetry is a
-  useful way to collect feedback.
-  One of the less-surprising findings is that types are unpopular:
+  We present several findings about Luau, all of which suggest that telemetry
+  is an effective way to study type error pragmatics.
+  One of the less-surprising findings is that opt-in gradual types are unpopular:
   there is an 100x gap between the number of untyped Luau sessions and the number
   of typed ones.
-  One surprise is that the strict mode for type analysis is very conservative
+  One surprise is that the strict mode for type analysis is overly conservative
   about interactions with data assets.
-  Instead of using the flexible dynamic type, it uses a top type and requires
-  creators to down-cast assets.
-  Lastly, a reassuring finding is that type analysis rarely hits its internal
-  limits on problem size.
+  % Instead of using the flexible dynamic type, it uses a top type and requires
+  % creators to down-cast assets.
+  A reassuring finding is that type analysis rarely hits its internal limits on
+  problem size.
 
   \paragraph{Grounding}
   %% What argument, feasibility proof, artifacts,
   %% or results and evaluation support this work?
-  Our findings are supported by a publicly-available dataset
-  of over 1.5 million telemetry records
-  and by free software for analyzing the data.
+  Our findings are supported by a dataset
+  of over 1.5 million telemetry records.
+  The data and scripts for analyzing it will be available in an artifact.
 
   \paragraph{Importance}
   %% Why does this work matter?
-  Luau is the first large-scale combination of gradual types and semantic
-  subtyping.
   Beyond the immediate benefits to Luau,
   our findings about types and type errors have implications
-  for adoption and ergonomics in other gradual languages.
-  %% mention Elixir, Verse?
-  FILL specifics.
-  %% TODO remove semantic subtyping
-  Our telemetry design is of broad interest, as it gathers useful
-  data without exposing personal information.
+  for adoption and ergonomics in other gradual languages
+  such as TypeScript, Elixir, and Typed Racket.
+  Our telemetry design is of broad interest, as it reports on
+  type errors without revealing sensitive information.
 
 \end{abstract}
+
 
 \section{Introduction}
 \label{s:introduction}
 
 {Roblox} is a platform for {shared virtual experiences}, with
 65~million Daily Active Users, and 14~billion hours of engagement in
-April--June 2023.
+April--June 2023~\cite{corp.roblox.com}.
 There are over 5~million experiences available on the platform thanks to a
-worldwide community of 3~million creators~\cite{corp.roblox.com}.
+worldwide community of 3~million creators.
+Many of the creators build experiences for fun or learning and may
+not consider themselves software developers; others are professional
+developers.
 
 Creators build experiences using the
 {Luau} programming language~\cite{luau-lang.org},
 an extension of {Lua~5.1~\cite{lua}}.
-The main addition in Luau is a static type system, which infers
+The main addition in Luau is a static type system that infers
 types for all Luau programs on the fly, as creators modify the code.
-These types are used primarily in type-driven tooling such as autocomplete and
-API documentation~\cite{luau-autocomplete}; the typical creator is unaware
-that a type system powers these tools.
-However, creators may write their own types, and they can opt in
-to receiving type error reports.
+These types are used primarily in IDE tooling such as autocomplete and
+in API documentation~\cite{luau-autocomplete}, and indeed, creators
+may be unaware that a typechecker is analyzing their code.
+However, creators can opt in to receiving type error reports and they can write
+their own types to guide designs and document their intentions.
 
-As discussed in~\cite{bfj-hatra-2021},
-the goals of the {Luau} type system are rather different from
-a traditional type system, which focuses on compilation and memory safety.
-{Luau} has a diverse user community, ranging from
-students in code camps to professional development studios. These
-creators have quite different needs, with different emphases on
-enabling rapid creation and ensuring software quality.
-{Luau} therefore supports three typing modes for user code:
-the hands-off default \mnocheck{},
-a relaxed \mnonstrict{} mode,
-and a rigorous \mstrict{} mode.
-Creators can switch between modes
-gradually~\cite{st-sfp-2006,tfffgksst-snapl-2017}, one module at a time.
-
-%% TODO Luau is migratory, clearer about this
+Due to the broad community of creators, the goals of the Luau type
+system are rather unique~\cite{bfj-hatra-2021}.
+Whereas a traditional type system focuses on compilation and memory
+safety, Luau takes a lenient approach by default and lets creators
+gradually~\cite{st-sfp-2006,tf-popl-2008} migrate to rigorous checks
+one module at a time.
+In this way, for example,
+students in code camps may begin in the \mnocheck{} mode that reports only
+syntax errors; hobbyists can use \mnonstrict{} mode to identify
+would-be runtime errors; and developers who need to ensure software
+quality can rely on \mstrict{} mode.
+(No matter the mode, a \emph{\FS{}} type analysis still drives the IDE tools.)
+Luau's types aim to support untyped designs, in the spirit of migratory
+typing~\cite{tfffgksst-snapl-2017}, so that creators can switch modes without
+needing to restructure their code.
 
 In this paper, we investigate methods for measuring the effectiveness
-of the {Luau} type system in the development of {Roblox} scripts.
-We want to collect measurements at a large scale, with thousands
-of participants, and we must do so in a way that protects creators' privacy.
+of the {Luau} type system.
+The goal is to collect feedback at a large scale, with thousands
+of participants maintaining real codebases.
+Consequently, the measurements cannot reveal \emph{any} information about
+source code, as it may contain personal data, proprietary algorithms, novel
+game designs, and so on.
 In comparison to prior work~(\cref{s:related}), which
-with few exceptions~\cite{zhlbr-cc-2020,zhlbr-oopsla-2020,hlzbr-ecoop-2021} is either small in scale
-or collects personally identifiable information~(PII),
-%% TODO careful, proprietary matters too!!!
-we performed a large-scale study using \panon{} \emph{telemetry}.
+with few exceptions~(e.g.,\cite{hlzbr-ecoop-2021}) is small in scale
+or collects source code, we performed a large-scale study using \panon{}
+{telemetry}.
 
-{Roblox Studio} has a telemetry system, which is used to gauge
-the effectiveness of creation features. This system randomly
-determines which sessions should report telemetry, and for those
-sessions, reports telemetry records back with a summary of the
-session. In the case of this study, the telemetry includes data on the
-number of errors at various levels of granularity: in the current edit
-range, in the current file, and in every file which was type
-checked.
+Our starting point is a telemetry framework that is built in
+to {Roblox Studio} and currently measures the effectiveness of
+creation features.
+This system randomly determines which sessions should report telemetry, and,
+for those sessions, reports telemetry records back with a summary of the
+session.
 
-The telemetry data we analyzed does not contain any PII.
-It has no source code;
- no source locations;
-no error messages (which may contain source code);
-no error messages;
-no record of the creator's identity, locale, or IP address;
-and no information about what creation the data came from.
-Telemetry records are correlated by session, using a \panon{}
-session identifier.
-
-Most users of {Roblox Studio} do not opt in to type error
-reporting (\pct{90},~\cref{s:data}), and so they do not see the ``squiggly underlining'' that
-indicates a type error site. Nonetheless, the type inference system
-still runs in the background (since it drives autocomplete and other
-type-based tools), letting us see which type errors would have
-been reported and whether users fix these errors over time.
+In this work, we design telemetry that collects data on type errors without
+exposing source code, source locations, or even error messages.
+The telemetry counts the number and kind of type errors at various
+levels of granularity.
+Furthermore it maintains a client-side approximation of the latest source-code
+edits and uses that to identify type errors that overlap with this edit range.
+Telemetry records are correlated by session, using a \panon{} session
+identifier and a timestamp.
 
 With this telemetry data, we investigate research questions about
 the adoption and benefits of type analysis:
@@ -321,20 +308,23 @@ the adoption and benefits of type analysis:
     For example, do \FS{} errors pile up in unanalyzed projects?
 \end{description}
 
-Beyond their immediate applications to {Luau},
-answers to these questions have implications for the design
-of gradual types~\cite{st-sfp-2006}, success types~\cite{lindahl2006practical},
+Beyond their immediate revelance to {Luau},
+answers to these questions have broad implications for the design
+of gradually-typed languages.
+Luau represents a large-scale combination of ideas from
+gradual typing~\cite{st-sfp-2006,tfffgksst-snapl-2017,bat-ecoop-2014},
+success typing~\cite{lindahl2006practical},
 and semantic subtyping~\cite{CF05:GentleIntroduction,Jef22:SemanticSubtyping}.
-Luau represents the first large-scale combination of these features,
-and lessons from this experience can inform future applications.
+Lessons from this experience can inform future applications.
 
 At a higher level, this paper is the first to use telemetry 
-to study a typechecker.
+to study a type checker.
 It thus represents a step toward data-driven language design,
 informed by many users' actual practice.
 Our data captures over 340,000 sessions
 that occured between February and April 2023
-and includes 72 million type analysis errors.
+and covers thousands of type analysis errors
+and millions of \FS{} errors.
 By contrast to typical qualitative methods such as surveys and interviews, it
 is not restricted to users' \emph{perceptions} about their work and it is not
 limited to a small number of users.
@@ -343,26 +333,19 @@ limited to a small number of users.
 \paragraph{Contributions}
 \begin{itemize}
   \item
-    Design of a low-overhead, (black-box / PII-safe / impersonal)
-    telemetry method, that other
-    researchers can build on.
+    Design of a low-overhead telemetry system
+    that reports on type errors without revealing source code.
 
   \item
-    Lessons from millions of type errors about
-    the adoption of strict type analysis,
-    the usefulness of type errors,
-    and \FILL{}.
-    These findings are especially important for the
-    gradual typing, success typing, and semantic subtyping communities.
+    Lessons from many thousands of type errors about
+    adoption, persistent errors, and creators' responses.
 
   \item
-    \FILL{} any surprises when doing the analysis?
-    Note, no ML for analysis, we do not have a corpus of text.
+    An available dataset of over 1.5 million telemetry records
+    and scripts to analyze them.
+    \emph{We intend to submit this in an artifact.}
 
 \end{itemize}
-
-The data and the analysis pipeline are freely available.
-\FILL{} link.
 
 
 \section{{Roblox} Context}
@@ -379,15 +362,12 @@ The data and the analysis pipeline are freely available.
 % 
 % \end{table}
 
-\begin{figure}[t]\centering
-  \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
-  \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
-
-  \caption{{Roblox Studio 3D creation} tools (left) and IDE (right).}
-  \label{fig:roblox-studio}
-\end{figure}
-
-%% \FILL{} explain the name "creators"?
+%% Most users of {Roblox Studio} do not opt in to type error
+%% reporting (\pct{90},~\cref{s:data}), and so they do not see the ``squiggly underlining'' that
+%% indicates a type error site. Nonetheless, the type inference system
+%% still runs in the background (since it drives autocomplete and other
+%% type-based tools), letting us see which type errors would have
+%% been reported and whether users fix these errors over time.
 
 {Roblox Studio} is a workbench that
 combines {3D creation} tools and an Integrated
@@ -472,6 +452,13 @@ While an experience is under development, it is typical for the data
 model to be edited (for example instances to be added, deleted, moved
 or renamed). Since the initial shape of the data model tree is reflected in
 the type system, it is possible for these edits to introduce type errors.
+
+\begin{figure}[t]\centering
+  \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
+  \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
+  \caption{{Roblox Studio 3D creation} tools (left) and IDE (right).}
+  \label{fig:roblox-studio}
+\end{figure}
 
 %% FILL table = object
 
@@ -1187,6 +1174,11 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
 \begin{itemize}
   \item
     \FILL{} which survive the longest, most keeps???
+
+  \item
+    \FILL{} \mnonstrict{} should have no false positives,
+    \mstrict{} doesn't care.
+    Why so many keeps in NS??!
 
   \item
     One striking aspect of~\cref{t:type-error-survival} is the large number
@@ -2064,7 +2056,7 @@ nevertheless on a much smaller scale than Roblox Studio.
 
 This paper presents the first large-scale analysis of developers' interactions with
 an industrial strength typechecker.
-With +1.5 million telemetry records from over three hundred thousand sessions
+With over 1.5 million telemetry records from over 300,000 sessions
 that took place during a three-month timespan, the data has plenty to say about
 type errors and their overlap with program edits.
 At the same time, the data is carefully restricted to avoid leaking personal
@@ -2107,23 +2099,24 @@ in Roblox Studio supports a variety of useful analyses:
     undesirable events rarely happen (e.g.,\code{UnificationTooComplex}).
   \item
     Testing the relationship between two counts can yield insights.
-    In~\cref{f:tefs-compass}, the gap between \mstrict{} vs \FS{} errors
+    The gap between \mstrict{} and \FS{} errors In~\cref{f:tefs-compass}
     revealed an issue with \mstrict{} checking.
   \item
     Reporting the overlap between type errors and the current (approximate) edit
-    range lets us assess the outcome of edits without revealing any source code.
+    range lets us assess the outcome of edits without revealing source code.
     It was especially useful to have overlaps for two sets of type errors: old and current.
   \item
     Timestamps give useful, low-level insights about the frequency of keystrokes,
     the length of sessions, and actions over time~(\cref{f:indy-session}).
     The event ordering that timestamps provide was invaluable; e.g., for learning
-    that error deltas bounce up and down~(\cref{f:error-density}).
+    that error deltas bounce up and down rather than rising shaply, then falling~(\cref{f:error-density}).
 \end{itemize}
 
 One aspect of the telemetry that we would change for next time is to provide
 more metadata.
 Luau recently adopted semantic subtyping to reduce false-positive type
-errors~\cite{luau-subt}, but the current telemetry has no way to tell if this
+errors~\cite{CF05:GentleIntroduction,Jef22:SemanticSubtyping}, but the current
+telemetry has no way to tell if this
 internal extension is enabled or not.
 Three other aspects are worth rethinking.
 First, it would be useful to have fine-grained counts for \FS{} analysis
@@ -2131,9 +2124,9 @@ errors and to know the specific reason behind errors such as \code{TypeMismatch}
 But, this additional data could double the size of telemetry records.
 Second, although tracking edit ranges was useful, it made the telemetry system
 much more difficult to build and maintain.
-Tracking old and current errors at the module level would be easier,
+Tracking old and current errors at the module level would be far easier,
 though there is a risk that it is too coarse.
-Third, the massive number of syntax errors begs the question of how to reduce
+Third, the massive number of syntax errors begs the question of how to skip
 them.
 Shifting focus from arbitrary keystrokes to selected ones, such as closing
 parentheses or whitespaces, might increase the likelihood of well-formed
