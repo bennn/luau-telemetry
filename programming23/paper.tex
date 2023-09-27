@@ -248,7 +248,7 @@ These types are used primarily in type-driven tooling such as autocomplete and
 API documentation~\cite{luau-autocomplete}; the typical creator is unaware
 that a type system powers these tools.
 However, creators may write their own types, and they can opt in
-to receiving ype error reports.
+to receiving type error reports.
 
 As discussed in~\cite{bfj-hatra-2021},
 the goals of the {Luau} type system are rather different from
@@ -316,9 +316,9 @@ the adoption and benefits of type analysis:
     how do creators respond,
     and which errors tend to persist despite subsequent edits?
   \item[RQ3.]
-    What impact does type analysis have on the number of background type
+    What impact does type analysis have on the number of \FS{}
     errors?
-    For example, do background errors pile up in unanalyzed projects?
+    For example, do \FS{} errors pile up in unanalyzed projects?
 \end{description}
 
 Beyond their immediate applications to {Luau},
@@ -339,7 +339,6 @@ By contrast to typical qualitative methods such as surveys and interviews, it
 is not restricted to users' \emph{perceptions} about their work and it is not
 limited to a small number of users.
 
-FILL can stats answer questions that point-by-point analysis cannot?
 
 \paragraph{Contributions}
 \begin{itemize}
@@ -1080,7 +1079,7 @@ in well-typed shape.
     72M forced scrict errors = \pct{89} \mnocheck{}, \pct{10} \mnonstrict{}, \pct{1} \mstrict{}
     %% really 0.16 strict, very low!!!
   \end{tabular}
-  \caption{}
+  \caption{FILL}
   \label{f:error-by-mode}
 \end{figure}
 
@@ -1187,6 +1186,9 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
 %% \paragraph{Most Type Errors are Typos}
 \begin{itemize}
   \item
+    \FILL{} which survive the longest, most keeps???
+
+  \item
     One striking aspect of~\cref{t:type-error-survival} is the large number
     of \code{SyntaxError}s and the related errors \code{UnknownSymbol} and
     \code{UnknownProperty}.
@@ -1264,7 +1266,7 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
 
 \begin{table}[t]\centering
   %% NOTE: popularity looks similar when [over all records] vs. [restricted to module switch records]
-  \caption{Type error popularity for \mnonstrict{} and \mstrict{} modes.  All of the type errors in \mnocheck{} mode are \code{SyntaxError}s.}
+  \caption{Type error popularity for \mnonstrict{} and \mstrict{} modes (all of the type errors in \mnocheck{} mode are \code{SyntaxError}s).}
   \label{t:type-error-count}
   \begin{tabular}{ll}
     \mnonstrict{} & \mstrict{} \\
@@ -1320,6 +1322,50 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
   \end{tabular}
 \end{table}
 
+%% UNUSED CODES
+%% \mnonstrict{}
+%%   CodeTooComplex
+%%   DeprecatedApiUsed
+%%   DuplicateGenericParameter
+%%   DynamicPropertyLookupOnClassesUnsafe
+%%   FunctionRequiresSelf
+%%   IncorrectGenericParameterCount
+%%   InternalError
+%%   NormalizationTooComplex
+%%   OccursCheckFailed
+%%   SwappedGenericTypeParameter
+%%   TypePackMismatch
+%%   UnificationTooComplex
+%% 
+%% \mstrict{}
+%%  CodeTooComplex
+%%  DeprecatedApiUsed
+%%  DuplicateGenericParameter
+%%  DuplicateTypeDefinition
+%%  DynamicPropertyLookupOnClassesUnsafe
+%%  FunctionDoesNotTakeSelf
+%%  FunctionRequiresSelf
+%%  InternalError
+%%  MissingUnionProperty
+%%  NormalizationTooComplex
+%%  OnlyTablesCanHaveMethods
+%%  SwappedGenericTypeParameter
+%%  TypePackMismatch
+%%  UnificationTooComplex
+
+%% both NS S
+%%  CodeTooComplex
+%%  DeprecatedApiUsed
+%%  DuplicateGenericParameter
+%%  DynamicPropertyLookupOnClassesUnsafe
+%%  FunctionRequiresSelf
+%%  InternalError
+%%  NormalizationTooComplex
+%%  OnlyTablesCanHaveMethods
+%%  SwappedGenericTypeParameter
+%%  TypePackMismatch
+%%  UnificationTooComplex
+
 \Cref{t:type-error-count} reports the percent of
 type errors that overlap with the edit range.
 This table is based on the same data as the previous table~(\cref{t:type-error-survival}),
@@ -1348,6 +1394,9 @@ by definition \code{SyntaxError}s.
     get type analysis to find errors like \code{UnknownSymbol(buck)}
     and \code{UnknownProperty(bucket.c)}.
     These are transient issues, but telemetry may catch them.
+
+  \item
+    \FILL{} huge syntax error gap between S nonstrict.
 
   \item
     \code{TypeMismatch} is far more common in \mstrict{} (\pct{20.46})
@@ -1411,10 +1460,12 @@ internal limits are not posing barriers to typechecker adoption.
 
   \mnocheck{}
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
-  \medskip
+  \smallskip
+
   \mnonstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
-  \medskip
+  \smallskip
+
   \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
   \caption{Changes in type error density (errors in module / lines in module) over time (seconds).}
@@ -1666,117 +1717,163 @@ errors, though the numbers are close.
 This should happen in \mstrict{} mode.
 
 
-\section{Discussion}
+\section{Answers to Research Questions}
 \label{s:discussion}
 
-To sum up, the data supports the following conclusions:
+With the data in hand, we can answer the research questions
+from~\cref{s:introduction}.
+The answers confirm several aspects of Luau's design, but
+at the same time offer several directions for future improvements.
+Luau clearly has a powerful typechecker that can efficiently
+analyze thousands of lines of code.
+But, few creators use type analysis directly and the data presents little
+evidence that doing so would improve their quality of life.
+We conjecture that Luau needs further tailoring to match
+common idioms in Roblox scripts.
+Discovering these idioms is a question for future work~(\cref{s:conclusion}).
+
+\begin{description}
+  \item[How many creators choose to use type analysis?]
+    A mere \pct{10} of creators opt-in to type checking.
+    Most of these use \mnonstrict{} mode, and fewer than \pct{1}
+    use \mstrict{} mode.
+
+  \item[How often do projects contain modules with different analysis modes?]
+    Projects rarely combine analysis modes.
+    Only 512 of \nK{340} sessions ($<\pct{1}$) switched to modules with different
+    analysis modes.
+    This number may be a significant underapproximation because we have data
+    only on modules that the creator chose to open, but the widespread use
+    of \mnocheck{} mode suggests that it is not off by much.
+
+  \item[How often do creators turn analysis off?]
+    Creators rarely disable type analysis after opting in.
+    Only 320 of the \nK{340} sessions ($<\pct{1}$)
+    switch to a weaker mode.
+    \FILL{} are they downgrading from S or NS?
+    %% FILL more insight if we match upgrades + downgrades in session?
+
+  \item[For modules that use type analysis:]\leavevmode
+    \begin{description}
+      \item[Which errors arise?]
+        Syntax errors are extremely common~(over \pct{50},~\cref{t:type-error-count}), 
+        followed by type mismatches~(\pct{20} in \mstrict{}),
+        arity errors~(\pct{2}),
+        and failure to unpack on optional value~(\pct{2}).
+        There are several uncommon errors, such as misusing a table operation,
+        and a few that never arise: internal and too-complex errors,
+        duplicating or swapping a generic parameter, use of a deprecated API,
+        and unsafe dynamic property lookup on a class.
+
+      \item[How do creators respond? Which errors persist through edits?]
+        Creators typically fix analysis errors.
+        With few exceptions, increases and decreases in the number of errors
+        balance out~(\cref{f:error-changes,t:type-error-survival,}).
+        Even in \mnocheck{}, most edits that overlap with syntax errors
+        remove at least one error~(\pct{67}) rather than increase or maintain
+        the total.
+        The errors that most-often survive edits are due to
+        inference at a binary operation,
+        sending \code{self} to a function that does not expect it,
+        and failure to unpack an optional value.
+        But the first two seldom arise, and the third is something creators
+        might reasonably ignore while prototyping.
+
+%% Keep percents
+%% '((CannotInferBinaryOperation "0.50")
+%%   (OptionalValueAccess "0.44")
+%%   (FunctionDoesNotTakeSelf "0.40")
+%%   (CannotExtendTable "0.35")
+%%   (UnknownPropButGotLikeProp "0.28")
+%%   (UnknownProperty "0.26")
+%%   (MissingProperties "0.25")
+%%   (FunctionExitsWithoutReturn "0.21")
+%%   (ModuleHasCyclicDependency "0.20")
+%%   (UnknownRequire "0.18")
+%%   (TypeMismatch "0.18")
+%%   (UnknownSymbol "0.15")
+%%   (NotATable "0.12")
+%%   (GenericError "0.11")
+%%   (CannotCallNonFunction "0.10")
+%%   (CountMismatch "0.09")
+%%   (GenericExtraInformation "0.07")
+%%   (IllegalRequire "0.06")
+%%   (SyntaxError "0.01")
+
+    \end{description}
+
+  \item[What impact does type analysis have on the number of \FS{} errors?]
+    Opting in to type analysis has little impact on \FS{} errors.
+    The percent of \FS{} errors in \mnocheck{} code matches the percent of
+    creators using \mnocheck{} mode~(\cref{f:error-by-mode}); whereas,
+    if type analysis helped reduce \FS{} errors, \mnocheck{} would own a
+    higher percentage of the errors.
+    Furthermore, there is no apparent relation between \FS{} errors and edits,
+    regardless of analysis mode~(\cref{f:error-changes}).
+    A randomly-chosen edit has a 1/3 chance of increasing, decreasing, or
+    maintaining the number of \FS{} errors.
+
+\end{description}
 
 
-\subsection{The Good News}
-
-\paragraph{Good: No Internal Error}
-
-FILL hope to never see \code{InternalError}.
-Have zero, yay!
-
-um ... very concerning if this is the top takeaway
-
-
-\paragraph{Good: No Apparent Turmoil With Upgrades / Downgrades}
-
-But, mode switches are very rare!
-Really too soon to draw any conclusion, this is only a lack of bad.
-
-
-\paragraph{Do Types Improve Quality of Life?}
-
-\FILL{} compare \mnonstrict{} and \mstrict{}.
-Use edit range~(\cref{t:type-error-survival} for NS vs S)
-and error density~(\cref{f:error-density})
-
-Uh oh, no accumulated FS errors in nocheck.
-Edits vs FS counts are the same in all three modes.
-
-
-\paragraph{... Something About Add/Drop in Edit Range}
-
-\FILL{}
-
-\subsection{The Bad News}
-
-\paragraph{Bad: Strict too Strict}
-
-\FILL{}
-
-Comparing NS vs S, the syntax error \% is about the same (15 vs 9)
-but the type mismatch \% is far off (2 vs 20).
-S is probably noisy.
-
-Data model is probably part of this.
-
-
-
-\paragraph{Big Bad: Low Adoption}
-
-poor advertising,
-unclear value proposition,
-nocheck code is apparently doing fine despite lots of forced strict errors,
-... can we say this outright?!
-
-
-\subsection{Threats to Validity}
+\paragraph{Threats to Validity}
 \label{s:threats}
 
-Error counts per-project and per-module include syntax errors.
-Problematic, because syntax errors are uninteresting (easy to fix),
-but common, which makes it likely that our per-keystroke telemetry (1/200) will record them.
-Edit range has specific counts.
-Next time, we should do that for the other aggregates.
+While this study has high ecological validity due to its focus on
+working creators, there are several threats to keep in mind.
+Some threats stem from our method of collecting data; others
+come from the limited scope of the data.
 
-We are sampling sessions. Could miss interesting ones.
+First of all, sampling is necessarily incomplete.
+Though the data includes many thousands of sessions, it
+may have missed a few critical sessions where a creator
+adopted \mstrict{} mode, encountered \code{CodeTooComplex} errors,
+and gave up.
+Furthemore, our method of sampling by keystroke and by module switch
+skews the data toward creators who, for whatever reason, do more
+of these actions.
+We have no access to other events (e.g., run locally, publish) due to privacy
+concerns; future studies may wish to avoid this limitation by actively
+recruiting subjects.
 
-Sampling by keystroke means different things for different creators.
-Depends how they type.
-Scripted interactions that generate a large number of keystrokes per second
-can swamp our data and are hard to distinguish from genuine interactions.
-Copy paste might just look like a bot.
-%% \QALAN{} I think you said a paste counts as 1 keystroke; is that right?
+Second, the edit ranges are a coarse approximation of actual edits.
+They begin at the lowest edited line of code and end at the highest
+edited line, even if nothing between those lines changed.
 
-We have no knowledge whatsoever about interesting events like save run publish.
-Publish events are private.
+Third, the total counts of type errors include a large number of syntax errors,
+which have little to do with the Luau type system and are presumably easy for
+creators to fix.
+It would be better for the analysis to ignore these errors.
+Indeed, our comparison between \FS{} errors in \mnocheck{} vs.
+\mstrict{} mode~(\cref{f:error-changes}) might tell a very different story
+without all the noise that syntax errors introduce.
 
-Changes to errors in the edit range are hard to follow.
-Could add one error but remove another of the same kind,
-then we can't distinguish from ignoring the error.
+Fourth, type analysis reports several errors at once and we have no idea which
+errors, if any, creators intended to fix with their edits.
+Although it appears that creators choose to fix errors,
+the fixes may be a side effect of other plans.
 
-Edit ranges are coarse, merely the top and bottom edit.
-No idea what happened in between.
-Long time between keystroke events makes this even worse.
+% Telemetry cannot replace user studies, as there is no way to measure
+% creator sentiment, but provide complementary data at scale.
+% No idea about intent is a big problem, we don't know which error the creator wanted to fix.
 
-Telemetry cannot replace user studies, as there is no way to measure
-creator sentiment, but provide complementary data at scale.
-No idea about intent is a big problem, we don't know which error the creator wanted to fix.
-
-Type analysis reports many errors at once.
-No way to know what the creator is looking at.
-Not even sure they have the analysis widget open.
-
-Internal validity?
-
-External validity?
-
-Construct validity?
-
-Conclusion validity
-
-Ecological validity is high.
+Lastly, we have two remarks about external validity.
+First, our information on type errors is limited to error names.
+If another language has an error that is roughly similar to the
+\code{CannotCallNonFunction} error but with slightly different
+semantics, then the relative frequency of that error could be different
+than what we observed.
+Second, we know nothing about the creators in our study except that they
+were selected at random from a large and diverse group.
+A dataset based on a targeted subset of users might show entirely different
+characteristics.
 
 
 \section{Related Work}
 \label{s:related}
 
 \begin{table}[t]\centering
-  \caption{Comparison of telemetry designs. Two orthogonal concerns are when to collect data and whether to add noise to it.}
+  \caption{Comparison of telemetry designs. Two orthogonal concerns are \emph{when} to collect data and \emph{whether} to add noise to enhance privacy.}
   \label{t:telemetry-design}
 
   \begin{tabular}{l@{~~}c@{~~}c@{~~}c@{~~}c@{~~}c}
@@ -2050,6 +2147,8 @@ While one could start modeling with the \mnocheck{} and \mnonstrict{}
 data, but there are too few \mstrict{} records at the moment due to our uniform
 sampling rate.
 More data is needed to experiment with models of \mstrict{}-mode programmers.
+
+\FILL{} future: interviews, accommodate idioms
 
 % \paragraph{Bad: Noisy Data}
 % 

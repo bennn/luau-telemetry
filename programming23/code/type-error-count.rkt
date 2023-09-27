@@ -64,7 +64,12 @@
   (define total-err (apply + (hash-values h#)))
   (define ranked (sort (hash->list h#) > #:key cdr))
   (define pct* (for/list ((kv (in-list ranked))
-                          #:when (< 0 (cdr kv)))
+                          #:when
+                            (if (< 0 (cdr kv))
+                              #true
+                              (begin
+                                (printf "unused code ~a~n" (car kv))
+                                #f)))
                  (list (car kv) (pct (cdr kv) total-err))))
   (tex-table pct*))
 
