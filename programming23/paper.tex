@@ -1850,7 +1850,7 @@ without all the noise that syntax errors introduce.
 
 Fourth, type analysis reports several errors at once and we have no idea which
 errors, if any, creators intended to fix with their edits.
-Although it appears that creators choose to fix errors,
+Although it appears that creators choose to fix errors with their edits,
 the fixes may be a side effect of other plans.
 
 % Telemetry cannot replace user studies, as there is no way to measure
@@ -2081,12 +2081,12 @@ developers and other maintainers of gradually-typed languages:
     Since the next typing mode (\mnonstrict{}) requires no annotations and is
     very conservative about the errors it reports, we conjecture that
     developers would have no objections to using it and are simply unaware that
-    this mode exists.
+    other modes exist.
 %  \item
 %    \pct{50} of all errors are in current module, so probably errors appear locally (not in a distant module);
 %    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
   \item
-    Creators tend to fix them immediately rather than dealing with them in a batch
+    Creators tend to fix errors immediately rather than dealing with them in a batch
     or ignoring the errors altogether~(\cref{f:error-density,f:error-changes}).
     % Changes to the number of errors balance one another~(\cref{f:error-density});
     % edits are equally likely to add or remove errors~(\cref{f:error-changes}).
@@ -2094,7 +2094,7 @@ developers and other maintainers of gradually-typed languages:
     All Luau scripts interact with data assets, but no typechecking mode
     has a precise view of the data.
     Improving precision is an important direction for future work.
-    Until then, the \mstrict{} mode clearly needs to relax its data-asset
+    Until then, \mstrict{} mode clearly needs to relax its data-asset
     analysis because it raises even more errors than \FS{} checking~(\cref{f:tefs-compass}).
 \end{itemize}
 
@@ -2106,13 +2106,13 @@ in Roblox Studio supports a variety of useful analyses:
     Counting specific type errors helps to identify trends and to confirm that
     undesirable events rarely happen (e.g.,\code{UnificationTooComplex}).
   \item
-    Testing the relationship between two counts can yield insights;
-    in~\cref{f:tefs-compass}, the gap between \mstrict{} vs \FS{} errors
+    Testing the relationship between two counts can yield insights.
+    In~\cref{f:tefs-compass}, the gap between \mstrict{} vs \FS{} errors
     revealed an issue with \mstrict{} checking.
   \item
     Reporting the overlap between type errors and the current (approximate) edit
     range lets us assess the outcome of edits without revealing any source code.
-    It was especially useful to know the overlap for old and for current type errors.
+    It was especially useful to have overlaps for two sets of type errors: old and current.
   \item
     Timestamps give useful, low-level insights about the frequency of keystrokes,
     the length of sessions, and actions over time~(\cref{f:indy-session}).
@@ -2131,8 +2131,8 @@ errors and to know the specific reason behind errors such as \code{TypeMismatch}
 But, this additional data could double the size of telemetry records.
 Second, although tracking edit ranges was useful, it made the telemetry system
 much more difficult to build and maintain.
-Tracking old and current errors at the module level would be more maintainable,
-but there is a risk that it is too coarse.
+Tracking old and current errors at the module level would be easier,
+though there is a risk that it is too coarse.
 Third, the massive number of syntax errors begs the question of how to reduce
 them.
 Shifting focus from arbitrary keystrokes to selected ones, such as closing
@@ -2146,21 +2146,9 @@ rates.
 While one could start modeling with the \mnocheck{} and \mnonstrict{}
 data, but there are too few \mstrict{} records at the moment due to our uniform
 sampling rate.
-More data is needed to experiment with models of \mstrict{}-mode programmers.
-
-\FILL{} future: interviews, accommodate idioms
-
-% \paragraph{Bad: Noisy Data}
-% 
-% \begin{verbatim}
-%  require(foobar)
-%   foobar is a module script in the data model
-%  require(foo.bar.b)
-%   - could be edit in progress
-%   - could be renamed module
-%   - 
-% \end{verbatim}
-
+The errors that we do see in \mstrict{} mode call for an in-depth analysis via
+talk-aloud interviews to discover why type mismatches occur and how how Luau
+can better accommodate untyped idioms.
 
 
 %% PS
@@ -2174,7 +2162,7 @@ More data is needed to experiment with models of \mstrict{}-mode programmers.
 Thanks to Benjamin Chung for several helpful discussions about data analysis
 and effective plotting.
 Greenman was supported by
-grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
+NSF grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
 to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
 %\newpage
