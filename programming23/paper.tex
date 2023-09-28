@@ -546,43 +546,58 @@ Telemetry allows an application to ``phone home'' with data
 summarizing usage patterns, such performance data, crash reporting,
 and feature uptake. A typical usage is in deciding whether an API can
 be deprecated: without telemetry it may be difficult to know how
-popular a feature is with users, but with telemetry it is
+popular it is, but with telemetry it is
 straightforward.
 
-IDEs use telemetry in a similar fashion to most user-facing
+IDEs use telemetry in a similar fashion\todo{I really don't know what
+  this means. Are you saying VSCode is constantly calling home? Is it
+  telling Racket about my API usage? Do we need anything in this para?} to most user-facing
 applications, for example VSCode~\cite{vsc-telemetry} and
 IntelliJ~\cite{intellij-telemetry} report telemetry.
 See~\cref{s:related} for futher comparisons among telemetry designs.
 
-Telemetry for programming languages can be controversial, for example
+Telemetry for programming languages can be controversial:e.g., see
 the lively discussion around telemetry in the Go
 toolchain~\cite{golang-telemetry}. 
 The Luau open source toolchain does \emph{not} report telemetry,
 as it is designed to be used in build environments such as Continuous Integration
 servers, where hermetic deterministic builds are expected.
 
-Much of the concern about telemetry is because of its potential impact on
-privacy, by revealing Personally Identifiable Information (PII).
-For this reason, it is important that any experiments using telemetry
-not reveal PII:
-no source code;
-no source code locations;
-no error messages (which may contain source code);
-no record of the creator's identity, locale, or IP address;
-and no information about what creation the data came from.
-A good introduction to the privacy implications and tradeoffs
-involved with telemetry is~\cite{transparent-telemetry}.
-
-For performance reasons, there are limits to telemetry data:
-telemetry records have size limits, and the performance impact of
-recording telemetry should be minimal.
-
-In summary, the limitations of telemetry are:
+Telemetry therefore faces at least two major constraints:
 \begin{itemize}
-  \item Data which reveals no PII.
-  \item Fixed-size telemetry records.
-  \item Minimal overhead to record telemtry.
+
+\item It should not reveal private information. This can include
+  Personally Identifying
+  Information (PII) about creators: their identity, location, etc. It also
+  includes trade secrets. Even an error message that contains the name
+  of a function could reveal something the creator would not want to
+  share.
+
+\item For performance reasons, it should have minimal run-time
+  overhead and also transmit small and bounded amounts of data.
 \end{itemize}
+Cox discusses in detail the privacy implications and tradeoffs
+in telemetry~\cite{transparent-telemetry}.
+
+% BEN: I believe the above subsumes all of the below:
+% Much of the concern about telemetry is because of its potential impact on
+% privacy. It can not only reveal Personally Identifiable Information
+% (PII) but also trade secrets, etc. Thus, telemetry should not reveal
+% PII, source code, error messages (which can refer to source), the
+% creator's identity, and so on.
+% % and no information about what creation the data came from.
+
+% For performance reasons, there are limits to telemetry data:
+% telemetry records have size limits, and the performance impact of
+% recording telemetry should be minimal.
+
+% In summary, the limitations of telemetry are:
+% \begin{itemize}
+%   \item Data that don't reveal private information.
+%   \item Fixed-size telemetry records.
+%   \item Minimal overhead to record telemtry.
+% \end{itemize}
+
 In addition, due to the architecture of Roblox Studio
 there is some information that is not available to the
 typechecker:
@@ -597,6 +612,7 @@ typechecker:
 \label{s:telemetry-records}
 
 \begin{figure}[t]\centering
+  % BEN: The left brace is confusing. Is ID not fixed?
   \begin{tabular}{|l|l|l|l|l|l|l|}\hline
     ID & Time & Mode & Reason & Size Info & Overall Counts & Edit Range Counts
     \\\toprule
@@ -608,11 +624,11 @@ typechecker:
 \end{figure}
 
 The telemetry for a Roblox Studio session is gathered as a series of
-telemtry records, all with the same \panon{} session
+records, all with the same \panon{} session
 identifier. This allows us to correlate telemetry across a single
 session, but not between sessions.
 
-In order to avoid swamping our telemetry servers, we randomly throttle
+In order to avoid swamping our telemetry servers, we randomly throttled
 the generation of telemetry records:
 \begin{itemize}
   \item
@@ -621,28 +637,20 @@ the generation of telemetry records:
     0.5\% of runs of the typechecker (approximately 1 in 200 keystrokes)
       in an enrolled session generated a telemetry record.
 \end{itemize}
-In order to find how file-switching correlated with type errors, we additionally have:
-\begin{itemize}
-  \item
-    every run of the typechecker in an enrolled session which switched file generated a telemetry record.
-\end{itemize}
+In order to find how file-switching correlated with type errors, we
+additionally recorded
+every run of the typechecker in an enrolled session which switched
+file generated a telemetry record.\todo{I cannot parse this!}
 
-To track the edit range, we record a start and end position, which we
-update appropriately on every edit. This can result in very large edit
-ranges, for example, if the user edits at the beginning and end of the
-file.
-The main benefit of this strategy is that it ensures constant-size telemetry records.
-
-Each telemetry record contains seven kinds of data.
-Refer to~\cref{f:tdata} for an illustration:
+\Cref{f:tdata} shows the structure of our telemetry records:
 \begin{enumerate}
   \item
-    ID: a \panon{} identifier for the current session
+    ID: a \panon{} identifier for the current session.
   \item
     Time: one timestamp from the client and one from the server.
     %% timestamp explanation \cref{s:data-cleaning}
   \item
-    Mode: type analysis mode of the current file, which is either \mnocheck{},
+    Mode: type analysis mode of the current file: \mnocheck{},
     \mnonstrict{}, or \mstrict{}.
   \item
     Reason: a flag that explains whether this record was sent due to a
@@ -679,6 +687,15 @@ Refer to~\cref{f:tdata} for an illustration:
         These may have motivated some of the changes in the edit range.
     \end{itemize}
 \end{enumerate}
+
+
+
+
+To track the edit range, we record a start and end position, which we
+update appropriately on every edit. This can result in very large edit
+ranges, for example, if the user edits at the beginning and end of the
+file.
+The main benefit of this strategy is that it ensures constant-size telemetry records.
 
 \paragraph{NOTES} %% FILL
 This kind of telemetry data is coarse-grained.
