@@ -230,16 +230,16 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 \section{Introduction}
 \label{s:introduction}
 
-{Roblox} is a platform for {shared virtual experiences}, with
+{Roblox} is a platform for {shared virtual experiences} (typically 3D games), with
 65~million Daily Active Users, and 14~billion hours of engagement in
 April--June 2023~\cite{corp.roblox.com}.
-There are over 5~million experiences available on the platform thanks to a
+There are over 5~million distinct user-created programs available on the platform thanks to a
 worldwide community of 3~million creators.
-Many of the creators build experiences for fun or learning and may
+Many of the creators program for fun or learning and may
 not consider themselves software developers; others are professional
 developers.
 
-Creators build experiences using the
+Creators program using the
 {Luau} programming language~\cite{luau-lang.org},
 an extension of {Lua~5.1~\cite{lua}}.
 The main addition in Luau is a static type system that infers
@@ -286,8 +286,9 @@ for those sessions, reports telemetry records back with a summary of the
 session.
 
 In this work, we design telemetry that collects data on type errors without
-exposing source code, source locations, or even error messages.
-The telemetry counts the number and kind of type errors at various
+exposing source code, source locations, or even error message text (which
+may contain revealing information).
+The telemetry counts the number and \emph{kind} of type errors at various
 levels of granularity.
 Furthermore it maintains a client-side approximation of the latest source-code
 edits and uses that to identify type errors that overlap with this edit range.
@@ -520,7 +521,7 @@ slowing down Roblox Studio.
 
 \paragraph{Data Model}
 
-The state of the world in a {Roblox} experience is captured by
+The state of the world in a {Roblox} program is captured by
 the \emph{data model}, which is a tree of {instances}, such as
 parts, models, meshes, effects, lighting, audio assets, and physics
 constraints such as forces, springs and joints.
@@ -529,7 +530,7 @@ There may be thousands of assets.
 %% The data model can be seen in the Explorer view of~\cref{fig:roblox-studio}.
 %% \QALAN{} where is it? very hard to see, needs a clear label
 
-While an experience is under development, it is typical for the data
+While a program is under development, it is typical for the data
 model to be edited.
 For example, instances may be added or renamed.
 Since the shape of the data model tree is reflected in
