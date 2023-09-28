@@ -401,14 +401,13 @@ will see highlights in their code but no further details.
 In addition to the main type analysis, Roblox Studio takes a second pass over
 every codebase with a \emph{\FS{}} analysis to infer autocomplete suggestions
 and drive other IDE tools.
-The \FS{} analysis uses rigorous checks along the lines of \mstrict{} mode
-no matter what mode the creator declared for the script in the hope of inferring
-precise types.
+To infer precise types,
+the \FS{} analysis uses rigorous checks very similar to those of
+\mstrict{} mode (but not identical: see \cref{s:strict-vs-forcedstrict})
+no matter what mode the creator declared for the script.
 (Internally to Roblox Studio, this analysis is called \emph{forced strict}
-because it ignores the creator's choice and applies strong checks. However,
-the checks are not the same as \mstrict{} mode;
-see~\cref{s:strict-vs-forcedstrict}.)
-When it fails to infer a type, \FS{} defaults to the unknown gradual
+because it ignores the creator's choice and applies strong checks.)
+When it fails to infer a type, \FS{} analysis defaults to the unknown gradual
 type~\cite{st-sfp-2006}.
 Creators cannot see the errors reported by \FS{} analysis.
 
@@ -509,7 +508,7 @@ and edges are removed to make the graph acyclic.
 Typechecking analyzes the entire module graph, but it also keeps track of which
 modules have been edited to avoid repeating work.
 Any script that the creator modifies gets marked as dirty,
-and any script that is dirty or that transitively import a dirty
+and any script that is dirty or that transitively imports a dirty
 module gets analyzed by the typechecker.
 In the common case when typechecking is performed for autocomplete,
 only the current script gets checked because it is the only dirty
@@ -532,7 +531,8 @@ There may be thousands of assets.
 
 While a program is under development, it is typical for the data
 model to be edited.
-For example, instances may be added or renamed.
+% For example, instances may be added or renamed.
+% --> Commented out to get a better page break.
 Since the shape of the data model tree is reflected in
 the type system, it is possible for these edits to introduce a mountain
 of type errors across the project.
