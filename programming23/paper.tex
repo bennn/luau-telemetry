@@ -968,9 +968,16 @@ persist through nearby edits.
             642 & mixed-mode    & [\pct{ 0.18}]
       \end{tabular}
       \begin{tabular}[t]{l@{~~}ll}
+        %% TODO numbers may be off by +- 100
+        %%    & 341 & contain a mode upgrade \\
+        %%    & 320 & contain a mode downgrade \\
+        %%    & 512 & contain modules with different modes
+        %%  they don't match out/error-density*hasdown.rkt
+        %%  ??? counting downs instead of sessions with downs ???
+        %% TODO fix throughout paper!
         \zerowidth{Among the mixed-mode sessions:} \\
-        & 341 & contain a mode upgrade \\
-        & 320 & contain a mode downgrade \\
+        & 176 & contain a mode upgrade \\
+        & 233 & contain a mode downgrade \\
         & 512 & contain modules with different modes
       \end{tabular}
     \end{tabular}
@@ -1092,7 +1099,6 @@ in well-typed shape.
 
 \Cref{f:error-by-mode} shows how the type errors and forced strict errors
 in the data are split across type analysis modes.
-\FILL{} add averages.
 
 Most type errors come from \mnonstrict{} mode, despite it having an order
 of magnitude fewer users that \mnocheck{}.
@@ -1761,10 +1767,28 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
   \item[How often do creators turn analysis off?]
     Creators rarely disable type analysis after opting in.
-    Only 320 of the \nK{340} sessions ($<\pct{1}$)
+    Only 233 of the \nK{340} sessions ($<\pct{1}$)
     switch to a weaker mode.
-    \FILL{} are they downgrading from S or NS?
+    Most of these (\pct{75}) are downgrading from \mstrict{}
+    rather than \mnonstrict{} mode.
     %% FILL more insight if we match upgrades + downgrades in session?
+
+    %% upgrade
+    %% 519 total sessions
+    %% 176 with up
+    %% #hash((nocheck . 0) (nonstrict . 44) (strict . 132))
+    %%  nocheck : 0.00\%
+    %%  strict : 75.00\%
+    %%  nonstrict : 25.00\%
+    %%
+    %% downgrade
+    %% 515 total sessions
+    %% 233 with down
+    %% #hash((nocheck . 0) (nonstrict . 64) (strict . 169))
+    %%  nocheck : 0.00\%
+    %%  strict : 72.53\%
+    %%  nonstrict : 27.47\%
+
 
   \item[For modules that use type analysis:]\leavevmode
     \begin{description}
