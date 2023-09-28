@@ -296,7 +296,8 @@ Telemetry records are correlated by session, using a \panon{} session
 identifier and a timestamp.
 
 With this telemetry data, we investigate research questions about
-the adoption and benefits of type analysis:
+the adoption and benefits of type analysis: \todo{Some of these are flawed. We don't know anything about creators. Adjust
+  to match section 5.}
 \begin{description}
   \item[RQ1.]
     How many creators use type analysis?
@@ -1782,11 +1783,13 @@ This should happen in \mstrict{} mode.
 \section{Answers to Research Questions}
 \label{s:discussion}
 
+\todo{No identity $\Rightarrow$ no ``creators'', only sessions.}
 With the data in hand, we can answer the research questions
 from~\cref{s:introduction}.
 The answers confirm several aspects of Luau's design, but
 at the same time offer several directions for future improvements.
-Luau clearly has a powerful typechecker that can efficiently
+
+Luau clearly\todo{How can we say?} has a powerful typechecker that can efficiently
 analyze thousands of lines of code.
 But, few creators use type analysis directly and the data presents little
 evidence that doing so would improve their quality of life.
@@ -1802,7 +1805,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
   \item[How often do projects contain modules with different analysis modes?]
     Projects rarely combine analysis modes.
-    Only 512 of \nK{340} sessions ($<\pct{1}$) switched to modules with different
+    Only 512 of \nK{340} sessions ($<\pct{0.15}$) switched to modules with different
     analysis modes.
     This number may be a significant underapproximation because we have data
     only on modules that the creator chose to open, but the widespread use
@@ -1810,10 +1813,11 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
   \item[How often do creators turn analysis off?]
     Creators rarely disable type analysis after opting in.
-    Only 233 of the \nK{340} sessions ($<\pct{1}$)
+    Only 233 of the \nK{340} sessions ($<\pct{0.07}$)
     switch to a weaker mode.
-    Most of these (\pct{75}) are downgrading from \mstrict{}
-    rather than \mnonstrict{} mode.
+    Most of these (\pct{75}) downgrade from \mstrict{} to
+    \mnonstrict{} % BEN: confirm!
+    rather than from \mnonstrict{} mode.
     %% FILL more insight if we match upgrades + downgrades in session?
 
     %% upgrade
@@ -1833,7 +1837,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
     %%  nonstrict : 27.47\%
 
 
-  \item[For modules that use type analysis:]\leavevmode
+  \item[For modules that use type analysis (\mstrict{} and \mnonstrict{}):]\leavevmode
     \begin{description}
       \item[- Which errors arise?]
         Syntax errors are extremely common~(over \pct{50},~\cref{t:type-error-count}), 
@@ -1852,7 +1856,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
         Even in \mnocheck{}, most edits that overlap with syntax errors
         remove at least one error~(\pct{67}) rather than increase or maintain
         the total.
-        The errors that most-often survive edits are due to
+        The errors that most often survive edits are due to
         inference at a binary operation,
         sending \code{self} to a function that does not expect it,
         and failure to unpack an optional value.
@@ -1926,12 +1930,13 @@ creators to fix.
 It would be better for the analysis to ignore these errors.
 Indeed, our comparison between \FS{} errors in \mnocheck{} vs.
 \mstrict{} mode~(\cref{f:error-changes}) might tell a very different story
-without all the noise that syntax errors introduce.
+without all the noise that syntax errors introduce.\todo{Why didn't
+  YOU just filter them, then?!?}
 
 Fourth, type analysis reports several errors at once and we have no idea which
 errors, if any, creators intended to fix with their edits.
-Although it appears that creators choose to fix errors with their edits,
-the fixes may be a side effect of other plans.
+Thus, fixes may be a side effect of other plans, as seen in prior work [CITE].
+% Cite the Marceau SIGCSE 2011 paper. This is the [DIFF] code from the rubric.
 
 % Telemetry cannot replace user studies, as there is no way to measure
 % creator sentiment, but provide complementary data at scale.
@@ -1939,7 +1944,8 @@ the fixes may be a side effect of other plans.
 
 Lastly, we have two remarks about external validity.
 First, our information on type errors is limited to error names.
-If another language has an error that is roughly similar to the
+If another language has an error that is roughly similar to
+the\todo{Huh? It's similar yet different?}
 \code{CannotCallNonFunction} error but with slightly different
 semantics, then the relative frequency of that error could be different
 than what we observed.
@@ -1948,6 +1954,10 @@ were selected at random from a large and diverse group.
 A dataset based on a targeted subset of users might show entirely different
 characteristics.
 
+Ultimately, we view our work as primarily \emph{formative}. It gives
+us a first look at usage, and generates several questions that can
+lead to hypotheses. Answering those would require much more intrusive
+techniques, or controlled studies, or other means.
 
 \section{Related Work}
 \label{s:related}
