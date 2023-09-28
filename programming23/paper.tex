@@ -260,10 +260,10 @@ students in code camps may begin in the \mnocheck{} mode that reports only
 syntax errors; hobbyists can use \mnonstrict{} mode to identify
 would-be runtime errors; and developers who need to ensure software
 quality can rely on \mstrict{} mode.
-(No matter the mode, a \emph{\FS{}} type analysis still drives the IDE tools.)
+(No matter the mode, a {\FS{}} type analysis still drives the IDE tools.)
 Luau's types aim to support untyped designs, in the spirit of migratory
 typing~\cite{tfffgksst-snapl-2017}, so that creators can switch modes without
-needing to restructure their code.
+needing to restructure their code in major, potentially-breaking, ways.
 
 In this paper, we investigate methods for measuring the effectiveness
 of the {Luau} type system.
@@ -375,16 +375,20 @@ limited to a small number of users.
 
 {Roblox Studio} is a workbench that
 combines {3D creation} tools and an Integrated
-Developer Environment (IDE), as seen in \Cref{fig:roblox-studio}.
+Developer Environment (IDE), as seen in \cref{fig:roblox-studio}.
 The IDE includes an optional \emph{Script Analysis} widget that
 reports syntax errors, type errors, and problems identified by
-lint tools. The script editor also (optionally) highlights
-the location in code where reported errors occur.
-Creators have three \emph{analysis modes} (modes) to choose from
-for every script they write:
+lint tools. The main editor widget can also highlight
+source locations in code where reported errors occur.
+
+
+\paragraph{Type Analysis Modes, \FS{} Analysis}
+
+Creators can opt in to detailed error reports and highlights by
+choosing a \emph{type analysis mode} for each script they write:
 \begin{itemize}
-  \item \mnocheck{}: report only syntax errors,
-  \item \mnonstrict{}: report syntax errors and a subset of ``high confidence'' type errors, or
+  \item \mnocheck{}: report only syntax errors (the default),
+  \item \mnonstrict{}: report syntax errors and a subset of high confidence type errors, or
   \item \mstrict{}: report syntax errors and all type errors.
 \end{itemize}
 Each run of type analysis can report several errors.
@@ -392,70 +396,45 @@ There is no guarantee that creators read every error.
 In fact, creators who close the Script Analysis widget
 will see highlights in their code but no further details.
 
-As an example of nonstrict mode, the following program only reports one error:
+In addition to the main type analysis, Roblox Studio takes a second pass over
+every codebase with a \emph{\FS{}} analysis to infer autocomplete suggestions
+and drive other IDE tools.
+The \FS{} analysis uses rigorous checks along the lines of \mstrict{} mode
+no matter what mode the creator declared for the script in the hope of inferring
+precise types.
+(Internally to Roblox Studio, this analysis is called \emph{forced strict}
+because it ignores the creator's choice and applies strong checks. However,
+the checks are not the same as \mstrict{} mode;
+see~\cref{s:strict-vs-forcedstrict}.)
+When it fails to infer a type, \FS{} defaults to the unknown gradual
+type~\cite{st-sfp-2006}.
+Creators cannot see the errors reported by \FS{} analysis.
+
+As an example of \mnonstrict{} mode, the following program only reports one error:
 \begin{verbatim}
   --!nonstrict
   local x = { p = 5, q = nil }
   if condition then x.q = 7 end
-  local y = x.p + x.q --> no type error
-  local z = x.r       --> "Key 'r' not found in table 'x'"
+  local y = x.p + x.q --> OK
+  local z = x.r           --> UnknownProperty: Key 'r' not found in table 'x'
 \end{verbatim}
-but in strict mode it reports two:
+In \mstrict{} mode, it reports two errors:
 \begin{verbatim}
   --!strict
   local x = { p = 5, q = nil }
   if condition then x.q = 7 end
-  local y = x.p + x.q --> "Type 'nil' could not be converted into 'number'"
-  local z = x.r       --> "Key 'r' not found in table 'x'"
+  local y = x.p + x.q --> TypeMismatch: Type 'nil' could not be converted into 'number'
+  local z = x.r           --> UnknownProperty: Key 'r' not found in table 'x'
 \end{verbatim}
 In cases like this, where it is undecidable whether there will be a run-time error,
-strict mode errs on the side of reporting an error, and nonstrict mode errs on
+\mstrict{} mode errs on the side of reporting an error, and \mnonstrict{} mode errs on
 the side of suppressing the error.
 
-Both modes report the \verb|Key 'r' not found in table 'x'| error --
+Both modes report the \code{UnknownProperty} error because
 misspellings of property names are common enough to report in both
-strict and nonstrict mode. See~\cite{bfj-hatra-2021}
-for a more detailed discussion of the rationale for strict and nonstrict mode.
-
-Both modes are opt-in. The default for a new script is \mnocheck{} by
-default, but creators can change this default to \mnonstrict{}.
-
-Even in \mnocheck{} mode, {Roblox Studio} performs type inference, since
-the results are needed by type-directed tooling such as autocomplete and
-API documentation. This behind-the-scenes typechecking is always performed
-in strict mode, since it is important that the inferred types be as precise
-as possible. The type errors produced by this pass are always discarded,
-so the verbosity of strict mode is not an issue.
-
-Since this pass is always performed in strict mode, we refer to it as
-\emph{forced strict} mode. Its main use is in autocomplete, so forced
-strict mode is triggered on every keystroke
-
-Scripts come in two favors: \emph{module scripts} and \emph{non-module
-scripts}.  Module scripts provide reusable libraries, which may be
-\emph{required} by other scripts. Since module scripts can require
-other module script, modules form a graph (though it is
-an error in strict mode if the graph is cyclic, and edges are removed to
-make the graph acyclic).
-
-When typechecking is performed for script analysis, any script that
-has been modified is marked as dirty, then any script that is dirty,
-or which transitively requires a dirty module, is typechecked. More
-commonly, when typechecking is performed for autocomplete, only
-the current script is typechecked, since it is the only dirty
-script, and nothing it requires can transitively require it, since
-the module graph is acyclic.
-
-The state of the world in a {Roblox} experience is captured by
-the \emph{data model}, which is a tree of \emph{instances}, such as
-parts, models, meshes, effects, lighting, audio assets, and physics
-constraints such as forces, springs and joints.
-%% The data model can be seen in the Explorer view of~\Cref{fig:roblox-studio}.
-%% ben: where is it? very hard to see
-While an experience is under development, it is typical for the data
-model to be edited (for example instances to be added, deleted, moved
-or renamed). Since the initial shape of the data model tree is reflected in
-the type system, it is possible for these edits to introduce type errors.
+\mstrict{} and \mnonstrict{} mode. See~\cite{bfj-hatra-2021}
+for a more detailed discussion of the rationale for \mstrict{} and
+\mnonstrict{} mode.
 
 \begin{figure}[t]\centering
   \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
@@ -464,63 +443,100 @@ the type system, it is possible for these edits to introduce type errors.
   \label{fig:roblox-studio}
 \end{figure}
 
-%% FILL table = object
+\Cref{t:type-error-labels} lists a few of the type errors that
+script analysis can report (10 out of 35 total)
+to give a sense of Luau.
+A \code{SyntaxError} is the only error that can appear in
+\mnocheck{} code.
+Several errors in addition to \code{UnknownProperty} are about
+tables, which are Luau's (and Lua's) primary data structure.
+Tables support arrays, dictionaries, and objects; consequently,
+tables can have methods and can usually be extended.
+The error \code{TypesAreUnrelated} is a special kind of type mismatch
+that arises only during cast, unification, or subtyping check.
+A \code{CountMismatch} occurs when the arguments to a function
+do not match the function's arity.
+Similarly, an \code{IncorrectGenericParamCount} is an arity mismatch
+for a generic type.
+Lastly, \code{CodeTooComplex} occurs when the typechecker hits an
+internal limit on problem size and \code{GenericError} is a catch-all
+label for miscellaneous errors.
+When Luau can provide more context regarding a generic error, it uses
+a second error label called \code{ExtraInformation} to attach
+a brief description.
 
 \begin{table}
-  \caption{Sample of type errors.}
+  \caption{Sample type errors.}
   % https://github.com/Roblox/luau/blob/master/Analysis/include/Luau/Error.h
   %% from type analysis, but they're not all really type errors
   \label{t:type-error-labels}
 
-  %% TODO review selection after analyzing the full data
-
-  %% FILL examples for each error?
   \begin{tabular}{ll}
     Label & Interpretation \\\midrule
-    \code{CodeTooComplex} & Type analysis failed, cannot understand the code\!\!\! \\
-    %% \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit\!\!\! \\
-    \code{SyntaxError} & Basic parse error, e.g., \code{for if end} \\
-
-    \code{CountMismatch} & Arity mismatch for a function \\
-    \code{IncorrectGenericParamCount} & Arity mismatch for a generic type \\
-    \code{UnknownProperty} & Referenced an invalid field or method  \\
-    \code{OnlyTablesCanHaveMethods} & Tried to attach a method to a non-table \\
-    \code{CannotCallNonFunction} & Called a value that is not a function \\
-    \code{TypesAreUnrelated} & Failed to cast, unify, or check subtyping \\
-    \code{TypeMismatch} & Generic label for other type errors \\
+    \code{TypeMismatch} & Basic type error. \\
+    \code{SyntaxError} & Basic parse error, e.g., \code{for if end}. \\
+    \code{UnknownProperty} & Referenced an invalid field or method.  \\
+    \code{OnlyTablesCanHaveMethods} & Tried to attach a method to a non-table. \\
+    \code{CannotExtendTable} & Tried to extend a sealed table. \\
+    \code{TypesAreUnrelated} & Failed cast, unify, or subtype. \\
+    \code{CountMismatch} & Arity mismatch for a function. \\
+    %% \code{CannotCallNonFunction} & Called a value that is not a function. \\
+    \code{IncorrectGenericParamCount} & Arity mismatch for a generic type. \\
+    \code{CodeTooComplex} & Type analysis failed, cannot understand the code. \\
+    %% \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit \\
     \code{GenericError}
     & Generic label for other non-type errors, such as\\
-    & \hbox{}~~looping over an unordered table
+    & \hbox{}~~looping over an unordered table.
     %% attempting to extend a type that does not describe a class
     %% attempting to iterate over a table without a clear order
 
-
-%    \code{ExtraInformation} & Follow-on error that provides additional information for an error at the same source location. \\
-%    UnknownSymbol &  \\
-%    NotATable &  \\
-%    CannotExtendTable &  \\
-%    DuplicateTypeDefinition &  \\
-%    FunctionDoesNotTakeSelf &  \\
-%    FunctionRequiresSelf &  \\
-%    OccursCheckFailed &  \\
-%    UnknownRequire &  \\
-%    UnknownPropButGotLikeProp &  \\
-%    InternalError &  \\
-%    DeprecatedApiUsed &  \\
-%    ModuleHasCyclicDependency &  \\
-%    IllegalRequire &  \\
-%    FunctionExitsWithoutReturn &  \\
-%    DuplicateGenericParameter &  \\
-%    CannotInferBinaryOperation &  \\
-%    MissingProperties &  \\
-%    SwappedGenericTypeParameter &  \\
-%    OptionalValueAccess &  \\
-%    MissingUnionProperty &  \\
-%    NormalizationTooComplex &  \\
-%    TypePackMismatch &  \\
-%    DynamicPropertyLookupOnClassesUnsafe &  \\)
   \end{tabular}
 \end{table}
+
+\paragraph{On-the-Fly Typechecking}
+
+Scripts come in two flavors: \emph{module scripts} and \emph{non-module
+scripts}.
+Module scripts provide reusable libraries, which may be
+{imported} by other scripts.
+Module scripts therefore form a graph in general,
+though it is an error in \mstrict{} mode to create an import cycle
+and edges are removed to make the graph acyclic.
+%% \QALAN{}: do all modes remove the edges?
+
+Typechecking analyzes the entire module graph, but it also keeps track of which
+modules have been edited to avoid repeating work.
+Any script that the creator modifies gets marked as dirty,
+and any script that is dirty or that transitively import a dirty
+module gets analyzed by the typechecker.
+In the common case when typechecking is performed for autocomplete,
+only the current script gets checked because it is the only dirty
+script, and because nothing it requires can transitively require it, since
+the module graph is acyclic.
+With this strategy, the typechecker can run after every keystroke without
+slowing down Roblox Studio.
+
+
+\paragraph{Data Model}
+
+%% TODO data assets ==> data model in rest of paper
+
+The state of the world in a {Roblox} experience is captured by
+the \emph{data model}, which is a tree of {instances}, such as
+parts, models, meshes, effects, lighting, audio assets, and physics
+constraints such as forces, springs and joints.
+Each asset lives in a separate file.
+There may be thousands of assets.
+%% The data model can be seen in the Explorer view of~\cref{fig:roblox-studio}.
+%% \QALAN{} where is it? very hard to see, needs a clear label
+
+While an experience is under development, it is typical for the data
+model to be edited.
+For example, instances may be added or renamed.
+Since the shape of the data model tree is reflected in
+the type system, it is possible for these edits to introduce a mountain
+of type errors across the project.
+
 
 \section{Telemetry Design}
 
@@ -1579,6 +1595,7 @@ errors in the project.
 
 
 \subsection{Two Activities: Asset Creation and Scripting}
+\label{s:strict-vs-forcedstrict}
 
 \begin{figure}[t]\centering
   %% TODO
