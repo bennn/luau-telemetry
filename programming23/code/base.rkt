@@ -5,10 +5,12 @@
 (require
   racket/runtime-path
   pict-abbrevs
+  colorblind-palette
   racket/string
   racket/format
   racket/math
   racket/file
+  racket/path
   racket/list
   plot/no-gui
   (only-in plot/utils linear-seq)
@@ -58,6 +60,10 @@
 
 (define bg-dark-blue (hex-triplet->color% #x2C6B91))
 (define bg-lite-blue (hex-triplet->color% #x357C9F))
+
+(define nocheck-color (list-ref tol-palette* 5))
+(define nonstrict-color (list-ref tol-palette* 6))
+(define strict-color (list-ref tol-palette* 7))
 
 (define (datetime-floor d)
   (datetime (->year d)
@@ -213,5 +219,12 @@
   (* 100 (/ a b)))
 
 (define (pct a b)
-  (~r #:precision '(= 2) (npct a b)))
+  (rnd (npct a b)))
+
+(define (rnd n)
+  (~r #:precision '(= 2) n))
+
+(define (save-pict+ fn pp)
+  (printf "save-pict: ~a~n" (file-name-from-path fn))
+  (save-pict fn pp))
 

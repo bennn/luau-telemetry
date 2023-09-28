@@ -649,7 +649,7 @@ Refer to~\cref{f:tdata} for an illustration:
   \item
     Size Info: number of lines in the codebase and number of lines in the edit range.
   \item
-    Overall Counts: summarizes type errors and forced strict errors during the
+    Overall Counts: summarizes type errors and \FS{} errors during the
     last two invocations of type analysis, and additionally reports the number
     of times type analysis hit an internal limit on problem
     size~(see~\cref{s:code-too-complex} for details).
@@ -925,12 +925,12 @@ records is 138.
        30,924 & in edit range & [\pct{5.20}]
     \end{tabular}
     \begin{tabular}[t]{r@{~~}r@{~}l}
-      72,235,735 & {forced strict errors} \\
+      72,235,735 & {\FS{} errors} \\
       37,027,281 & in current module & [\pct{51.26}] \\
        1,111,178 & in edit range & [\pct{1.54}]
     \end{tabular}
   \end{tabular}
-  \caption{Type errors and forced strict errors across all telemetry records.}
+  \caption{Type errors and \FS{} errors across all telemetry records.}
   \label{f:count-analysis-errors}
 \end{figure}
 
@@ -938,17 +938,19 @@ records is 138.
 
 \Cref{f:count-analysis-errors} lists the number of type analysis errors
 and breaks them down by location in the codebase.
-In total, there are nearly 600K type errors.
-These appeared in modules that opted in to typechecking with either the
-\mnonstrict{} or \mstrict{} mode.
-The number of forced strict errors is much larger, 72M, because this analysis
+In total, there are over 590,000 type errors.
+%% delete? upcoming figure has the same info
+% Most of these (\pct{65}) appeared in modules that opted in to typechecking with either the
+% \mnonstrict{} or \mstrict{} mode; the remainder are syntax errors reported
+% by \mnocheck{} mode.
+The number of \FS{} errors is much larger, 72M, because this analysis
 ran on every module using strict type.
-(Furthermore, forced strict runs silently, so creators have no
+(Furthermore, \FS{} runs silently, so creators have no
 awareness of or incentive to
 fix these errors.)
 Approximately half the analysis errors occurred in the current module,
 and a small fraction overlapped with the current edit range~(\pct{5} for
-type errors, \pct{1} for forced strict).
+type errors, \pct{1} for \FS{}).
 
 The large fraction of errors in the current module is encouraging.
 It suggests that errors appear locally, as the result of edits to nearby
@@ -1084,7 +1086,9 @@ in well-typed shape.
 
 \subsection{Errors by Mode}
 
-\begin{figure}[t]
+\begin{figure}[t]\centering
+
+  %%%% from nsa aggregate-tefs
   %% strict
   %%  te total 22771
   %%  mean 6.9 std 26.24592591869705 med 1 max 385
@@ -1106,17 +1110,19 @@ in well-typed shape.
   %%  fs total 63784284
   %%  mean 47.7 std 885.8225471699477 med 1 max 251131
 
-  \begin{tabular}{l}
-    600K type errors         = \pct{35} \mnocheck{}, \pct{61} \mnonstrict{}, \pct{4} \mstrict{}
-    \\
-    72M forced scrict errors = \pct{89} \mnocheck{}, \pct{10} \mnonstrict{}, \pct{1} \mstrict{}
-    %% really 0.16 strict, very low!!!
+  \newcommand{\labelbars}[1]{\begin{tabular}[t]{l@{}l} \begin{tabular}[t]{r} \mnocheck{} \\ \mnonstrict{} \\ \mstrict{} \\ ~ \end{tabular} & #1 \end{tabular}}
+
+    \begin{tabular}[t]{cc}
+    %% TODO why text blurry??!
+    Type errors & Background errors \\
+    \labelbars{\includegraphics[valign=M]{img/error-by-mode-te.pdf}}
+    & \labelbars{\includegraphics[valign=M]{img/error-by-mode-fs.pdf}}
   \end{tabular}
   \caption{FILL}
   \label{f:error-by-mode}
 \end{figure}
 
-\Cref{f:error-by-mode} shows how the type errors and forced strict errors
+\Cref{f:error-by-mode} shows how the type errors and \FS{} errors
 in the data are split across type analysis modes.
 
 Most type errors come from \mnonstrict{} mode, despite it having an order
@@ -1126,9 +1132,9 @@ whereas \mnonstrict{} reports several others kinds~(detailed in the next section
 Finally, \mstrict{} mode accounts for a small fraction of type errors, despite
 being more picky, because so few creators use it.
 
-Forced strict analysis applies the same typechecker to every module, regardless
+Background analysis applies the same typechecker to every module, regardless
 of mode, in the hope of enabling IDE tools.
-Consequently, the breakdown of forced strict errors matches the overall usage
+Consequently, the breakdown of \FS{} errors matches the overall usage
 data~(\cref{f:dataset-overview}): almost \pct{90} for \mnocheck{},
 \pct{10} for \mnonstrict{}, and \pct{1} for \mstrict{}.
 Type analysis finds a large number of errors in \mnocheck{} code;
@@ -1634,37 +1640,37 @@ errors in the project.
     &
     \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
   \end{tabular}
-  \caption{Comparing the change in type errors to the change in forced strict errors.}
+  \caption{Comparing the change in type errors to the change in \FS{} errors.}
   \label{f:tefs-compass}
 \end{figure}
 
 Since Roblox Studio runs each codebase through two passes of type analysis,
 it is interesting to compare their results.
 Of special interest is the \mstrict{} mode case, because the number of
-type errors and forced strict errors should be nearly the same.
+type errors and \FS{} errors should be nearly the same.
 But, there are two differences between \mstrict{} type checking
-and forced strict checking:
+and \FS{} checking:
 \begin{itemize}
   \item
-    Forced strict checks all dependencies in \mstrict{} mode, no matter
+    Background checks all dependencies in \mstrict{} mode, no matter
     what mode they declare.
-    So, the number of forced strict errors may be higher.
+    So, the number of \FS{} errors may be higher.
   \item
-    Forced strict has looser rules for the \emph{data model};
+    Background checking has looser rules for the \emph{data model};
     that is, for the static assets that a program manipulates.
-    So, the number of forced strict errors may be lower.
+    So, the number of \FS{} errors may be lower.
     %% initial DM, all properties go into a table type; DM -> folder -> model -> part
     %% get dot-driven autocomplete
 \end{itemize}
-Our data contains a surprising number of records where forced strict
+Our data contains a surprising number of records where \FS{}
 reports fewer errors.
 Data model edits are apparently a regular occurrence in Luau programs.
 
-\Cref{f:tefs-compass} compares changes in type errors (\tekey{}) to changes in forced
-strict errors (\fskey{}) for the three analysis modes.
+\Cref{f:tefs-compass} compares changes in type errors (\tekey{}) to changes in
+\FS{} errors (\fskey{}) for the three analysis modes.
 To a first approximation, the changes either agree with one another
 or disagree.
-For example, if type errors increase but forced strict errors decrease,
+For example, if type errors increase but \FS{} errors decrease,
 we have a disagreement.
 The plots futher categorize agreements and disagreements into
 the following five cases:
@@ -1735,12 +1741,12 @@ This may be a barrier to adaption.
 
 Another insightful visualization that the telemetry supports is plots of individual sessions
 over time.
-\Cref{f:indy-session} shows the type errors, forced strict errors, and module switches
+\Cref{f:indy-session} shows the type errors, \FS{} errors, and module switches
 in two \mstrict{} mode sessions.
 The x-axis shows time in seconds from the start of the session.
 The y-axis counts errors.
 Type errors appear as orange plus marks.
-Forced strict errors appear as green x marks.
+Background errors appear as green x marks.
 The vertical lines show module switches.
 
 In the first plot, the error counts are low until about the 3,000s mark,
@@ -1750,7 +1756,7 @@ Then, after two module switches and some edits, the number of errors spikes agai
 In the second plot, the number of errors spikes in the beginning due to edits,
 then remains low for the next few thousand seconds.
 
-A general observation is that the number of type errors is always less than the number of forced strict
+A general observation is that the number of type errors is always less than the number of \FS{}
 errors, though the numbers are close.
 This should happen in \mstrict{} mode.
 
