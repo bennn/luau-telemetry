@@ -20,6 +20,7 @@
 \usepackage{alltt}
 % Not sure why <Programming> is recommending non-standard tools
 % \usepackage[backend=biber]{biblatex}
+\usepackage[export]{adjustbox}
 \usepackage{amssymb}
 \usepackage{calc}
 \usepackage{colortbl}
@@ -352,7 +353,7 @@ limited to a small number of users.
 \end{itemize}
 
 
-\section{{Roblox} Context}
+\section{Context: {Roblox} and {Luau}}
 \label{s:context}
 % https://create.roblox.com/docs/scripting/luau
 
@@ -540,7 +541,7 @@ of type errors across the project.
 
 \section{Telemetry Design}
 
-\subsection{Limits of telemetry}
+\subsection{Limits of Telemetry}
 
 Telemetry allows an application to ``phone home'' with data
 summarizing usage patterns, such performance data, crash reporting,
@@ -815,14 +816,23 @@ section), but sufficient to proceed with futher analysis.
 % 51,761 &              &
 %   & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
 
-  \begin{tabular}{l@{}r@{~}l@{}r@{~}l}
-                 &  Lines &             &    Edit Range & \\
-    Mean [std]   &  6,497 & \stddev{22} &         3,680 & \stddev{31} \\
-    Median       &  3,115 &             &           926 & \\
-    \pct{99}     & 50,547 &             &        34,725 & \\
-    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
-      & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
-    & & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
+%  \begin{tabular}{l@{}r@{~}l@{}r@{~}l}
+%                 &  Lines &             &    Edit Range & \\
+%    Mean [std]   &  6,497 & \stddev{22} &         3,680 & \stddev{31} \\
+%    Median       &  3,115 &             &           926 & \\
+%    \pct{99}     & 50,547 &             &        34,725 & \\
+%    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
+%      & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
+%    & & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
+%
+%  \end{tabular}
+
+  \begin{tabular}[t]{lrrrl}
+    ~          & Mean [std] & Median & \pct{99} Pct. & Distribution \\
+    Lines      & 6,497 \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
+    Edit Range & 3,680 \stddev{31} & 926   & 34,725 & \includegraphics[width=0.14\columnwidth,valign=M]{img/editrange-distribution.pdf}
+    %% TODO x-axis starts at 1, not zero
+    %% TODO much bigger font or much smaller plot!!!
 
   \end{tabular}
 
@@ -858,14 +868,23 @@ and 1,000 lines in edit ranges.
 \begin{figure}[t]\centering
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
 
-  \begin{tabular}{l@{}r@{~}l@{}r@{~}l} \\
-                 & Time Span (sec)  &       & Record Count  \\
-    Mean [std]   &     3,184 & \stddev{16}  &     286 & [583] \\
-    Median       &       845 &              &     138        \\
-    \pct{99}     &    35,450 &              &   3,302        \\
-    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
-    & \includegraphics[width=0.2\columnwidth]{img/timespan-distribution.pdf}
-    & & \includegraphics[width=0.2\columnwidth]{img/event-count-distribution.pdf}
+%  \begin{tabular}{l@{}r@{~}l@{}r@{~}l} \\
+%                 & Time Span (sec)  &       & Record Count  \\
+%    Mean [std]   &     3,184 & \stddev{16}  &     286 & [583] \\
+%    Median       &       845 &              &     138        \\
+%    \pct{99}     &    35,450 &              &   3,302        \\
+%    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
+%    & \includegraphics[width=0.2\columnwidth]{img/timespan-distribution.pdf}
+%    & & \includegraphics[width=0.2\columnwidth]{img/event-count-distribution.pdf}
+%
+%  \end{tabular}
+
+  \begin{tabular}{lrrrl} \\
+    ~               & Mean [std] & Median & \pct{99} Pct. & Distribution \\
+    Time Span (sec) & 3,184 \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
+    Record Count    & 286 [583]         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
+    %% TODO x-axis starts at 1
+    %% TODO huge font, or smaller plot
 
   \end{tabular}
 
@@ -1792,7 +1811,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
   \item[For modules that use type analysis:]\leavevmode
     \begin{description}
-      \item[Which errors arise?]
+      \item[- Which errors arise?]
         Syntax errors are extremely common~(over \pct{50},~\cref{t:type-error-count}), 
         followed by type mismatches~(\pct{20} in \mstrict{}),
         arity errors~(\pct{2}),
@@ -1802,7 +1821,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
         duplicating or swapping a generic parameter, use of a deprecated API,
         and unsafe dynamic property lookup on a class.
 
-      \item[How do creators respond? Which errors persist through edits?]
+      \item[- How do creators respond? Which errors persist through edits?]
         Creators typically fix analysis errors.
         With few exceptions, increases and decreases in the number of errors
         balance out~(\cref{f:error-changes,t:type-error-survival,}).
