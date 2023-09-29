@@ -704,29 +704,34 @@ interesting conclusions that we showcase in the next section.
 \section{The Data}
 \label{s:data}
 
-Roblox Studio collected type error telemetry in Spring 2023,
-between February and April.
+Roblox Studio collected type error telemetry between February
+and April 2023.
 Every Studio session had a small random chance of generating
 telemetry~(\cref{s:telemetry-records}).
 The chosen sessions generated a record whenever the user switched modules and
 randomly on each keystroke.
-In total, we collected 1.5 million telemetry records.
-Roughly two-thirds of records are due to keystrokes.
+In total, we collected over 1.5 million telemetry records.
+Roughly two thirds of records are due to keystrokes.
 
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 Each vertical bar counts the number of records generated per hour according to
-a client-side timestamp.\todo{Do we need all this detail?}
+a client-side timestamp.
+%% \todo{Do we need all this detail?}
+%% the vertical bars suggest we have lots of day-job developers, will point this out below
 The bars are labeled with a California time zone because that is the locale of
 the Roblox servers, which parsed the timestamps.
-Most buckets contain roughly one thousand records, but some have very few
-and a handful of others exceed three thousand.
+Most buckets contain roughly one thousand records, but the number
+varies between a few dozen at minimum at over three thousand.
 %% \FILL{} investigate one tower, what's happening?? all one session?
 There is a sharp drop in early April when the experiment was finished
-and the telemetry probe was removed (though there is a long tail as
-developers uopdated Roblox Studio).
+and the telemetry probe was removed, though there is a long tail as
+developers updated {Roblox Studio}.
 We do not know which timezone the records originated in, but since the counts
 tend to peak midday California time it seems that the majority
 of Roblox developers are following a Western Hemisphere schedule.
+The regular pattern of the peaks furthermore suggests that many creators
+follow a regular schedule; this may be due to a large community of
+professional developers.
 The counts for weekends (shaded regions) are often the tallest,
 as Roblox has a significant school-aged creator community.
 
@@ -751,43 +756,40 @@ as Roblox has a significant school-aged creator community.
 \subsection{Data Cleaning}
 \label{s:data-cleaning}
 
-A close inspection of the data revealed a few anomalies.
-For the most part, we omit the strange data from futher
-analysis.\todo{I'm inclined to rewrite this to be much more concise.}\todo{agreed}
+A close inspection of the data revealed a two anomalies
+that we removed from further analysis:
+\begin{enumerate}
+  \item
+    Some records have identical timestamps and session IDs.
+    We keep the first such record and discard the rest.
+    (A human would have to switch modules twice or enter several keystrokes
+     within one millisecond to generate two such records legitimately.)
 
-First, some records have odd timestamps according to the server's records.
-Every telemetry record comes with two timestamps: a client-side timestamp
-from when Roblox Studio created it and a server-side timestamp from when
-the server posted it to its database.
-The server timestamps are little use for our analysis because they bunch
-together; it is common for several records to have identical server
-timestamps.
-However, server timestamps are useful for auditing because they should
-be relatively close in value to the client timestamps.
-For a small number of records (<100? \FILL{}), though, the client is off by a large
-margin: up to one week behind and up to one day ahead of the server.
-We attribute the large delays to issues when sending telemetry (lost internet
-connection, etc.) and smaller offsets to incorrect time settings on the client
-machine.
-In any event, we do not filter these records from further
-analysis.\todo{To be clear, you do NOT filter? Because the section is
-  about what you DO filter.}
+   \item
+     A few hundred records~(1,533) have negative edit ranges.
+     These are likely due to large deletions.
+     Since the issue affects so few records, we simply ignore
+     their edit ranges. We do, however, use their overall error counts and other uncorrupted fields.
 
-Second, some records have identical (client) timestamps.
-This can happen legitimately if type analysis runs several times
-in the same millisecond, but it is unlikely that a human would
-enter keystrokes or switch modules quickly enough.
-We keep the first record with a distinct timestamp and discard the others.
-%% TODO wait, better deduplicate by session and not globally!!!
+\end{enumerate}
 
-%% out/negative-edit-range.txt
-%% actual value is NOT negative, but large positive over 4 billion
-%% example: 4294967293
-Third, the edit ranges are negative in a few hundred records~(1,533).
-This is likely due to the user deleting a large block of code.
-Since the issue affects so few records, we omit the negative ranges
-from analysis (but, we do use other parts of the records; for example
-the timestamps influence~\cref{f:records-per-hour}).
+%% not important for submission
+% One related observation, for which \emph{do not} sanitize the data, is
+% that some records have odd timestamps according to the server's records.
+% Every telemetry record comes with two timestamps: a client-side timestamp
+% from when Roblox Studio created it and a server-side timestamp from when
+% the server posted it to its database.
+% The server timestamps are little use for our analysis because they bunch
+% together; it is common for several records to have identical server
+% timestamps.
+% However, server timestamps are useful for auditing because they should
+% be relatively close in value to the client timestamps.
+% For a small number of records (<100? \FILL{}), though, the client is off by a large
+% margin: up to one week behind and up to one day ahead of the server.
+% We attribute the large delays to issues when sending telemetry (lost internet
+% connection, etc.) and smaller offsets to incorrect time settings on the client
+% machine.
+
 
 \subsection{Overall Size and Shape}
 
@@ -795,10 +797,11 @@ Three important characteristics of the recorded data are the size of the codebas
 the length of the sessions, and the number of type
 errors.
 We discuss these in turn.
-Codebase size and session length follow power-law
-distributions,\todo{Please confirm w/ a statistical test. See Clauset
-  et al.: arXiv:0706.1062.} with
-many small items and a few very large items.
+Codebase size and session length have long-tailed distributions
+with many small items and few very large ones.
+%% TODO check %% follow power-law distributions~\cite{csn-siamr-2009} 
+%% https://aaronclauset.github.io/powerlaws/
+%% bin version, is this relevant? sounds like no from abtract https://arxiv.org/pdf/1208.3524.pdf
 The number of type analysis errors is somewhat low~(explained in the next
 section), but sufficient to proceed with futher analysis.
 
@@ -806,7 +809,9 @@ section), but sufficient to proceed with futher analysis.
 \paragraph{Codebase Size}
 %\label{s:codebase-size}
 
-\begin{figure}[t]\centering
+\begin{table}[t]\centering
+  \caption{Size of analyzed code: number of files, number of lines, and lines in edit range}
+  \label{t:codebase-size}
   % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
   % ;; percentile* = 0.95 -- 0.99
   % #hash((editrange . (1156036 926 3007043/817 30975.40553032358 (0.95 8220) (0.96 9858) (0.97 13656) (0.98 18956) (0.99 34725)))
@@ -847,11 +852,11 @@ section), but sufficient to proceed with futher analysis.
 
   \end{tabular}
 
-  \caption{Size of analyzed code: number of files, number of lines, and lines in edit range}
-  \label{f:codebase-size}
-\end{figure}
+\end{table}
 
-\Cref{f:codebase-size} summarizes the size of projects in the dataset.
+%% TODO figure --> table
+
+\Cref{t:codebase-size} summarizes the size of projects in the dataset.
 The top half of the figure reports the mean, standard deviation, median,
 and \percentile{99} for the number of lines
 and lines in edit range.\footnote{The data also contains the number of files in
@@ -859,16 +864,16 @@ each project, but these numbers are difficult to relate to typechecking because
 projects may contain hundreds of files that define data assets.  For the
 record, the median file count is 7,678 and the 99th percentile is 51,761 files.
 }
-The bottom half shows zoomed-in distributions of the line and edit range
+The distributions zoom in zoomed-in distributions of the line and edit range
 sizes.
-For example, the x-axis of the first plot ranges from 0 to 1,000 lines and
+For example, the x-axis of the first plot counts up to 1,000 lines and
 the y-axis counts up to 1,000 telemetry records.
 
 There is a huge amount of variation across projects.
 The largest ones have over 50,000 lines of code
 while the smallest have merely 1 line of code.
 Unsurprisingly, the numbers come with large standard
-deviations~([std] in~\cref{f:codebase-size}).
+deviations~([std] in~\cref{t:codebase-size}).
 The median values are more reasonable, with roughly 3,000 lines of code
 and 1,000 lines in edit ranges.
 
@@ -903,10 +908,9 @@ and 1,000 lines in edit ranges.
   \label{f:session-size}
 \end{figure}
 
-\Cref{f:session-size} outlines the size of the Roblox Studio sessions in the
-data.
-There are two useful notions of size: real time in seconds (between the first
-and last record) and the total number of records.
+\Cref{f:session-size} outlines the size of sessions using two metrics:
+real time in seconds between the first and last record, and the total number of
+records.
 The top of~\cref{f:session-size} reports the mean, standard deviation,
 median, and \percentile{99}; the bottom shows size distributions, zoomed in
 to focus on at most 1,000 units (x-axis) and 1,000 sessions
