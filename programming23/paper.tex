@@ -118,7 +118,7 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 \newcommand{\FS}{background}
 \newcommand{\zerowidth}[1]{\makebox[0pt][l]{#1}}
 \newcommand{\nK}[1]{#1\textsc{k}}
-\newcommand{\stddev}[1]{[\nK{#1}]}
+\newcommand{\stddev}[1]{\nK{#1}}
 \newcommand{\gcell}[1]{\cellcolor{green!20}#1}
 \newcommand{\ycell}[1]{\cellcolor{yellow!18}#1}
 \newcommand{\ocell}[1]{\cellcolor{orange!29}#1}
@@ -755,8 +755,7 @@ as Roblox has a significant school-aged creator community.
 \subsection{Data Cleaning}
 \label{s:data-cleaning}
 
-A close inspection of the data revealed a two anomalies
-that we removed from further analysis:
+A close inspection of the data revealed two anomalies:
 \begin{enumerate}
   \item
     Some records have identical timestamps and session IDs.
@@ -823,56 +822,39 @@ section), but sufficient to proceed with futher analysis.
   %% NOTE: 133 records have +52K files, all from one nocheck session
   %% - session "330,172,870,224,081" 
   %% (2nd biggest has 41K files "31,650,473,913,529")
-
 %% Files has HUGE numbers thanks to data assets. Forget it.
 % Files  &              &
 % 11,911 & \stddev{12}  &
 %  7,678 &              &
 % 51,761 &              &
-%   & \includegraphics[width=0.2\columnwidth]{img/files-distribution.pdf}
-
-%  \begin{tabular}{l@{}r@{~}l@{}r@{~}l}
-%                 &  Lines &             &    Edit Range & \\
-%    Mean [std]   &  6,497 & \stddev{22} &         3,680 & \stddev{31} \\
-%    Median       &  3,115 &             &           926 & \\
-%    \pct{99}     & 50,547 &             &        34,725 & \\
-%    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
-%      & \includegraphics[width=0.2\columnwidth]{img/lines-distribution.pdf}
-%    & & \includegraphics[width=0.2\columnwidth]{img/editrange-distribution.pdf}
-%
-%  \end{tabular}
-
-  \begin{tabular}[t]{lrrrl}
-    ~          & Mean [std] & Median & \pct{99} Pct. & Distribution \\
-    Lines      & 6,497 \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
-    Edit Range & 3,680 \stddev{31} & 926   & 34,725 & \includegraphics[width=0.14\columnwidth,valign=M]{img/editrange-distribution.pdf}
+  \begin{tabular}[t]{lrrrrl}
+    ~          & Mean  & Stddev & Median & \pct{99} Pct. & Distribution \\
+    Lines      & 6,497 & \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
+    Edit Range & 3,680 & \stddev{31} & 926   & 34,725 & \includegraphics[width=0.14\columnwidth,valign=M]{img/editrange-distribution.pdf}
     %% TODO x-axis starts at 1, not zero
     %% TODO much bigger font or much smaller plot!!!
-
   \end{tabular}
-
 \end{table}
 
-%% TODO figure --> table
-
 \Cref{t:codebase-size} summarizes the size of projects in the dataset.
-The top half of the figure reports the mean, standard deviation, median,
+The middle four columns report the mean, standard deviation, median,
 and \percentile{99} for the number of lines
 and lines in edit range.\footnote{The data also contains the number of files in
 each project, but these numbers are difficult to relate to typechecking because
 projects may contain hundreds of files that define data assets.  For the
 record, the median file count is 7,678 and the 99th percentile is 51,761 files.
 }
-The distributions zoom in zoomed-in distributions of the line and edit range
+The plots on the right show zoomed-in distributions of the line and edit range
 sizes.
-For example, the x-axis of the first plot counts up to 1,000 lines and
-the y-axis counts up to 1,000 telemetry records.
+For example, the x-axis of the first plot counts up to 1,000 lines (not showing
+a long tail to the right) and the y-axis counts up to 1,000 telemetry records
+(not showing a tall spike on the left).
 
 There is a huge amount of variation across projects.
 The largest ones have over 50,000 lines of code
 while the smallest have merely 1 line of code.
-Unsurprisingly, the numbers come with large standard
-deviations~([std] in~\cref{t:codebase-size}).
+Unsurprisingly, these wide-ranging numbers come with large standard
+deviations.
 The median values are more reasonable, with roughly 3,000 lines of code
 and 1,000 lines in edit ranges.
 
@@ -880,99 +862,100 @@ and 1,000 lines in edit ranges.
 \paragraph{Session Size}
 %\label{s:session-size}
 
-\begin{figure}[t]\centering
+\begin{table}[t]\centering
+  \caption{Session size in seconds and in number of records.}
+  \label{t:session-size}
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
-
-%  \begin{tabular}{l@{}r@{~}l@{}r@{~}l} \\
-%                 & Time Span (sec)  &       & Record Count  \\
-%    Mean [std]   &     3,184 & \stddev{16}  &     286 & [583] \\
-%    Median       &       845 &              &     138        \\
-%    \pct{99}     &    35,450 &              &   3,302        \\
-%    %% TODO x-axis starts at 1, not zero ... there are no zeros right??!
-%    & \includegraphics[width=0.2\columnwidth]{img/timespan-distribution.pdf}
-%    & & \includegraphics[width=0.2\columnwidth]{img/event-count-distribution.pdf}
-%
-%  \end{tabular}
-
-  \begin{tabular}{lrrrl} \\
-    ~               & Mean [std] & Median & \pct{99} Pct. & Distribution \\
-    Time Span (sec) & 3,184 \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
-    Record Count    & 286 [583]         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
+  \begin{tabular}{lrrrrl} \\
+    ~               & Mean & Stddev & Median & \pct{99} Pct. & Distribution \\
+    Time Span (sec) & 3,184 & \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
+    Record Count    & 286 & 583         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
     %% TODO x-axis starts at 1
     %% TODO huge font, or smaller plot
-
   \end{tabular}
+\end{table}
 
-  \caption{Session size in seconds and in number of records.}
-  \label{f:session-size}
-\end{figure}
-
-\Cref{f:session-size} outlines the size of sessions using two metrics:
+\Cref{t:session-size} outlines the size of sessions using two metrics:
 real time in seconds between the first and last record, and the total number of
 records.
-The top of~\cref{f:session-size} reports the mean, standard deviation,
-median, and \percentile{99}; the bottom shows size distributions, zoomed in
-to focus on at most 1,000 units (x-axis) and 1,000 sessions
-(y-axis).\todo{Again, confused.}
-
-Similar to the data on project size, there is huge variation in session
-length.
+The middle columns report the mean, standard deviation,
+median, and \percentile{99}.
+Similar to the previous table~(\cref{t:codebase-size}), the distributions focus
+on the lower-left fragment of the data, which again has a very long tail.
+%% comment on long-tail record counts?
 The longest sessions last several days and/or contain thousands of records,
 while the shortest last a few milliseconds or include just one record.
-Likewise, both plots in the figure follow a power-law distribution
-(especially for record count).
-A typical session runs on the order of minutes and consists of a few dozen events.
-The median session time is approximately 14 minutes.
-The median number of
-records is 138.
+% Likewise, both plots in the figure follow a power-law distribution
+% (especially for record count).
+A median session runs on the order of minutes and consists of a few dozen events.
+%% The median time is 14 minutes and the median 
+%% The median number of records is 138.
 % These numbers are reasonable.
 
 
 \paragraph{Number of Type Analysis Errors}
 %\label{s:count-analysis-errors}
 
-\begin{figure}[t]
+\begin{table}[t]\centering
+  \caption{Current type errors and \FS{} errors across all telemetry records.}
+  \label{t:count-analysis-errors}
   \begin{tabular}[t]{ll} \\
-    \begin{tabular}[t]{r@{~~}r@{~}l}
+    \begin{tabular}[t]{r@{~~}r@{~}r}
       595,137 & type errors \\
-      289,698 & in current module & [\pct{48.68}] \\
-       30,924 & in edit range & [\pct{5.20}]
+      289,698 & \hbox{}~in module & [\pct{48.68}] \\
+       30,924 & \hbox{}~in edit range & [\pct{5.20}]
     \end{tabular}
-    \begin{tabular}[t]{r@{~~}r@{~}l}
+    \begin{tabular}[t]{r@{~}r@{~}r}
       72,235,735 & {\FS{} errors} \\
-      37,027,281 & in current module & [\pct{51.26}] \\
-       1,111,178 & in edit range & [\pct{1.54}]
+      37,027,281 & \hbox{}~in module & [\pct{51.26}] \\
+       1,111,178 & \hbox{}~in edit range & [\pct{1.54}]
     \end{tabular}
   \end{tabular}
-  \caption{Type errors and \FS{} errors across all telemetry records.}
-  \label{f:count-analysis-errors}
-\end{figure}
+\end{table}
 
-\FILL{} need old and current in edit range
-
-\Cref{f:count-analysis-errors} lists the number of type analysis errors
+\Cref{t:count-analysis-errors} lists the number of type analysis errors
 and breaks them down by location in the codebase.
 In total, there are over 590,000 type errors.
-%% delete? upcoming figure has the same info
-% Most of these (\pct{65}) appeared in modules that opted in to typechecking with either the
-% \mnonstrict{} or \mstrict{} mode; the remainder are syntax errors reported
-% by \mnocheck{} mode.
-The number of \FS{} errors is much larger, 72M, because this analysis
-ran on every module using strict type.
-(Furthermore, \FS{} runs silently, so creators have no
-awareness of or incentive to
-fix these errors.)
+The number of \FS{} errors is much larger, at 72 million, because this analysis
+uses rigorous checks and runs on every module no matter what type analysis
+mode the module declares.
+(Furthermore, \FS{} checks run silently, so creators have no
+awareness of or incentive to fix these errors.)
 Approximately half the analysis errors occurred in the current module,
 and a small fraction overlapped with the current edit range~(\pct{5} for
 type errors, \pct{1} for \FS{}).
 
-The large fraction of errors in the current module is encouraging.
-It suggests that errors appear locally, as the result of edits to nearby
-code (as opposed to edits in one module raising errors in another), and
-that creators fix the errors before switching focus to another
+The large fraction of errors in the current module is encouraging
+for two reasons.
+First, it suggests that errors appear locally, as the result of edits to nearby
+code, rather than as the result of edits to far-away code that lives in another
 module.
-The low fraction of errors in the edit range suggests that errors rarely
-persist through nearby edits.
+Second, it suggests that creators typically fix errors before switching
+to another module.
+
+The low fraction of errors in the edit range sends a mixed message:
+\begin{itemize}
+  \item
+    On one hand, it suggests that edits successfully remove errors.
+    This is true, however, only for type errors and not for \FS{} errors.
+    There are 11,479 more type errors from the previous analysis
+    that overlap with the current edit range~(\pct{27} difference),
+    but 172,678 fewer previous \FS{} errors~(\pct{15} difference).
+    Since creators can see the type errors but not the \FS{}
+    errors before making edits, we conclude that the visibility
+    makes a difference.
+    \Cref{s:type-error-survival} explores edits and type errors in more detail.
+
+  \item
+    On the other hand, the low overlap between errors (whether current or previous)
+    and edits says that edits rarely target highlighted code.
+    There are several possible explanations:
+    analysis might report several errors and the edits only target one or two of them;
+    creators might ignore errors entirely and edit other code; or
+    creators might choose to edit a non-highlighted location to fix an error.
+    Our data cannot narrow down the answer.
+
+\end{itemize}
 
 
 \subsection{Type Analysis Modes}
@@ -1024,32 +1007,31 @@ persist through nearby edits.
   \label{f:dataset-overview}
 \end{figure}
 
-Creators have three analysis modes to choose from.
-Furthermore, they can switch between modes at any time.
-According to~\cref{s:type-analysis-modes}, however, usage is
-extremely skewed toward the type-free \mnocheck{} mode.
-Nearly \pct{90} of all records use the \mnocheck{} mode
-and \pct{90} of all sessions use \mnocheck{} exclusively.
-Among the rest, roughly \pct{10} of all records use \mnonstrict{} and only a
-tiny fraction (\pct{0.4}) use \mstrict{}.
-The per-session data is similar: \pct{9} use \mnonstrict{} exclusively
-and \pct{0.2} use \mstrict{}.
+Creators have three analysis modes to choose from
+and can switch between modes at any time.
+\Cref{f:dataset-overview} shows, however, that
+usage is extremely skewed toward the default \mnocheck{} mode.
+Nearly \pct{90} of all records use \mnocheck{}, while \pct{10} use
+\mnonstrict{} and only a tiny fraction~(\pct{0.4}) use \mstrict{} mode.
+Grouping these records into sessions shows that
+\pct{90} of all sessions use \mnocheck{} exclusively,
+\pct{9} use \mnonstrict{} exclusively,
+and \pct{0.2} use \mstrict{} exclusively.
 
-These adoption numbers indicate that there is a communication gap;
-as long as type checking is opt-in, most developers stay opted out.
-Once Luau type checking is opt-out rather than opt-in, it will be interesting
-to revisit these numbers.
+These adoption numbers indicate that as long as type checking is opt-in, most
+creators stay opted out.
+In the future, Luau plans to make \mnonstrict{} the default mode.
+It will be interesting to revisit mode usage at that point.
 
 %% mostly pure, rare mixes
 Most sessions (\pct{99.82}) stick to a single analysis mode.
-These sessions never change the mode in the current module and never switch
-focus to a module with a different analysis mode.
-Among the mixed-mode sessions, most (\pct{80}) switch to modules with
-a different mode, about half contain at least one edit that upgrades
-the typing strictness in the
-current mode, and about half contain a downgrade.
-There are 619 upgrades in total and 583 downgrades.
-\FILL{} Ben check how often the downgrades follow the upgrades.
+They never change the mode in the current module and never
+switch focus to a module with a different analysis mode.
+Among the other, mixed-mode sessions, most of those (\pct{80}) switch to a
+module with a different mode, about half contain at least one edit that
+upgrades to a more strict mode, and about half contain a downgrade to a
+less-strict mode.
+There are 263 total upgrades (across all sessions) and 320 total downgrades.
 
 
 \paragraph{Are Upgrades Discouraging?}
@@ -1063,17 +1045,15 @@ There are 619 upgrades in total and 583 downgrades.
 A possible explanation for the low adoption of \mnonstrict{} and
 \mstrict{} mode is that upgrading to these modes leads to a large
 number of type errors.
-Creators might get discouraged or overwhelmed by a high error count and revert to
-\mnocheck{} mode.
+Creators might get discouraged or overwhelmed by a high error count.
 
 The data does not support this explanation.
-On average, the mode-upgrades in the data resulted in 3 additional
+On average, mode-upgrades resulted in 3 additional
 type errors (stddev 7, median 0).
-The worst-case increase was 57 type errors, which is very high
-but exceptional.
-In another exception, upgrading modes removed three type errors
-(possibly due to other edits being rolled in with the
-mode change).
+The worst-case increase was quite high at 57 type errors, but exceptional.
+In another exception, upgrading modes removed three type errors,
+possibly due to other edits being rolled in with the
+mode change.
 
 In the other direction, mode downgrades have only a small negative effect on the
 number of errors (mean -0.3, stddev 4, median 0, max -48).
@@ -1081,11 +1061,12 @@ number of errors (mean -0.3, stddev 4, median 0, max -48).
 We would see a much larger effect here if creators used downgrades
 as a quick way to silence the typechecker.
 But, creators evidently switch modes only when the code is already
-in well-typed shape.
+in a well-typed state.
 
 
 %% \paragraph{Module Switches vs Errors}
 %% FILL need \%s out of all module switches.
+%% count-modswitch in downgrade-count.rkt
 %% How many module switches exit a module with errors?
 %% > OLD DATA
 %% > \mnocheck{} 24, \mnonstrict{} 9, \mstrict{} 3.
@@ -1814,26 +1795,55 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
     Sessions rarely disable type analysis after opting in.
     Only 233 of the \nK{340} sessions ($<\pct{0.07}$)
     switch to a weaker mode.
-    Most of these (\pct{75}) downgrade from \mstrict{} to
-    \mnonstrict{} % BEN: confirm!
-    rather than from \mnonstrict{} mode.
-    %% FILL more insight if we match upgrades + downgrades in session?
+    One-fourth of the downgrades switch from \mstrict{}
+    to \mnonstrict{}, and therefore keep some type analysis.
+    The remainder switch from \mstrict{} to \mnocheck{} (\pct{50})
+    or from \mnonstrict{} to \mnocheck{} (\pct{25}).
+    %% FILL more insight if we match ups and downs together??
 
     %% upgrade
     %% 519 total sessions
     %% 176 with up
+    %% 263 total up
     %% #hash((nocheck . 0) (nonstrict . 44) (strict . 132))
     %%  nocheck : 0.00\%
     %%  strict : 75.00\%
     %%  nonstrict : 25.00\%
+    %%%% #hash(((strict nocheck) . 88)
+    %%%%       (nonstrict . 0)
+    %%%%       (strict . 0)
+    %%%%       ((nonstrict nocheck) . 44)
+    %%%%       (nocheck . 0)
+    %%%%       ((strict nonstrict) . 44))
+    %%%%  (strict nonstrict) : 25.00\%
+    %%%%  nocheck : 0.00\%
+    %%%%  (nonstrict nocheck) : 25.00\%
+    %%%%  strict : 0.00\%
+    %%%%  nonstrict : 0.00\%
+    %%%%  (strict nocheck) : 50.00\%
     %%
     %% downgrade
     %% 515 total sessions
     %% 233 with down
+    %% 320 total down
     %% #hash((nocheck . 0) (nonstrict . 64) (strict . 169))
     %%  nocheck : 0.00\%
     %%  strict : 72.53\%
     %%  nonstrict : 27.47\%
+    %%%% #hash(((strict nocheck) . 116)
+    %%%%       (nonstrict . 0)
+    %%%%       (strict . 0)
+    %%%%       ((nonstrict nocheck) . 64)
+    %%%%       (nocheck . 0)
+    %%%%       ((strict nonstrict) . 53))
+    %%%%  (strict nonstrict) : 22.75\%
+    %%%%  nocheck : 0.00\%
+    %%%%  (nonstrict nocheck) : 27.47\%
+    %%%%  strict : 0.00\%
+    %%%%  nonstrict : 0.00\%
+    %%%%  (strict nocheck) : 49.79\%
+
+
 
 
   \item[For modules that use type analysis (\mstrict{} and \mnonstrict{}):]\leavevmode

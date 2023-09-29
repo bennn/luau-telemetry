@@ -22,7 +22,7 @@
           (define acc+
             (if downgrade?
               #;(hash-set acc curr-mode #true)
-              (hash-add1 acc curr-mode)
+              (hash-add1 acc (list curr-mode next-mode))
               acc))
           (if (null? (cddr row*))
             acc+
@@ -39,13 +39,19 @@
     (printf " ~a : ~a\\%~n" k (pct v NN)))
   (void))
 
+(define (count-modswitch fn)
+  ;; TODO
+  (void))
+
 (module+ main
-  (let ((what "upgrade"))
+  #;(let ((what "upgrade"))
     (displayln what)
     (go (build-path data-dir "error-density-ss-hasup.rktd") what))
-  (let ((what "downgrade"))
+  #;(let ((what "downgrade"))
     (displayln what)
     (go (build-path data-dir "error-density-ss-hasdown.rktd") what))
+  (newline)
+  (count-modswitch (build-path data-dir "error-density-ss-multimod.rktd"))
   (void))
 
 
