@@ -499,6 +499,8 @@ a brief description.
 
 Scripts come in two flavors: \emph{module scripts} and \emph{non-module
 scripts}.
+(Though, throughout this paper we use the word ``module''
+to refer to arbitrary scripts.)
 Module scripts provide reusable libraries, which may be
 {imported} by other scripts.
 Module scripts therefore form a graph in general,
@@ -541,107 +543,100 @@ of type errors across the project.
 
 \section{Telemetry Design}
 
-\subsection{Limits of Telemetry}
-
 Telemetry allows an application to ``phone home'' with data
 summarizing usage patterns, such performance data, crash reporting,
 and feature uptake. A typical usage is in deciding whether an API can
-be deprecated: without telemetry it may be difficult to know how
-popular it is, but with telemetry it is
-straightforward.
+be deprecated; without telemetry, it may be difficult to know how
+popular the API is, but with telemetry it is straightforward.
+Telemetry for programming languages can, however, be controversial.
+See, for example, the lively discussion around telemetry in the Go
+toolchain~\cite{golang-telemetry}.
 
-IDEs use telemetry in a similar fashion\todo{I really don't know what
-  this means. Are you saying VSCode is constantly calling home? Is it
-  telling Racket about my API usage? Do we need anything in this para?} to most user-facing
-applications, for example VSCode~\cite{vsc-telemetry} and
-IntelliJ~\cite{intellij-telemetry} report telemetry.
-See~\cref{s:related} for futher comparisons among telemetry designs.
-
-Telemetry for programming languages can be controversial:e.g., see
-the lively discussion around telemetry in the Go
-toolchain~\cite{golang-telemetry}. 
+Roblox Studio has a framework for reporting telemetry.
+Various features in the IDE use telemetry to measure their effectiveness.
 The Luau open source toolchain does \emph{not} report telemetry,
 as it is designed to be used in build environments such as Continuous Integration
 servers, where hermetic deterministic builds are expected.
 
-Telemetry therefore faces at least two major constraints:
+We added a telemetry subsystem to Roblox Studio in order to study type errors
+in Luau code.
+This section explains the constraints our telemetry had to meet~(\cref{s:tel-limitations})
+and the final design~(\cref{s:telemetry-records}).
+
+
+\subsection{Limitations for Luau Telemetry}
+\label{s:tel-limitations}
+
+Telemetry in Roblox Studio faces three major constraints:
 \begin{itemize}
 
-\item It should not reveal private information. This can include
-  Personally Identifying
-  Information (PII) about creators: their identity, location, etc. It also
-  includes trade secrets. Even an error message that contains the name
-  of a function could reveal something the creator would not want to
-  share.
+  \item
+    It \emph{must not reveal private information}.
+    This can include Personally Identifying Information (PII) about creators: their identity, location, etc.
+    It also includes trade secrets. Even an error message that contains the
+    name of a function can reveal something the creator does not want to share.
 
-\item For performance reasons, it should have minimal run-time
-  overhead and also transmit small and bounded amounts of data.
+  \item
+    On the client side, telemetry computations \emph{must run quickly enough} to avoid
+    slowing down the editing experience.
+
+  \item
+    Telemetry \emph{must transmit a small amount of data}---not too many records
+    with not too much information inside---to avoid overloading the servers.
+
 \end{itemize}
-Cox discusses in detail the privacy implications and tradeoffs
-in telemetry~\cite{transparent-telemetry}.
-
-% BEN: I believe the above subsumes all of the below:
-% Much of the concern about telemetry is because of its potential impact on
-% privacy. It can not only reveal Personally Identifiable Information
-% (PII) but also trade secrets, etc. Thus, telemetry should not reveal
-% PII, source code, error messages (which can refer to source), the
-% creator's identity, and so on.
-% % and no information about what creation the data came from.
-
-% For performance reasons, there are limits to telemetry data:
-% telemetry records have size limits, and the performance impact of
-% recording telemetry should be minimal.
-
-% In summary, the limitations of telemetry are:
-% \begin{itemize}
-%   \item Data that don't reveal private information.
-%   \item Fixed-size telemetry records.
-%   \item Minimal overhead to record telemtry.
-% \end{itemize}
+Cox~\cite{transparent-telemetry} discusses in detail the privacy implications
+and tradeoffs in telemetry.
 
 In addition, due to the architecture of Roblox Studio
 there is some information that is not available to the
 typechecker:
 \begin{itemize}
-  \item The typechecker does not have access to some lifecycle events,
-    such as save, quit and publish.
-  \item The typechecker does not have access to GUI state, for example
-    whether the Script Analysis widget is visible.
+  \item
+    Lifecycle events including as save, run, quit, and publish.\footnote{Publish events
+    cannot be reported at any rate because they are public, and could be used
+    to match a telemetry session to a creator.}
+  \item
+    GUI state, in particular, whether the Script Analysis widget is visible.
 \end{itemize}
+Our type error telemetry has to meet all of the above constraints.
+
 
 \subsection{Telemetry Records}
 \label{s:telemetry-records}
 
 \begin{figure}[t]\centering
-  % BEN: The left brace is confusing. Is ID not fixed?
   \begin{tabular}{|l|l|l|l|l|l|l|}\hline
     ID & Time & Mode & Reason & Size Info & Overall Counts & Edit Range Counts
     \\\toprule
-    \multicolumn{6}{c}{\upbracefill} & \multicolumn{1}{c}{\upbracefill} \\[-0.5ex]
+    \multicolumn{6}{c}{\raisebox{.5\normalbaselineskip}[0pt][0pt]{$\underbrace{\hspace{9cm}}$}} &
+    \multicolumn{1}{c}{\raisebox{.5\normalbaselineskip}[0pt][0pt]{$\underbrace{\hspace{3cm}}$}} \\[-0.5ex]
     \multicolumn{6}{c}{fixed-size} & \multicolumn{1}{c}{variable-size}
   \end{tabular}
   \caption{Structure of a telemetry record. There are 13 overall counts and up to 70 edit range counts in each record.}
   \label{f:tdata}
 \end{figure}
 
-The telemetry for a Roblox Studio session is gathered as a series of
-records, all with the same \panon{} session
-identifier. This allows us to correlate telemetry across a single
+The type error telemetry for a Roblox Studio session is gathered as a series of
+records, all with the same \panon{} session identifier.
+This allows us to correlate telemetry across a single
 session, but not between sessions.
-
-In order to avoid swamping our telemetry servers, we randomly throttled
-the generation of telemetry records:
+In order to avoid swamping the telemetry servers, the client reports on a subset
+of telemetry events via two levels of uniform random sampling:
 \begin{itemize}
   \item
-    1\% of Roblox Studio sessions were enrolled in generating telemetry, and
+    1\% of Roblox Studio sessions generate \emph{any} type error telemetry, and
   \item
-    0.5\% of runs of the typechecker (approximately 1 in 200 keystrokes)
-      in an enrolled session generated a telemetry record.
+    0.5\% of all type analyses (approximately 1 in 200 keystrokes)
+    in an enrolled session generate a telemetry record.
 \end{itemize}
-In order to find how file-switching correlated with type errors, we
-additionally recorded
-every run of the typechecker in an enrolled session which switched
-file generated a telemetry record.\todo{I cannot parse this!}
+In addition to sending telemetry for randomly-selected keystrokes,
+our system sends a telemetry record every time the session changes
+focus from one module to another.
+These records provide important context for mode switches:
+if one record uses \mstrict{} mode but the next uses \mnocheck{},
+then it is critical to know whether the creator downgraded modes
+or simply switched to another module.
 
 \Cref{f:tdata} shows the structure of our telemetry records:
 \begin{enumerate}
@@ -689,23 +684,20 @@ file generated a telemetry record.\todo{I cannot parse this!}
     \end{itemize}
 \end{enumerate}
 
-
-
-
 To track the edit range, we record a start and end position, which we
-update appropriately on every edit. This can result in very large edit
-ranges, for example, if the user edits at the beginning and end of the
-file.
-The main benefit of this strategy is that it ensures constant-size telemetry records.
+update appropriately on every edit. This can result in very large and
+imprecise edit ranges, for example, if the user edits at the beginning and end
+of the file.
+The upshot of this strategy is that it reduces the size and complexity of
+telemetry records because there is only one inerval for errors to overlap with.
 
-\paragraph{NOTES} %% FILL
-This kind of telemetry data is coarse-grained.
-For instance, it does not let us distinguish between edits that ignore a type
+This telemetry design is admittedly coarse-grained.
+For instance, it does not distinguish between edits that ignore a type
 error from edits that remove one error while introducing another.
 We acknowledge this and other threats in~\cref{s:threats}.
-The main advantages of the telemetry design are the small size of each record
-and complete the lack of PII.
-Furthermore, despite the limitations, Studio's telemetry supports a variety of
+The main advantages of this telemetry are the small size of each record
+and complete the lack of private information.
+Furthermore, despite the limitations, this telemetry supports a variety of
 interesting conclusions that we showcase in the next section.
 
 
@@ -1244,6 +1236,10 @@ an Add and a Remove because we cannot distinguish two errors of the same kind.
 \begin{itemize}
   \item
     \FILL{} which survive the longest, most keeps???
+
+  \item
+    \FILL{} beware counts include module switches. Why???
+    Is that defensible at all?
 
   \item
     \FILL{} \mnonstrict{} should have no false positives,
@@ -1903,6 +1899,8 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 \paragraph{Threats to Validity}
 \label{s:threats}
 
+\FILL{} cannot match sessions to codebases
+
 While this study has high ecological validity due to its focus on
 working creators, there are several threats to keep in mind.
 Some threats stem from our method of collecting data; others
@@ -1985,8 +1983,8 @@ randomly-selected runs of the type checker rather than specific events of intere
 To the best of our knowledge, this design occupies a unique position relative to prior
 work~(\cref{t:telemetry-design}).
 
-In other professional-grade IDEs, such as VSCode~\cite{vscode-telemetry}
-and \code{.NET}~\cite{dotnet-telemetry}, telemetry may include all sorts of
+In other professional-grade IDEs, such as VSCode~\cite{vscode-telemetry},
+IntelliJ~\cite{intellij-telemetry}, and \code{.NET}~\cite{dotnet-telemetry}, telemetry may include all sorts of
 data: error reports, source code fragments, timestamps, and filepaths.
 Users may be able to opt out of some telemetry, but the details depend on the
 license agreement.
