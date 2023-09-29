@@ -296,18 +296,17 @@ Telemetry records are correlated by session, using a \panon{} session
 identifier and a timestamp.
 
 With this telemetry data, we investigate research questions about
-the adoption and benefits of type analysis: \todo{Some of these are flawed. We don't know anything about creators. Adjust
-  to match section 5.}
+the adoption and benefits of type analysis:
 \begin{description}
   \item[RQ1.]
-    How many creators use type analysis?
+    How many sessions use type analysis?
     How often do projects contain modules with different
     analysis modes?
-    How often do creators turn analysis off?
+    How often do sessions turn analysis off?
   \item[RQ2.]
     For modules that use type analysis:
     which errors arise,
-    how do creators respond,
+    how do sessions respond,
     and which errors tend to persist despite subsequent edits?
   \item[RQ3.]
     What impact does type analysis have on the number of \FS{}
@@ -350,7 +349,7 @@ limited to a small number of users.
   \item
     An available dataset of over 1.5 million telemetry records
     and scripts to analyze them.
-    \emph{We intend to submit this in an artifact.}
+    \emph{We intend to submit these in an artifact.}
 
 \end{itemize}
 
@@ -1797,7 +1796,7 @@ common idioms in Roblox scripts.
 Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
 \begin{description}
-  \item[How many creators choose to use type analysis?]
+  \item[How many sessions use type analysis?]
     A mere \pct{10} of sessions (and of telemetry records overall) opt-in to
     type checking~(\cref{f:dataset-overview}).
     Most of these use \mnonstrict{} mode, and fewer than \pct{1}
@@ -1811,7 +1810,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
     only on modules that the creator chose to open, but the widespread use
     of \mnocheck{} mode suggests that it is not off by much.
 
-  \item[How often do creators turn analysis off?]
+  \item[How often do sessions turn analysis off?]
     Sessions rarely disable type analysis after opting in.
     Only 233 of the \nK{340} sessions ($<\pct{0.07}$)
     switch to a weaker mode.
@@ -1849,7 +1848,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
         duplicating or swapping a generic parameter, use of a deprecated API,
         and unsafe dynamic property lookup on a class.
 
-      \item[- How do creators respond? Which errors persist through edits?]
+      \item[- How do sessions respond? Which errors persist through edits?]
         Sessions typically fix analysis errors.
         With few exceptions, increases and decreases in the number of errors
         balance out~(\cref{f:error-changes,t:type-error-survival,}).
