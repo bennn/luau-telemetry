@@ -1507,7 +1507,7 @@ None of these errors appear in edit ranges~(\cref{t:type-error-count}).
 For the specific case of \code{CodeTooComplex}, our telemetry tracked project-wide
 counts and found only 26 of these errors, which were spread across eleven
 records in three sessions.
-It is entirely possible that all these errors came from one creator who
+It is entirely possible that all these errors came from one session that
 deliberately pushed the limits of type analysis.
 Whatever the reason, the overall number is low enough to suggest that the
 internal limits are not posing barriers to typechecker adoption.
@@ -1616,7 +1616,7 @@ Still, the plots reveal interesting points:
 The apparent visual symmetry in the density plots~(\cref{f:error-density})
 suggests that edits add and remove errors with rougly equal frequency,
 regardless of mode.
-No matter whether a creator is using \mnocheck{}, \mnonstrict{},
+No matter whether a session is using \mnocheck{}, \mnonstrict{},
 or \mstrict{} mode, edits seem to balance increases and decreases in the number
 of type errors.
 \Cref{f:error-changes} explores this question of balance in detail.
@@ -1632,7 +1632,7 @@ errors in the project.
     The Adds and Drops are remarkably balanced: across all three modes, they are
     at most \pct{2} apart from one another.
     This confirms that changes to the number of errors are balanced.
-    Creators tend to fix errors highlighted by type analysis
+    Sessions tend to fix errors highlighted by type analysis
     even in the stricter analysis modes.
 
   \item
@@ -1783,7 +1783,6 @@ This should happen in \mstrict{} mode.
 \section{Answers to Research Questions}
 \label{s:discussion}
 
-\todo{No identity $\Rightarrow$ no ``creators'', only sessions.}
 With the data in hand, we can answer the research questions
 from~\cref{s:introduction}.
 The answers confirm several aspects of Luau's design, but
@@ -1791,20 +1790,21 @@ at the same time offer several directions for future improvements.
 
 Luau clearly\todo{How can we say?} has a powerful typechecker that can efficiently
 analyze thousands of lines of code.
-But, few creators use type analysis directly and the data presents little
-evidence that doing so would improve their quality of life.
+But, few sessions use type analysis directly and the data presents little
+evidence that doing so would improve creators' quality of life.
 We conjecture that Luau needs further tailoring to match
 common idioms in Roblox scripts.
 Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
 \begin{description}
   \item[How many creators choose to use type analysis?]
-    A mere \pct{10} of creators opt-in to type checking.
+    A mere \pct{10} of sessions (and of telemetry records overall) opt-in to
+    type checking~(\cref{f:dataset-overview}).
     Most of these use \mnonstrict{} mode, and fewer than \pct{1}
     use \mstrict{} mode.
 
   \item[How often do projects contain modules with different analysis modes?]
-    Projects rarely combine analysis modes.
+    Sessions rarely combine analysis modes.
     Only 512 of \nK{340} sessions ($<\pct{0.15}$) switched to modules with different
     analysis modes.
     This number may be a significant underapproximation because we have data
@@ -1812,7 +1812,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
     of \mnocheck{} mode suggests that it is not off by much.
 
   \item[How often do creators turn analysis off?]
-    Creators rarely disable type analysis after opting in.
+    Sessions rarely disable type analysis after opting in.
     Only 233 of the \nK{340} sessions ($<\pct{0.07}$)
     switch to a weaker mode.
     Most of these (\pct{75}) downgrade from \mstrict{} to
@@ -1850,7 +1850,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
         and unsafe dynamic property lookup on a class.
 
       \item[- How do creators respond? Which errors persist through edits?]
-        Creators typically fix analysis errors.
+        Sessions typically fix analysis errors.
         With few exceptions, increases and decreases in the number of errors
         balance out~(\cref{f:error-changes,t:type-error-survival,}).
         Even in \mnocheck{}, most edits that overlap with syntax errors
@@ -1889,7 +1889,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
   \item[What impact does type analysis have on the number of \FS{} errors?]
     Opting in to type analysis has little impact on \FS{} errors.
     The percent of \FS{} errors in \mnocheck{} code matches the percent of
-    creators using \mnocheck{} mode~(\cref{f:error-by-mode}); whereas,
+    sessions using \mnocheck{} mode~(\cref{f:error-by-mode}); whereas,
     if type analysis helped reduce \FS{} errors, \mnocheck{} would own a
     higher percentage of the errors.
     Furthermore, there is no apparent relation between \FS{} errors and edits,
@@ -1937,8 +1937,8 @@ without all the noise that syntax errors introduce.\todo{Why didn't
 
 Fourth, type analysis reports several errors at once and we have no idea which
 errors, if any, creators intended to fix with their edits.
-Thus, fixes may be a side effect of other plans, as seen in prior work [CITE].
-% Cite the Marceau SIGCSE 2011 paper. This is the [DIFF] code from the rubric.
+Thus, fixes may be a side effect of other plans, as seen in prior work~\cite{mfk-sigcse-2011}.
+% This is the [DIFF] code from Marceau SIGCSE 2011.
 
 % Telemetry cannot replace user studies, as there is no way to measure
 % creator sentiment, but provide complementary data at scale.
@@ -1951,6 +1951,7 @@ the\todo{Huh? It's similar yet different?}
 \code{CannotCallNonFunction} error but with slightly different
 semantics, then the relative frequency of that error could be different
 than what we observed.
+%% ben: not sure what to say ... may remove the error names comment
 Second, we know nothing about the creators in our study except that they
 were selected at random from a large and diverse group.
 A dataset based on a targeted subset of users might show entirely different
@@ -1960,6 +1961,7 @@ Ultimately, we view our work as primarily \emph{formative}. It gives
 us a first look at usage, and generates several questions that can
 lead to hypotheses. Answering those would require much more intrusive
 techniques, or controlled studies, or other means.
+
 
 \section{Related Work}
 \label{s:related}
@@ -2156,10 +2158,10 @@ nevertheless on a much smaller scale than Roblox Studio.
 
 This paper presents the first large-scale analysis of developers' interactions with
 an industrial strength typechecker.
-With over 1.5 million telemetry records from over 300,000 sessions
+With over 1.5 million telemetry records from over 340,000 sessions
 that took place during a three-month timespan, the data has plenty to say about
 type errors and their overlap with program edits.
-At the same time, the data is carefully restricted to avoid leaking personal
+At the same time, the data is limited to avoid leaking personal
 and proprietary information: we know the number and kind of type errors
 that occurred, but nothing about the line(s) of code that the typechecker
 complained about.
@@ -2168,7 +2170,7 @@ On the object level, the analysis offers several lessons for the Luau
 developers and other maintainers of gradually-typed languages:
 \begin{itemize}
   \item
-    Nearly all creators (\pct{90}) use the default ``no check''
+    Nearly all sessions (\pct{90}) use the default ``no check''
     typechecking mode~(\cref{f:dataset-overview}).
     Since the next typing mode (\mnonstrict{}) requires no annotations and is
     very conservative about the errors it reports, we conjecture that
@@ -2178,7 +2180,7 @@ developers and other maintainers of gradually-typed languages:
 %    \pct{50} of all errors are in current module, so probably errors appear locally (not in a distant module);
 %    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
   \item
-    Creators tend to fix errors immediately rather than dealing with them in a batch
+    Sessions tend to fix errors immediately rather than dealing with them in a batch
     or ignoring the errors altogether~(\cref{f:error-density,f:error-changes}).
     % Changes to the number of errors balance one another~(\cref{f:error-density});
     % edits are equally likely to add or remove errors~(\cref{f:error-changes}).
