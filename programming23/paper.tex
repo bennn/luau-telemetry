@@ -1902,8 +1902,6 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 \paragraph{Threats to Validity}
 \label{s:threats}
 
-\FILL{} cannot match sessions to codebases
-
 While this study has high ecological validity due to its focus on
 working creators, there are several threats to keep in mind.
 Some threats stem from our method of collecting data; others
@@ -1917,15 +1915,24 @@ and gave up.
 Furthemore, our method of sampling by keystroke and by module switch
 skews the data toward creators who, for whatever reason, do more
 of these actions.
-We have no access to other events (e.g., run locally, publish) due to privacy
-concerns; future studies may wish to avoid this limitation by actively
+We have no access to other events, e.g., run locally~(\cref{s:tel-limitations});
+future studies may wish to avoid this limitation by actively
 recruiting subjects.
 
 Second, the edit ranges are a coarse approximation of actual edits.
 They begin at the lowest edited line of code and end at the highest
 edited line, even if nothing between those lines changed.
 
-Third, the total counts of type errors include a large number of syntax errors,
+Third, session-based data has limitations.
+A creator who closes and reopens Roblox Studio every day has
+a much higher chance of generating telemetry than one who
+leaves Studio open all week.
+We have no way to reliably check whether multiple sessions are
+reporting on the same codebase.
+Sessions may end abruptly, for instance because of machine reboot,
+instead of ending when the creator was finished editing code.
+
+Fourth, the total counts of type errors include a large number of syntax errors,
 which have little to do with the Luau type system and are presumably easy for
 creators to fix.
 It would be better for the analysis to ignore these errors.
@@ -1934,7 +1941,7 @@ Indeed, our comparison between \FS{} errors in \mnocheck{} vs.
 without all the noise that syntax errors introduce.\todo{Why didn't
   YOU just filter them, then?!?}
 
-Fourth, type analysis reports several errors at once and we have no idea which
+Fifth, type analysis reports several errors at once and we have no idea which
 errors, if any, creators intended to fix with their edits.
 Thus, fixes may be a side effect of other plans, as seen in prior work~\cite{mfk-sigcse-2011}.
 % This is the [DIFF] code from Marceau SIGCSE 2011.
