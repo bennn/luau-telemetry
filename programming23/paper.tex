@@ -447,8 +447,9 @@ See~\cite{bfj-hatra-2021} for a more detailed discussion of the rationale
 behind the type systems.
 
 \begin{figure}[t]\centering
-  \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
-  \includegraphics[width=.45\textwidth]{img/roblox-studio-ide.png}
+  \includegraphics[width=.35\textwidth]{img/roblox-studio.png}
+  \hspace{1cm}
+  \includegraphics[width=.35\textwidth]{img/roblox-studio-ide.png}
   \caption{{Roblox Studio 3D creation} tools (left) and IDE (right).}
   \label{fig:roblox-studio}
 \end{figure}
@@ -875,7 +876,7 @@ and 1,000 lines in edit ranges.
   \caption{Session size in seconds and in number of records.}
   \label{t:session-size}
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
-  \begin{tabular}{lrrrrl} \\
+  \begin{tabular}{lrrrrl}
     ~               & Mean & Stddev & Median & \ptile{99} & Distribution \\
     Time Span (sec) & 3,184 & \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
     Record Count    & 286 & 583         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
@@ -908,7 +909,7 @@ A median session runs on the order of minutes and consists of a few dozen events
 \begin{table}[t]\centering
   \caption{Current type errors and \FS{} errors across all telemetry records.}
   \label{t:count-analysis-errors}
-  \begin{tabular}[t]{ll} \\
+  \begin{tabular}[t]{ll}
     \begin{tabular}[t]{r@{~~}r@{~}r}
       595,137 & type errors \\
       289,698 & \hbox{}~in module & [\pct{48.68}] \\
@@ -971,46 +972,30 @@ The low fraction of errors in the edit range sends a mixed message:
 \label{s:type-analysis-modes}
 
 \begin{figure}[t]\centering
-  \begin{subfigure}[t]{\columnwidth}
-    \begin{tabular}[t]{ll}
-      %% FILL bar chart? rectangle?
+  \begin{subfigure}[b]{0.48\columnwidth}
       \begin{tabular}[t]{r@{~~}l@{~}r}
          1,341,348 & \mnocheck{}          & [\pct{89.14}] \\
            156,883 & \mnonstrict{}        & [\pct{10.43}] \\
              6,505 & \mstrict{}           & [\pct{ 0.43}]
       \end{tabular}
-      \begin{tabular}[t]{r@{~~}l@{~~}r}
-      \end{tabular}
-    \end{tabular}
-    \caption{Analysis modes across the 1,504,736 records.}
+    \caption{Analysis modes in 1,504,736 records.}
     \label{f:total-records}
   \end{subfigure}
-
-  \begin{subfigure}[t]{\columnwidth}
-    \begin{tabular}[t]{ll} \\
+  \begin{subfigure}[b]{0.48\columnwidth}
       \begin{tabular}[t]{r@{~~}r@{~}r}
         313,509 & \mnocheck{}   & [\pct{90.19}] \\
          32,902 & \mnonstrict{} & [\pct{ 9.47}] \\
             545 & \mstrict{}    & [\pct{ 0.16}] \\
             642 & mixed-mode    & [\pct{ 0.18}]
       \end{tabular}
-      \begin{tabular}[t]{l@{~~}ll}
-        %% TODO numbers may be off by +- 100
-        %%    & 341 & contain a mode upgrade \\
-        %%    & 320 & contain a mode downgrade \\
-        %%    & 512 & contain modules with different modes
-        %%  they don't match out/error-density*hasdown.rkt
-        %%  ??? counting downs instead of sessions with downs ???
-        %% TODO fix throughout paper!
-        \zerowidth{Among the mixed-mode sessions:} \\
-        & 176 & contain a mode upgrade \\
-        & 233 & contain a mode downgrade \\
-        & 512 & contain modules with different modes
-      \end{tabular}
-    \end{tabular}
-    \caption{Analysis mode(s) for the 347,598 sessions.}
+    \caption{Analysis mode(s) in 347,598 sessions.}
     \label{f:total-sessions}
   \end{subfigure}
+
+  {Among the mixed-mode sessions:
+        176 contain a mode upgrade,
+        233 contain a mode downgrade, and
+        512 contain modules with different modes.}
 
   \caption{Overview of type analysis modes.}
   \label{f:dataset-overview}
@@ -1119,8 +1104,8 @@ in a well-typed state.
     \begin{tabular}[t]{cc}
     %% TODO why text blurry??!
     Type errors & Background errors \\
-    \labelbars{\includegraphics[valign=M]{img/error-by-mode-te.pdf}}
-    & \labelbars{\includegraphics[valign=M]{img/error-by-mode-fs.pdf}}
+    \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{img/error-by-mode-te.pdf}}
+    & \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{img/error-by-mode-fs.pdf}}
   \end{tabular}
   \caption{Type and \FS{} errors grouped by mode.}
   \label{f:error-by-mode}
@@ -1518,11 +1503,9 @@ deliberately pushed the limits of type analysis.
 
   \mnocheck{}
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
-  \smallskip
 
   \mnonstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
-  \smallskip
 
   \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
@@ -1663,11 +1646,11 @@ The ``maintain'' rows include cases where there are zero errors before and after
   %% - colors for good , bad (disagree) , neutral
   \begin{tabular}{lll}
     \mnocheck{} & \mnonstrict{} & \mstrict{} \\
-    \includegraphics[width=0.26\columnwidth]{img/compass-nocheck.pdf}
+    \includegraphics[width=0.24\columnwidth]{img/compass-nocheck.pdf}
     &
-    \includegraphics[width=0.26\columnwidth]{img/compass-nonstrict.pdf}
+    \includegraphics[width=0.24\columnwidth]{img/compass-nonstrict.pdf}
     &
-    \includegraphics[width=0.26\columnwidth]{img/compass-strict.pdf}
+    \includegraphics[width=0.24\columnwidth]{img/compass-strict.pdf}
   \end{tabular}
   \caption{Comparing the change in type errors to the change in \FS{} errors.}
   \label{f:tefs-compass}
