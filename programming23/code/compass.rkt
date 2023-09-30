@@ -64,6 +64,7 @@
            (num-total (apply + num*))
            (_ (set-box! *ymax (apply max (map (lambda (n) (npct n num-total)) num*))))
            )
+#;(displayln (vector "te only" (npct num-te num-total)))
       (discrete-histogram
         (list
           (vector "zero" (npct num-zero num-total))

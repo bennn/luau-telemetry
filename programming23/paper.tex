@@ -1567,6 +1567,7 @@ very useful because there are many more sessions than colors.
 
 
 \subsection{Do Edits Tend to Add Type Errors?}
+\label{s:tefs-compass}
 
 \begin{figure}[t]\centering
   % TODO use bars instead, percent only, don't care about counts
@@ -1630,82 +1631,39 @@ The ``maintain'' rows include cases where there are zero errors before and after
 
   \item
     In \FS{} mode, the percent of ``maintain'' records is high across
-    the board and the percents of increases and decreases are lower.
+    the board and the increases and decreases are lower.
     No matter the mode, reducing type errors is not guaranteed to reduce
     \FS{} errors as well.
-    The next section further compares type and \FS{} errors.
+    This is surprising for \mstrict{} mode, and likely relates to
+    the data model; see below for details.
 
 \end{itemize}
 
 
-\subsection{Two Activities: Asset Creation and Scripting}
-\label{s:strict-vs-forcedstrict}
+\paragraph{Data Model Types: Strict vs. Background Analysis}
 
-\begin{figure}[t]\centering
-  %% TODO
-  %% - thin bars
-  %% - colors for good , bad (disagree) , neutral
-  \begin{tabular}{lll}
-    \mnocheck{} & \mnonstrict{} & \mstrict{} \\
-    \includegraphics[width=0.24\columnwidth]{img/compass-nocheck.pdf}
-    &
-    \includegraphics[width=0.24\columnwidth]{img/compass-nonstrict.pdf}
-    &
-    \includegraphics[width=0.24\columnwidth]{img/compass-strict.pdf}
-  \end{tabular}
-  \caption{Comparing the change in type errors to the change in \FS{} errors.}
-  \label{f:tefs-compass}
-\end{figure}
+Based on the description of \FS{} analysis from~\cref{s:context},
+it should raise \emph{at least as many errors} as \mstrict{} mode
+because it uses \mstrict{} checks for all dependencies.
+For example, if a \mstrict{} module imports from a \mnocheck{} one,
+then \mstrict{} analysis does not analyze the import but
+\FS{} analysis does.
 
-\Cref{f:tefs-compass} takes a closer look at type errors (\tekey{}) and \FS{} errors (\fskey{}).
-\todo{I'm kinda' baffled.}
-For every pair of events in each session, we compare the change in
-type errors to the change in \FS{} errors and choose one of five categories.
-At a high level, the question at hand is whether the changes \emph{agree} or \emph{disagree}.
-The categories go one step further and separate zero and non-zero changes:
-
-\noindent{}\begin{tabular}{lll}
-  1. & \code{zero} &  neither \tekey{} nor \fskey{} changed \\
-  2. & \code{te only} & \tekey{} changed but \fskey{} remained the same \\
-  3. & \code{bg only} & \tekey{} remained the same but \fskey{} changed \\
-  4. & \code{dis} & \tekey{} and \fskey{} changed in opposite directions \\
-  5. & \code{agree} & \tekey{} and \fskey{} changed in the same direction
-\end{tabular}
-\smallskip{}
-
-Of particular interest is how \mstrict{} and \FS{} checks compares.
-The two analyses are similar, but \FS{} analysis uses strong checks
-on all dependencies and has looser rules for the data model~(\cref{s:context}):
-whereas \mstrict{} requires casts to confirm the types of data assets,
-\FS{} gives data the dynamic gradual type.
-
-
-\paragraph{Observations}
-
+In \cref{f:error-changes}, however, nearly \pct{3} of \mstrict{}-mode records
+increase the number of \mstrict{} errors without increasing \FS{} errors.
+Further inspection reveals that the situation is a bit worse, as
+some records increase \mstrict{} errors without changing the \FS{} errors:
 \begin{itemize}
   \item
-    All three plots have a nonzero percentage of \code{te only} items.
-    In \mstrict{} mode, the percentage jumps up to nearly \pct{25}.
-    Since \FS{} analysis is more lenient only for data model changes, these must
-    be edits that affect the model in a way that raises a type error.
-    The high percentage in \mstrict{} may be a source of frustration.
-    %% Naturally, \mstrict{} mode has the largest number of such edits because
-    %% its type checker is the most careful.
-
-  \item
-    In the first plot, for \mnocheck{},
-    half the records are \code{zero}, nearly half are \code{bg only}, and only a few
-    land in the other categories.
-    While the number of zeros is a bit high, the high \code{bg only} and low
-    \code{agree} counts make sense because \mnocheck{} reports few errors.
-
-  \item
-    In \mnonstrict{}, the number of agreements jumps up to nearly \pct{20}.
-    This is reassuring because type and \FS{} analysis should agree to some extent,
-    but the level of agreement is still rather low.
-
+    \pct{22} of \mstrict{} records increase (\addsym{}) the number of type errors
+    but maintain (\keepsym{}) the number of \FS{} errors.
 \end{itemize}
-
+The reason for the discrepancy is that \mstrict{} mode and \FS{} analysis
+assign different types to the data model: \mstrict{} assigns a top type
+and requires downcasts at use sites, whereas \FS{} analysis uses the
+dynamic gradual type.
+Dealing with these data model errors may be a source of frustration
+for creators using \mstrict{} mode.
 
 
 \section{Answers to Research Questions}
@@ -2151,7 +2109,7 @@ developers and other maintainers of gradually-typed languages:
     has a precise view of the data.
     Improving precision is an important direction for future work.
     Until then, \mstrict{} mode clearly needs to relax its data model
-    analysis because it raises even more errors than \FS{} checking~(\cref{f:tefs-compass}).
+    analysis because it raises even more errors than \FS{} checking~(\cref{s:tefs-compass}).
 \end{itemize}
 
 
@@ -2163,7 +2121,7 @@ in Roblox Studio supports a variety of useful analyses:
     undesirable events rarely happen (e.g.,\code{UnificationTooComplex}).
   \item
     Testing the relationship between two counts can yield insights.
-    The gap between \mstrict{} and \FS{} errors in~\cref{f:tefs-compass}
+    The gap between \mstrict{} and \FS{} errors in~\cref{s:tefs-compass}
     revealed an issue with \mstrict{} checking.
   \item
     Reporting the overlap between type errors and the current (approximate) edit
