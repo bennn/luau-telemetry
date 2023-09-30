@@ -1411,25 +1411,24 @@ telemetry system.
 %%  TypePackMismatch
 %%  UnificationTooComplex
 
-\Cref{t:type-error-count} reports the percent of type errors that overlap with
-the edit range.\todo{I DO NOT UNDERSTAND ANYTHING HERE.}
-The purpose of this table is to discover all specific errors in the dataset,
-thus it includes both keystroke-based and module-switch-based records---even
-though edit ranges are not well-defined for the latter.
-
-There are two subtables for \mnonstrict{} and \mstrict{} mode.
-The table does not report \mnocheck{} because all its type errors are
-by definition \code{SyntaxError}s.
+\Cref{t:type-error-count} sorts type errors by their popularity
+in \mnonstrict{} and \mstrict{} mode.
+The purpose of this table is to discover and rank all errors that
+appear in the dataset, thus it is based on both keystroke and
+module-switch telemetry records even though edit ranges are not well-defined
+for the latter.
+The table does not include \mnocheck{} because all its type errors are
+\code{SyntaxError}s by definition.
 
 
 \paragraph{Observations}
 
 \begin{itemize}
   \item
-    Syntax errors, in particular \code{UnknownSymbol}, are much more
-    common in \mnonstrict{} than \mstrict{}.\todo{This is NOT a
-      ``syntax'' error? It's a typo!}
-    This may be because \mnonstrict{} reports fewer errors in general.
+    Syntax errors, in particular \code{UnknownSymbol} (for an unbound variable),
+    are much more common in \mnonstrict{} than \mstrict{}.
+    This may be because \mnonstrict{} reports fewer errors
+    to dilute the proportion of unknown symbols.
 
   \item
     Despite being less strict, \mnonstrict{} reported four errors that
@@ -1569,6 +1568,7 @@ very useful because there are many more sessions than colors.
 
 \subsection{Do Edits Tend to Add Type Errors?}
 \label{s:tefs-compass}
+\label{s:strict-vs-forcedstrict}
 
 \begin{figure}[t]\centering
   % TODO use bars instead, percent only, don't care about counts
