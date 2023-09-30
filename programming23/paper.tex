@@ -139,7 +139,7 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 \newcommand{\rbox}[1]{\colorbox{red!30}{#1}}
 \newcommand{\tefsfont}[1]{\textsc{#1}}
 \newcommand{\tekey}{\tefsfont{te}}
-\newcommand{\fskey}{\tefsfont{fs}}
+\newcommand{\fskey}{\tefsfont{bg}}
 \newcommand{\QALAN}{\FILL{} Alan:}
 \newcommand{\panon}{pseudonymized}
 \newcommand{\symbox}[1]{{\makebox[0.8em][c]{{#1}}}}
@@ -297,6 +297,7 @@ or collects source code, we performed a large-scale study using \panon{}
 Our starting point is a telemetry framework that is built in
 to {Roblox Studio} and currently measures the effectiveness of
 creation features.
+%% \QALAN: can we be more specific? what's an example ... API usage?
 This system randomly determines which sessions should report telemetry, and,
 for those sessions, reports telemetry records back with a summary of the
 session.
@@ -372,17 +373,8 @@ limited to a small number of users.
 
 \section{Context: {Roblox} and {Luau}}
 \label{s:context}
-% https://create.roblox.com/docs/scripting/luau
 
-% TODO quick reference table
-% \begin{table}
-%   \caption{Modes and analyses}
-%   \label{t:mode-analyze}
-% 
-%   Mode: nocheck ...
-%   Analysis: nocheck ... forced strict
-% 
-% \end{table}
+% https://create.roblox.com/docs/scripting/luau
 
 %% Most users of {Roblox Studio} do not opt in to type error
 %% reporting (\pct{90},~\cref{s:data}), and so they do not see the ``squiggly underlining'' that
@@ -1615,7 +1607,7 @@ very useful because there are many more sessions than colors.
     type      & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
     error     & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
               & \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
-    \\
+    \\[-2ex]
     \FS       & \mnocheck{}   & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
     error     & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
               & \mstrict{}    & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
@@ -1648,9 +1640,16 @@ The ``maintain'' rows include cases where there are zero errors before and after
     fix errors highlighted by type analysis.
 
   \item
-    \mstrict{} mode has a higher percent of  (\keepsym{}) records.
-    It may be that errors are more likely to persist in this mode.
+    \mstrict{} mode has a higher percent of ``maintain'' (\keepsym{}) records.
+    Errors may be more likely to persist in this mode.
     %% TODO check if actually zero
+
+  \item
+    In \FS{} mode, the percent of ``maintain'' records is high across
+    the board and the percents of increases and decreases are lower.
+    No matter the mode, reducing type errors is not guaranteed to reduce
+    \FS{} errors as well.
+    The next section further compares type and \FS{} errors.
 
 \end{itemize}
 
@@ -1664,131 +1663,64 @@ The ``maintain'' rows include cases where there are zero errors before and after
   %% - colors for good , bad (disagree) , neutral
   \begin{tabular}{lll}
     \mnocheck{} & \mnonstrict{} & \mstrict{} \\
-    \includegraphics[width=0.3\columnwidth]{img/compass-nocheck.pdf}
+    \includegraphics[width=0.26\columnwidth]{img/compass-nocheck.pdf}
     &
-    \includegraphics[width=0.3\columnwidth]{img/compass-nonstrict.pdf}
+    \includegraphics[width=0.26\columnwidth]{img/compass-nonstrict.pdf}
     &
-    \includegraphics[width=0.3\columnwidth]{img/compass-strict.pdf}
+    \includegraphics[width=0.26\columnwidth]{img/compass-strict.pdf}
   \end{tabular}
   \caption{Comparing the change in type errors to the change in \FS{} errors.}
   \label{f:tefs-compass}
 \end{figure}
 
-Since Roblox Studio runs each codebase through two passes of type analysis,
-it is interesting to compare their results.
-Of special interest is the \mstrict{} mode case, because the number of
-type errors and \FS{} errors should be nearly the same.
-But, there are two differences between \mstrict{} type checking
-and \FS{} checking:
-\begin{itemize}
-  \item
-    Background checks all dependencies in \mstrict{} mode, no matter
-    what mode they declare.
-    So, the number of \FS{} errors may be higher.
-  \item
-    Background checking has looser rules for the \emph{data model};
-    that is, for the static assets that a program manipulates.
-    So, the number of \FS{} errors may be lower.
-    %% initial DM, all properties go into a table type; DM -> folder -> model -> part
-    %% get dot-driven autocomplete
-\end{itemize}
-Our data contains a surprising number of records where \FS{}
-reports fewer errors.
-Data model edits are apparently a regular occurrence in Luau programs.
+\Cref{f:tefs-compass} takes a closer look at type errors (\tekey{}) and \FS{} errors (\fskey{}).
+For every pair of events in each session, we compare the change in
+type errors to the change in \FS{} errors and choose one of five categories.
+At a high level, the question at hand is whether the changes \emph{agree} or \emph{disagree}.
+The categories go one step further and separate zero and non-zero changes:
 
-\Cref{f:tefs-compass} compares changes in type errors (\tekey{}) to changes in
-\FS{} errors (\fskey{}) for the three analysis modes.
-To a first approximation, the changes either agree with one another
-or disagree.
-For example, if type errors increase but \FS{} errors decrease,
-we have a disagreement.
-The plots futher categorize agreements and disagreements into
-the following five cases:
-\begin{enumerate}
-  \item
-    \emph{zero}: neither \tekey{} nor \fskey{} changed
-  \item
-    \emph{te only}: \tekey{} changed but \fskey{} remained the same
-  \item 
-    \emph{fs only}: \tekey{} remained the same but \fskey{} changed
-  \item
-    \emph{dis}: \tekey{} and \fskey{} changed in opposite directions
-  \item 
-    \emph{agree}: \tekey{} and \fskey{} changed in the same direction
-\end{enumerate}
-Both \emph{zero} and \emph{agree} are agreements.
-The others are disagreements.
-The plots show what percent of all telemetry records fell into these five categories.
+\noindent{}\begin{tabular}{lll}
+  1. & \code{zero} &  neither \tekey{} nor \fskey{} changed \\
+  2. & \code{te only} & \tekey{} changed but \fskey{} remained the same \\
+  3. & \code{bg only} & \tekey{} remained the same but \fskey{} changed \\
+  4. & \code{dis} & \tekey{} and \fskey{} changed in opposite directions \\
+  5. & \code{agree} & \tekey{} and \fskey{} changed in the same direction
+\end{tabular}
+\smallskip{}
+
+Of particular interest is how \mstrict{} and \FS{} checks compares.
+The two analyses are similar, but \FS{} analysis uses strong checks
+on all dependencies and has looser rules for the data model~(\cref{s:context}):
+whereas \mstrict{} requires casts to confirm the types of data assets,
+\FS{} gives data the dynamic gradual type.
+
 
 \paragraph{Observations}
 
 \begin{itemize}
   \item
-    All three plots have a nonzero percentage of \emph{te only} items.
+    All three plots have a nonzero percentage of \code{te only} items.
     In \mstrict{} mode, the percentage jumps up to nearly \pct{25}.
-    Since \fskey{} is more lenient only for data model changes, these must
+    Since \FS{} analysis is more lenient only for data model changes, these must
     be edits that affect the model in a way that raises a type error.
-    Naturally, \mstrict{} mode has the largest number of such edits because
-    its type checker is the most careful.
+    The high percentage in \mstrict{} may be a source of frustration.
+    %% Naturally, \mstrict{} mode has the largest number of such edits because
+    %% its type checker is the most careful.
 
   \item
     In the first plot, for \mnocheck{},
-    half the records are \emph{zero\/}s, nearly half are \emph{fs only}, and only a few
+    half the records are \code{zero}, nearly half are \code{bg only}, and only a few
     land in the other categories.
-    While the number of zeros is a bit high,
-    the \emph{fs. only} spike makes sense because type checking is supposed to complain
-    sparingly in \mnocheck{} mode.
+    While the number of zeros is a bit high, the high \code{bg only} and low
+    \code{agree} counts make sense because \mnocheck{} reports few errors.
 
   \item
-    In the \mnonstrict{} plot, the number of agreements jumps up.
-    This is reassuring.
-    \FILL{}.
+    In \mnonstrict{}, the number of agreements jumps up to nearly \pct{20}.
+    This is reassuring because type and \FS{} analysis should agree to some extent,
+    but the level of agreement is still rather low.
 
 \end{itemize}
 
-Users of \mstrict{} mode may find it frustrating that the type checker complains
-about data model edits.
-Though we cannot see the exact reason for the complaints, the checker errs on
-the conservative side.
-Thus we expect the number of useful reports is low.
-This may be a barrier to adaption.
-
-
-\subsection{Session Timelines}
-
-\begin{figure}[t]\centering
-  %% TODO any way to cluster timelines to avoid the "creepiness" of spying on one user?
-%  \mnonstrict{}\\
-%  \includegraphics[width=\columnwidth]{img/timeline-nonstrict.pdf}
-
-  \medskip{}
-  \mstrict{}\\
-  \includegraphics[width=\columnwidth]{img/timeline-strict.pdf}
-
-  \caption{Two example sessions.}
-  \label{f:indy-session}
-\end{figure}
-
-Another insightful visualization that the telemetry supports is plots of individual sessions
-over time.
-\Cref{f:indy-session} shows the type errors, \FS{} errors, and module switches
-in two \mstrict{} mode sessions.
-The x-axis shows time in seconds from the start of the session.
-The y-axis counts errors.
-Type errors appear as orange plus marks.
-Background errors appear as green x marks.
-The vertical lines show module switches.
-
-In the first plot, the error counts are low until about the 3,000s mark,
-at which point an edit (not a module switch) leads to 15 errors.
-These 15 errors disappear two records later.
-Then, after two module switches and some edits, the number of errors spikes again.
-In the second plot, the number of errors spikes in the beginning due to edits,
-then remains low for the next few thousand seconds.
-
-A general observation is that the number of type errors is always less than the number of \FS{}
-errors, though the numbers are close.
-This should happen in \mstrict{} mode.
 
 
 \section{Answers to Research Questions}
@@ -2254,7 +2186,7 @@ in Roblox Studio supports a variety of useful analyses:
     It was especially useful to have overlaps for two sets of type errors: old and current.
   \item
     Timestamps give useful, low-level insights about the frequency of keystrokes,
-    the length of sessions, and actions over time~(\cref{f:indy-session}).
+    the length of sessions, and actions over time.
     The event ordering that timestamps provide was invaluable; e.g., for learning
     that error deltas bounce up and down rather than rising shaply, then falling~(\cref{f:error-density}).
 \end{itemize}

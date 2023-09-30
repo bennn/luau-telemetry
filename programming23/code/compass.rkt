@@ -68,7 +68,7 @@
         (list
           (vector "zero" (npct num-zero num-total))
           (vector "te only" (npct num-te num-total))
-          (vector "fs only" (npct num-fs num-total))
+          (vector "bg only" (npct num-fs num-total))
           (vector "dis." (npct num-disagree num-total))
           (vector "agree" (npct num-agree num-total)))
         #:color neutral-color
