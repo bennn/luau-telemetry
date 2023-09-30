@@ -1960,14 +1960,14 @@ One way to futher strengthen the privacy of any telemetry design, including
 transparent telemetry, is to systematically add noise to the data using
 techniques from differential
 privacy~\cite{zhlbr-cc-2020,epk-ccs-2014,wblj-usenix-2017}.
-Recent work that is especially relevant to the session-based data collected
-by Roblox Studio shows how to add noise to traces~\cite{zhlbr-cc-2020},
+Recent work about session-based data that could be added
+to Roblox Studio shows how to add noise to traces~\cite{zhlbr-cc-2020},
 how to account for known relationships between events~\cite{zhlbr-oopsla-2020},
-and how to choose the noise amount on the client side~\cite{hlzbr-ecoop-2021}.
+and how to choose the noise on the client side~\cite{hlzbr-ecoop-2021}.
 Applying differential privacy is subtle, however.
-While we can likely fuzz the total number of type errors, if we were to
+While we could fuzz the total number of type errors, if we were to
 fuzz the number of \code{CodeTooComplex} errors, it might drastically
-affect our conclusions.
+affect our inferences.
 
 Cooperative bug isolation is a method for designing
 telemetry systems~\cite{liblit-thesis}.
@@ -2011,16 +2011,18 @@ Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021}
 for Racket and Alloy4Fun, respectively. Other more recent work has
 also studied edit sequences to infer intent~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
 A major difference is that we have only samples, not full sequences,
-which significantly impacts our study methods.
+which significantly impacts our study methods and inferences.
 
 The BitFit project collects data about beginning students interactions in
 Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}.
 It does not collect source code, nor does it collect error messages;
 the telemetry simply counts all (i.e., without sampling) compile events, hint
-requests, etc. in a transparent~\cite{transparent-telemetry} manner.
+requests, etc. While it does operate in a
+transparent~\cite{transparent-telemetry} manner, it only provides
+coarse-grained information that would be insufficient in our study.
 Other logging-based studies of Java programs use the full error message to
 draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}, which we
-cannot use to preserve privacy.
+cannot use.
 
 Much work~\cite{empirical-types,heeren-thesis} on the benefits of static types focuses on
 small case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
