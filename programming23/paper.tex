@@ -564,7 +564,7 @@ The Luau open source toolchain does \emph{not} report telemetry,
 as it is designed to be used in build environments such as Continuous Integration
 servers, where hermetic deterministic builds are expected.
 
-We added a telemetry subsystem to Roblox Studio in order to study type errors
+We added a subsystem to Roblox Studio's telemetry in order to study type errors
 in Luau code.
 This section explains the constraints our telemetry had to meet~(\cref{s:tel-limitations})
 and the final design~(\cref{s:telemetry-records}).
@@ -574,7 +574,7 @@ and the final design~(\cref{s:telemetry-records}).
 \label{s:tel-limitations}
 
 Telemetry in Roblox Studio faces three major constraints:
-\begin{itemize}
+\begin{enumerate}
 
   \item
     It \emph{must not reveal private information}.
@@ -590,11 +590,11 @@ Telemetry in Roblox Studio faces three major constraints:
     Telemetry \emph{must transmit a small amount of data}---not too many records
     with not too much information inside---to avoid overloading the servers.
 
-\end{itemize}
+\end{enumerate}
 Cox~\cite{transparent-telemetry} discusses in detail the privacy implications
 and tradeoffs in telemetry.
 
-In addition, due to the architecture of Roblox Studio
+In addition, due to the architecture of Roblox Studio,
 there is some information that is not available to the
 typechecker:
 \begin{itemize}
@@ -603,7 +603,7 @@ typechecker:
     cannot be reported at any rate because they are public, and could be used
     to match a telemetry session to a creator.}
   \item
-    GUI state, in particular, whether the Script Analysis widget is visible.
+    GUI state: in particular, whether the Script Analysis widget is visible.
 \end{itemize}
 Our type error telemetry has to meet all of the above constraints.
 
@@ -624,7 +624,7 @@ Our type error telemetry has to meet all of the above constraints.
 \end{figure}
 
 The type error telemetry for a Roblox Studio session is gathered as a series of
-records, all with the same \panon{} session identifier.
+records, all with the same per-session \panon{} session identifier.
 This allows us to correlate telemetry across a single
 session, but not between sessions.
 In order to avoid swamping the telemetry servers, the client reports on a subset
@@ -704,7 +704,7 @@ We acknowledge this and other threats in~\cref{s:threats}.
 The main advantages of this telemetry are the small size of each record
 and complete the lack of private information.
 Furthermore, despite the limitations, this telemetry supports a variety of
-interesting conclusions that we showcase in the next section.
+inferences that we showcase in the next section.
 
 
 \section{The Data}
