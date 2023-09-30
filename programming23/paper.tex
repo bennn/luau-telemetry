@@ -1673,7 +1673,8 @@ The answers confirm several aspects of Luau's design, but
 at the same time offer several directions for future improvements.
 
 Luau has an efficient type checker that can
-analyze thousands of lines of code~(\cref{t:codebase-size}).
+analyze thousands of lines of code~(\cref{t:codebase-size}) quickly
+enough to be used on-the-fly in an IDE.
 But, few sessions use type analysis directly and the data presents little
 evidence that doing so would improve creators' quality of life.
 We conjecture that Luau needs further tailoring to match
@@ -1843,8 +1844,8 @@ a much higher chance of generating telemetry than one who
 leaves Studio open all week.
 We have no way to reliably check whether multiple sessions are
 reporting on the same codebase.
-Sessions may end abruptly, for instance because of machine reboot,
-instead of ending when the creator was finished editing code.
+Sessions may end abruptly, e.g., because of machine reboot,
+instead of ending when the creator was done editing code.
 
 Fourth, the total counts of type errors include a large number of syntax errors,
 which have little to do with the Luau type system and are presumably easy for
