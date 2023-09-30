@@ -1653,11 +1653,9 @@ In \cref{f:error-changes}, however, nearly \pct{3} of \mstrict{}-mode records
 increase the number of \mstrict{} errors without increasing \FS{} errors.
 Further inspection reveals that the situation is a bit worse, as
 some records increase \mstrict{} errors without changing the \FS{} errors:
-\begin{itemize}
-  \item
     \pct{22} of \mstrict{} records increase (\addsym{}) the number of type errors
     but maintain (\keepsym{}) the number of \FS{} errors.
-\end{itemize}
+
 The reason for the discrepancy is that \mstrict{} mode and \FS{} analysis
 assign different types to the data model: \mstrict{} assigns a top type
 and requires downcasts at use sites, whereas \FS{} analysis uses the
