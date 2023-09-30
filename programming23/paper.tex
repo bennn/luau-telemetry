@@ -1677,7 +1677,7 @@ analyze thousands of lines of code~(\cref{t:codebase-size}).
 But, few sessions use type analysis directly and the data presents little
 evidence that doing so would improve creators' quality of life.
 We conjecture that Luau needs further tailoring to match
-common idioms in Roblox scripts.
+common idioms in untyped code.
 Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
 \begin{description}
@@ -1844,7 +1844,7 @@ leaves Studio open all week.
 We have no way to reliably check whether multiple sessions are
 reporting on the same codebase.
 Sessions may end abruptly, for instance because of machine reboot,
-instead of ending when the creator was finished editing code.
+instead of ending when the creator was finished editing.
 
 Fourth, the total counts of type errors include a large number of syntax errors,
 which have little to do with the Luau type system and are presumably easy for
@@ -1902,12 +1902,14 @@ Our telemetry has two distinguishing characteristics:
 it includes no private information (both PII and source code details),
 and it sends data on
 randomly-selected runs of the type checker rather than specific events of interest.
-To the best of our knowledge, this design occupies a unique position relative to prior
-work~(\cref{t:telemetry-design}).\todo{Where do these labels come
-  from?!? There are no ``prior work'' citations either!}
+To the best of our knowledge, this design occupies a unique position relative
+to prior work, the two main strands of which we describe below and summarize
+in~\cref{t:telemetry-design}.
 
-In other professional-grade \IDE{}s, such as VSCode~\cite{vscode-telemetry},
-IntelliJ~\cite{intellij-telemetry}, and \code{.NET}~\cite{dotnet-telemetry}, telemetry may include all sorts of
+In a \emph{classic} telemetry system, such as the ones in
+VSCode~\cite{vscode-telemetry}, IntelliJ~\cite{intellij-telemetry}, and
+\code{.NET}~\cite{dotnet-telemetry},
+telemetry may include all sorts of
 data: error reports, source code fragments, time\-stamps, and filepaths.
 Users may be able to opt out of some telemetry, but the details depend on the
 license agreement.
@@ -1918,8 +1920,8 @@ The Blackbox project similarly collects telemetry in broad strokes.
 Every Java program submitted for compilation goes into the Blackbox database (minus
 any comments above the main class) along with the compiler's response~\cite{bkmu-sigcse-2014}.
 The millions of programs in the Blackbox dataset
-have, however, enabled dozens of contributions to the area of CS
-education~\cite{bask-icer-2018}.
+have enabled dozens of contributions to the area of CS
+education~\cite{bask-icer-2018}, but its telemetry does little to respect privacy.
 
 % BEN: saving space.
 % , ranging from categorization of novice
@@ -1933,8 +1935,8 @@ education~\cite{bask-icer-2018}.
 % keep it. Is it that you can't freely get Blackbox, you have to ask
 % Neil Brown for permission or something?
 
-At the opposite end of the privacy spectrum, Go's design for \emph{transparent
-telemetry} reports only counter values~\cite{transparent-telemetry}.
+At the opposite end of the privacy spectrum, Go's design for \emph{transparent}
+telemetry reports only counter values~\cite{transparent-telemetry}.
 Unlike Roblox Studio, transparent telemetry includes no timestamps and no 
 session \uid{}s.
 While useful for learning about the frequency and distribution of
@@ -2008,12 +2010,13 @@ Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021}
 for Racket and Alloy4Fun, respectively. Other more recent work has
 also studied edit sequences to infer intent~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
 A major difference is that we have only samples, not full sequences,
-which significantly impacts our study methods.\todo{Reasonable rewrite?}
+which significantly impacts our study methods.
 
 The BitFit project collects data about beginning students interactions in
-Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}; it does
-not collect source code.\todo{Does it sample? If not, say so!}
-However, its data do not contain details about errors.\todo{Really?!?}
+Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}.
+It does not collect source code, nor does it collect error messages;
+the telemetry simply counts all (i.e., without sampling) compile events, hint
+requests, etc. in a transparent~\cite{transparent-telemetry} manner.
 Other logging-based studies of Java programs use the full error message to
 draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}, which we
 cannot use to preserve privacy.
@@ -2022,8 +2025,7 @@ Much work~\cite{empirical-types,heeren-thesis} on the benefits of static types f
 small case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
 inverviews~\cite{cdhhjklwya-hatra-2020,gstf-hatra-2021,cams-oopsla-2020},
 or static
-corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019,bmvv-arxiv-2019}.\todo{Why
-  are we citing arXiv?}
+corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019}
 Controlled experiments are rare;
 Kleinschmager, et~al.\cite{khrts-icpc-2012} is a notable exception.
 Lerner et~al.~\cite{lfgc-pldi-2007} apply a type error repair tool on
