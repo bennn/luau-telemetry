@@ -844,8 +844,6 @@ section), but sufficient to proceed with futher analysis.
 % 11,911 & \stddev{12}  &
 %  7,678 &              &
 % 51,761 &              &
-
-  %% FILL P99 or P01
   \begin{tabular}[t]{lrrrrl}
     ~          & Mean  & Stddev & Median & \ptile{99} & Distribution \\
     Lines      & 6,497 & \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
@@ -1536,37 +1534,36 @@ deliberately pushed the limits of type analysis.
 
   \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
-  \caption{Changes in type error density (errors-in-module / lines-in-module) over time.}
+  \caption{Changes in type error density (errors / lines) over time (seconds).}
   \label{f:error-density}
 \end{figure}
 
+Since errors and edits may not overlap, either because the highlights
+are misleading or because the creator ignores the errors, it is important
+to see how the total errors change over time.
+We measure \emph{error density} rather than error count, however,
+to normalize for the wide range of codebase sizes~(\cref{t:codebase-size}).
+Density is the number of type errors divided by the number of lines.
 
-Moving on to type errors across the projects, and not just in the edit range,
-a first interesting question is to study how the overall number of errors
-changes over time.
-But, the sheer number of errors can be skewed by codebase size.
-To give a better basis for project-to-project comparisons, we focus
-on the density of errors rather than the count, where \emph{density} is
-the total number of type errors divided by the lines of code in the project.
-
-\Cref{f:error-density} presents a zoomed-in view of type error density as it
-changes over time in every session of the dataset.
-The x-axis counts time in seconds from the start of the session.
-The y-axis shows the change in density from the previous telemetry record
-in the session to the next.
-Changes can be positive or negative depending on whether the edits added
-or removed errors.
-The plots cut off at$\pm{}50$ density and 150 seconds.to focus on the
-bulk of the data.
-%% Sadly even with the zoom, it's too hard to follow one session ... the plot only gives a big-picture impression.
+\Cref{f:error-density} plots changes to error density for every session in the dataset.
+The x axis counts time in seconds from the start of the session.
+Most sessions last a few dozen seconds~(\cref{t:session-size}), so the axis
+ends at 150 seconds.
+The y axis shows changes to errors over time; a positive number means errors
+increased since the last record, and a negative number represents a decrease.
+While there are a few errors that go outside the plot bounds
+(max \mnocheck{}: 101, max \mnonstrict{}: 3577, max \mstrict{}: 87), we focus
+on $\pm{}50$ errors because most of the mass is in that region.
+The points are color-coded to give each session the same color, but this is not
+very useful because there are many more sessions than colors.
 
 
 \paragraph{Observations}
 
-Due to the relative adoption of type analysis, there is much more
-data for the weak \mnocheck{} mode than for \mnonstrict{},
-and in turn for \mnonstrict{} relative to \mstrict{}.
-Still, the plots reveal interesting points:
+% Due to the relative adoption of type analysis, there is much more
+% data for the weak \mnocheck{} mode than for \mnonstrict{},
+% and in turn for \mnonstrict{} relative to \mstrict{}.
+% Still, the plots reveal interesting points:
 
 \begin{itemize}
   \item
@@ -1577,11 +1574,19 @@ Still, the plots reveal interesting points:
   \item
     After the 40-second mark, changes to type error density become much
     smaller.
-    Why?
-    There are also fewer sessions (\mstrict{} makes that very clear).
+    These long-running sessions are not introducing errors.
+    %% TODO check #mod switch in long sessions
 
   \item
-    \mnonstrict{} has the biggest number of up/down deltas in the 10+ range.
+    \mnonstrict{} has the biggest fluctuations in errors, whereas \mstrict{}
+    has the smallest.
+    One explanation is that some \mnonstrict{} sessions ignore type analysis
+    (in particular the one with over 3,000 errors!) whereas most \mstrict{}
+    sessions pay close attention to it.
+
+  %% \item
+  %%   TODO plot FS with a much bigger range ... tells a different story about buildup?
+
 \end{itemize}
 
 
@@ -1605,47 +1610,47 @@ Still, the plots reveal interesting points:
   % FS mod: nocheck & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
   % FS mod: nonstrict & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
   % FS mod: strict & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
-  \begin{tabular}{l@{~}lr@{}rr@{}rr@{}r}
-    & & \zerowidth{Add} & & \zerowidth{Keep} & & \zerowidth{Drop} \\\midrule
-    type err. & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
-              & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
+  \begin{tabular}{l@{~~}lr@{}rr@{}rr@{}r}
+    & & \zerowidth{\rbox{\addsym{}}} & & \zerowidth{\ybox{\keepsym{}}} & & \zerowidth{\gbox{\dropsym{}}} \\\midrule
+    type      & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
+    error     & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
               & \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
     \\
     \FS       & \mnocheck{}   & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
-              & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
+    error     & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
               & \mstrict{}    & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
   \end{tabular}
   \caption{How often do edits increase, maintain, or decrease the number of errors?}
   \label{f:error-changes}
 \end{figure}
 
-The apparent visual symmetry in the density plots~(\cref{f:error-density})
+The visual symmetry in the density plots~(\cref{f:error-density})
 suggests that edits add and remove errors with rougly equal frequency,
 regardless of mode.
-No matter whether a session is using \mnocheck{}, \mnonstrict{},
-or \mstrict{} mode, edits seem to balance increases and decreases in the number
-of type errors.
 \Cref{f:error-changes} explores this question of balance in detail.
-For each of the three modes, it reports the percent of edits that increase (Add),
-maintain at a nonzero level (Keep), or decrease (Drop) the number of type
-errors in the project.
+For each of the three modes, it reports the percent of edits that increase (\addsym{}),
+maintain (\keepsym{}), or decrease (\dropsym{}) the number of type
+errors in the module.
+It also reports counts for \FS{} checks to see whether fixing type errors fixes
+\FS{} errors as well.
+The ``maintain'' rows include cases where there are zero errors before and after.
 
 
 \paragraph{Observations}
 
 \begin{itemize}
   \item
-    The Adds and Drops are remarkably balanced: across all three modes, they are
-    at most \pct{2} apart from one another.
-    This confirms that changes to the number of errors are balanced.
-    Sessions tend to fix errors highlighted by type analysis
-    even in the stricter analysis modes.
+    The type error increases and decreases are remarkably balanced: across all
+    three modes, they are at most \pct{2} apart.
+    While some of this balance is due to module-switch records
+    (if the two modules have different error counts, there will be a change),
+    most of the data is from keystrokes; thus it appears that sessions tend to
+    fix errors highlighted by type analysis.
 
   \item
-    The percentage of Keeps is somewhat high: nearly \pct{10} in \mnocheck{}
-    and \pct{20} in \mnonstrict{} and \mstrict{}.
-    Evidently, the mode plays a role here.
-    Outside of \mnocheck{}, type errors are more likely to persist through edits.
+    \mstrict{} mode has a higher percent of  (\keepsym{}) records.
+    It may be that errors are more likely to persist in this mode.
+    %% TODO check if actually zero
 
 \end{itemize}
 

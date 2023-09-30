@@ -63,8 +63,8 @@
     #f
     (/ (row->X rr) N)))
 
-(define row->te-density (row->X-density row->te-mod))
-(define row->fs-density (row->X-density row->fs-mod))
+(define row->te-density (row->X-density row->te))
+(define row->fs-density (row->X-density row->fs))
 
 (define (plot-error-count mode)
   (one-line-plot mode row->te))
@@ -135,13 +135,16 @@
   (row->te-density-diff 'reset)
   (one-line-plot mode row->te-density-diff))
 
-(define (plot-fs-density-diff mode)
+(define (plot-fs-density-diff mode #:y-max [y-max #f])
   (row->te-density-diff 'reset)
-  (one-line-plot mode row->fs-density-diff #:point 'times))
+  (one-line-plot mode row->fs-density-diff #:point 'times #:y-max y-max))
 
-(define (one-line-plot mode row->y #:point [point-sym 'plus])
+(define (one-line-plot mode row->y #:point [point-sym 'plus] #:y-max [-y-max #f])
   (define row** (file->value (build-path data-dir (format "error-density-ss-~a.rktd" mode))))
   (define row->x row->ctime)
+  (define *ymax (box 0))
+  (define *ymin (box 0))
+  (define *xmax (box 0))
   (define my-lines
     (for/list ((row* (in-list row**))
                (ii (in-naturals)))
@@ -154,8 +157,13 @@
           (for/list ((rr (in-list row*)))
             (define x (row->x rr))
             (define y (row->y rr))
-            (and x y (vector x y))))
+            (and x y
+                 (set-box! *ymax (max (unbox *ymax) y))
+                 (set-box! *ymin (min (unbox *ymin) y))
+                 (set-box! *xmax (max (unbox *xmax) x))
+                 (vector x y))))
         #:size 10 #:color ii #:alpha 0.5 #:sym point-sym)))
+  (define y-max (or -y-max 50))
   (parameterize ([plot-x-far-ticks no-ticks]
                  [plot-y-far-ticks no-ticks]
                  [plot-x-ticks (linear-major-y-ticks 4)]
@@ -164,6 +172,8 @@
                  [plot-font-family 'roman])
     (define out-file (build-path img-dir (string-replace (format "error-count-~a-~a.~a" mode (object-name row->y) out-kind) ">" "-")))
     (printf "plot-file ~a~n" (path->string (file-name-from-path out-file)))
+    (printf "ymax ~a ymin ~a xmax ~a~n"
+            (unbox *ymax) (unbox *ymin) (unbox *xmax))
     (define pp
       (plot-pict
         (list
@@ -171,8 +181,8 @@
           (hrule 0 #:alpha 0.5 #:color 0))
         #:width  700
         #:height 120
-        #:y-max  50
-        #:y-min -50
+        #:y-max (+ y-max)
+        #:y-min (- y-max)
         #:x-max 150
         #:x-min 0
         #:title #f
@@ -187,8 +197,8 @@
   #;(plot-error-count mode)
   #;(plot-error-density mode)
   #;(plot-error-diff mode)
-  (plot-error-density-diff mode)
-  #;(plot-fs-density-diff mode)
+  #;(plot-error-density-diff mode)
+  (plot-fs-density-diff mode)
   (void))
 
 ;; ---
