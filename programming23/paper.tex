@@ -704,8 +704,7 @@ telemetry records because there is only one inerval for errors to overlap with.
 This telemetry design is admittedly coarse-grained.
 For instance, it does not distinguish between edits that ignore a type
 error from edits that remove one error while introducing another.
-We acknowledge this and other threats in~\cref{s:threats}.\todo{Do we?
-Double check.}
+We acknowledge this and other threats in~\cref{s:threats}.
 The main advantages of this telemetry are the small size of each record
 and complete the lack of private information.
 Furthermore, despite the limitations, this telemetry supports a variety of
@@ -725,15 +724,16 @@ In total, we collected over 1.5 million telemetry records.
 Roughly two thirds are due to keystrokes.
 
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
-Each vertical bar counts the number of records generated per hour according to
-a client-side timestamp.\todo{Not just per day?!?}
-The bars are labeled with a California time zone.
-Buckets\todo{What is a BUCKET as opposed to a BAR?}
-contain a few dozen to over 3,000 records, typically about 1,000.
+The x-axis is labeled with a California time zone; the thin vertical lines
+mark the start of a new day.
+Each of the blue bars in the plot bar is a bucket that counts the number of
+records generated per hour according to a client-side timestamp.
+Buckets contain a few dozen to over 3,000 records, typically about 1,000.
 %% \FILL{} investigate one tower, what's happening?? all one session?
 Telemetry ended in early April; the long tail is due to developers
 updating Roblox Studio later.
 % BEN: I see no basis for this; nor is this at all interesting.
+%% ben: basis = it's where the peaks are
 % We do not know which timezone the records originated in, but since the counts
 % tend to peak midday California time it seems that the majority
 % of Roblox developers are following a Western Hemisphere schedule.
@@ -1141,7 +1141,7 @@ Digging further into \FS{} errors, the median number of such errors by mode is
 Records in \mnocheck{} mode evidently do not have significantly more \FS{}
 errors.
 Furthermore, type analysis does not seem to reduce \FS{}
-errors.\todo{Isn't this a bit surprising?}
+errors; this is surprising and~\cref{s:tefs-compass} has more to say about it.
 
 
 \subsection{Type Errors vs. Program Edits}
@@ -1205,9 +1205,10 @@ and twenty reduce the number of \code{CannotCallNonFunction} errors.
 
 % BEN: double-check, I think this says all you were trying to say.
 % "typically" because we COULD have gotten lucky.
+% ben: I'd written "immediatly introduces" to rule out getting lucky. Deleted "immediately" and went with your version.
 The counts are imprecise because of telemetry granularity.
 If a creator removes one error but then
-immediately introduces another on a different line, this typically manifests as
+introduces another on a different line, this typically manifests as
 a \keepsym{} rather than one \addsym{} and one \dropsym{}.
 
 This table is based on the 996,164 records generated from keystroke events.
@@ -1859,6 +1860,8 @@ Fifth, type analysis reports several errors at once and we have no idea which
 errors, if any, creators intended to fix with their edits.
 Thus, fixes may be a side effect of other plans, as seen in prior work~\cite{mfk-sigcse-2011}.
 % This is the [DIFF] code from Marceau SIGCSE 2011.
+Edits that fix one error but introduce another are also indistinguishable
+from edits that maintain the number of errors.
 
 % Telemetry cannot replace user studies, as there is no way to measure
 % creator sentiment, but provide complementary data at scale.
