@@ -393,7 +393,7 @@ lint tools. The main editor widget can also highlight
 source locations in code where reported errors occur.
 
 
-\paragraph{Type Analysis Modes, \FS{} Analysis}
+\paragraph{Type Analysis Modes, Background Analysis}
 
 Creators can opt in to detailed error reports and highlights by
 choosing a \emph{type analysis mode} for each script they write:
@@ -407,20 +407,15 @@ There is no guarantee that creators read every error.
 In fact, creators who close the Script Analysis widget
 will see highlights in their code but no further details.
 
-In addition to the main type analysis, Roblox Studio takes a second pass over
-every codebase with a \emph{\FS{}} analysis to infer autocomplete suggestions
-and drive other IDE tools.
-To infer precise types,
-the \FS{} analysis uses rigorous checks very similar to those of
-\mstrict{} mode (but not identical: see \cref{s:strict-vs-forcedstrict})
-no matter what mode the creator declared for the script.
-(Internally to Roblox Studio, this analysis is called \emph{forced strict}
-because it ignores the creator's choice and applies strong checks.)
-When it fails to infer a type, \FS{} analysis defaults to the unknown gradual
-type~\cite{st-sfp-2006}.
-Creators cannot see the errors reported by \FS{} analysis.
+\begin{figure}[t]\centering
+  \includegraphics[width=.35\textwidth]{img/roblox-studio.png}
+  \hspace{1cm}
+  \includegraphics[width=.35\textwidth]{img/roblox-studio-ide.png}
+  \caption{{Roblox Studio 3D creation} tools (left) and IDE (right).}
+  \label{fig:roblox-studio}
+\end{figure}
 
-As an example of \mnonstrict{} mode, the following program only reports one error:
+ As an example of \mnonstrict{} mode, the following program only reports one error:
 \begin{verbatim}
   --!nonstrict
   local x = { p = 5, q = nil }
@@ -447,13 +442,18 @@ misspellings of property names are common enough to report in both
 See~\cite{bfj-hatra-2021} for a more detailed discussion of the rationale
 behind the type systems.
 
-\begin{figure}[t]\centering
-  \includegraphics[width=.35\textwidth]{img/roblox-studio.png}
-  \hspace{1cm}
-  \includegraphics[width=.35\textwidth]{img/roblox-studio-ide.png}
-  \caption{{Roblox Studio 3D creation} tools (left) and IDE (right).}
-  \label{fig:roblox-studio}
-\end{figure}
+In addition to the main type analysis, Roblox Studio takes a second pass over
+every codebase with a \emph{\FS{}} analysis to infer autocomplete suggestions
+and drive other IDE tools.
+To infer precise types,
+the \FS{} analysis uses rigorous checks very similar to those of
+\mstrict{} mode (but not identical: see \cref{s:strict-vs-forcedstrict})
+no matter what mode the creator declared for the script.
+(Internally to Roblox Studio, this analysis is called \emph{forced strict}
+because it ignores the creator's choice and applies strong checks.)
+When it fails to infer a type, \FS{} analysis defaults to the unknown gradual
+type~\cite{st-sfp-2006}.
+Creators cannot see the errors reported by \FS{} analysis.
 
 \Cref{t:type-error-labels} lists a few of the type errors that
 script analysis can report (10 out of 35 total)
@@ -507,13 +507,9 @@ a brief description.
 
 \paragraph{On-the-Fly Typechecking}
 
-Scripts come in two flavors: \emph{module scripts} and \emph{non-module
-scripts}.
-(Though, throughout this paper we use the word ``module''
-to refer to arbitrary scripts.)
-Module scripts provide reusable libraries, which may be
+Luau modules provide reusable libraries, which may be
 {imported} by other scripts.
-Module scripts therefore form a graph in general,
+Imports therefore form a graph in general,
 though it is an error in \mstrict{} mode to create an import cycle
 and edges are removed to make the graph acyclic.
 %% \QALAN{}: do all modes remove the edges?
