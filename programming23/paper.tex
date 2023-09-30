@@ -1590,13 +1590,13 @@ very useful because there are many more sessions than colors.
   % FS mod: strict & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
   \begin{tabular}{l@{~~}lr@{}rr@{}rr@{}r}
     & & \zerowidth{\rbox{\addsym{}}} & & \zerowidth{\ybox{\keepsym{}}} & & \zerowidth{\gbox{\dropsym{}}} \\\midrule
-    type      & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
-    error     & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
-              & \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
+    type error  & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
+    (in module) & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
+                & \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
     \\[-2ex]
-    \FS       & \mnocheck{}   & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
-    error     & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
-              & \mstrict{}    & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
+    \FS         & \mnocheck{}   & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
+    error       & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
+    (in module) & \mstrict{}    & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
   \end{tabular}
   \caption{How often do edits increase, maintain, or decrease the number of errors?}
   \label{f:error-changes}
@@ -1673,8 +1673,8 @@ from~\cref{s:introduction}.
 The answers confirm several aspects of Luau's design, but
 at the same time offer several directions for future improvements.
 
-Luau clearly\todo{How can we say?} has a powerful typechecker that can efficiently
-analyze thousands of lines of code.
+Luau has an efficient type checker that can
+analyze thousands of lines of code~(\cref{t:codebase-size}).
 But, few sessions use type analysis directly and the data presents little
 evidence that doing so would improve creators' quality of life.
 We conjecture that Luau needs further tailoring to match
@@ -1850,11 +1850,11 @@ instead of ending when the creator was finished editing code.
 Fourth, the total counts of type errors include a large number of syntax errors,
 which have little to do with the Luau type system and are presumably easy for
 creators to fix.
-It would be better for the analysis to ignore these errors.
-Indeed, our comparison between \FS{} errors in \mnocheck{} vs.
-\mstrict{} mode~(\cref{f:error-changes}) might tell a very different story
-without all the noise that syntax errors introduce.\todo{Why didn't
-  YOU just filter them, then?!?}
+Our comparison between \FS{} errors in \mnocheck{} vs.
+\mstrict{} mode~(\cref{f:error-changes}) might tell a different story
+without the noise that syntax errors introduce, but we cannot easily
+filter them because we have only the total number (not the kind)
+for errors outside the edit range.
 
 Fifth, type analysis reports several errors at once and we have no idea which
 errors, if any, creators intended to fix with their edits.
@@ -1867,15 +1867,8 @@ from edits that maintain the number of errors.
 % creator sentiment, but provide complementary data at scale.
 % No idea about intent is a big problem, we don't know which error the creator wanted to fix.
 
-Lastly, we have two remarks about external validity.
-First, our information on type errors is limited to error names.
-If another language has an error that is roughly similar to
-the\todo{Huh? It's similar yet different?}
-\code{CannotCallNonFunction} error but with slightly different
-semantics, then the relative frequency of that error could be different
-than what we observed.
-%% ben: not sure what to say ... may remove the error names comment
-Second, we know nothing about the creators in our study except that they
+Lastly, regarding external validity,
+we know nothing about the creators in our study except that they
 were selected at random from a large and diverse group.
 A dataset based on a targeted subset of users might show entirely different
 characteristics.
