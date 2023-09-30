@@ -3,6 +3,8 @@
 
 % TODO BEFORE SUBMISSION
 % be consistent between "IDs" and "ids" [SK prefers "IDs" to avoid it being read as a word]
+% even more so between "ID" and "id" [NB: "id" is a word in English]
+% \usepackage[sort]{natbib} or otherwise manually fix cites to be in ascending order
 
 % TODO BEFORE FINAL
 % - uncomment acks
@@ -2133,45 +2135,35 @@ interest~\cite{zfstt-ieeesensors-2022}.
 \paragraph{User Studies, Errors, and Type Errors}
 
 Our approach to data analysis is inspired by Marceau
-et~al.~\cite{mfk-onward-2011,mfk-sigcse-2011}, who used keystroke-level data
-collected over 6 weeks to analyze students' responses to runtime errors
-in DrRacket~\cite{fcffksf-jfp-2002}.
-Similarly, Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021} capture
-edit sessions from the online Alloy4Fun editor and present several automated
-analyses.
-A major challenge in our setting, however, is that edit sequences are
-incomplete---there may be minutes-long gaps between two telemetry records.
-Several more-recent works have studied edit sequences
-to draw conclusions about errors and intent, e.g.,~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
+et~al.~\cite{mfk-onward-2011,mfk-sigcse-2011} and
+Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021}
+for Racket and Alloy4Fun, respectively. Other more recent work has
+also studied edit sequences to infer intent~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
+A major difference is that we have only samples, not full sequences,
+which significantly impacts our study methods.\todo{Reasonable rewrite?}
 
-The BitFit project collects data about beginning students interactions with a
-Java IDE~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}; however, unlike Blackbox, it does
-not collect source code.
-BitFit data consists of a timestamp, a session id, and counter values showing
-the number of attempts at a question, the number of hints requested, the number
-of compiles and runs, and the number of submission attempts.
-On one hand, this data is more informative than Roblox Studio's because it
-targets specific events rather than random keystrokes.
-On the other hand, there are no details about errors to show what students
-struggled with.
+The BitFit project collects data about beginning students interactions in
+Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}; it does
+not collect source code.\todo{Does it sample? If not, say so!}
+However, its data do not contain details about errors.\todo{Really?!?}
 Other logging-based studies of Java programs use the full error message to
-draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}.
-Roblox Studio cannot follow this approach because strings in errors may leak
-personal information.
+draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}, which we
+cannot use to preserve privacy.
 
-Much work on the benefits of static types focuses on a small number
-of case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
+Much work~\cite{empirical-types,heeren-thesis} on the benefits of static types focuses on
+small case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
 inverviews~\cite{cdhhjklwya-hatra-2020,gstf-hatra-2021,cams-oopsla-2020},
-or static corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019,bmvv-arxiv-2019}
-(for literature reviews, see~\cite{empirical-types,heeren-thesis}).
-Controlled experiments, for example comparing statically-typed Java and dynamically-typed
-Groovy~\cite{khrts-icpc-2012}, are a notable exception.
-Lerner et~al.~\cite{lfgc-pldi-2007} apply type error repair tool on over two thousand
-of programs written during five homework exercises.
+or static
+corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019,bmvv-arxiv-2019}.\todo{Why
+  are we citing arXiv?}
+Controlled experiments are rare;
+Kleinschmager, et~al.\cite{khrts-icpc-2012} is a notable exception.
+Lerner et~al.~\cite{lfgc-pldi-2007} apply a type error repair tool on
+over two thousand programs.
 Seidel et~al.~\cite{sscwj-oopsla-2017,sjw-jfp-2018} use five thousand programs
 to train data-driven methods for localizing errors.
-These large studies with several thousands of programs are
-nevertheless on a much smaller scale than Roblox Studio.
+These are all on a vastly smaller scale than our study and also study
+different issues.
 
 %\paragraph{TBD}
 %
@@ -2307,13 +2299,13 @@ can better accommodate untyped idioms.
 
 
 %% -----------------------------------------------------------------------------
-\acks
+% \acks
 
-Thanks to Benjamin Chung for several helpful discussions about data analysis
-and effective plotting.
-Greenman was supported by
-NSF grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
-to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
+% Thanks to Benjamin Chung for several helpful discussions about data analysis
+% and effective plotting.
+% Greenman was supported by
+% NSF grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
+% to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
 %\newpage
 %
