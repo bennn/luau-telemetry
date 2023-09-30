@@ -722,9 +722,11 @@ Roughly two thirds are due to keystrokes.
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 The x-axis is labeled with a California time zone; the thin vertical lines
 mark the start of a new day.
-Each of the blue bars in the plot bar is a bucket that counts the number of
-records generated per hour according to a client-side timestamp.
-Buckets contain a few dozen to over 3,000 records, typically about 1,000.
+Each day has 24 records, one per hour, represented by a blue bar
+indicating the number of records generated in that hour.
+Each hour has a few dozen to over 3,000 records, typically about
+1,000.\footnote{We conjecture the very low bars are due to outage on
+  the logging server, but need to investigate further.}
 %% \FILL{} investigate one tower, what's happening?? all one session?
 Telemetry ended in early April; the long tail is due to developers
 updating Roblox Studio later.
@@ -989,7 +991,7 @@ The low fraction of errors in the edit range sends a mixed message:
     \label{f:total-sessions}
   \end{subfigure}
 
-  {Among the mixed-mode sessions:
+  {Among the other sessions:
         176 contain a mode upgrade,
         233 contain a mode downgrade, and
         512 contain modules with different modes.}
@@ -1018,7 +1020,7 @@ It will be interesting to revisit mode usage at that point.
 Most sessions (\pct{99.82}) stick to a single analysis mode.
 They never change the mode in the current module and never
 switch focus to a module with a different analysis mode.
-Among the other, mixed-mode sessions, most of those (\pct{80}) switch to a
+Among the other sessions, most of those (\pct{80}) switch to a
 module with a different mode, about half contain at least one edit that
 upgrades to a more strict mode, and about half contain a downgrade to a
 less-strict mode.
@@ -1301,7 +1303,7 @@ telemetry system.
 
 
 
-\subsection{Type Error Popularity}
+\subsection{Type Error Frequency}
 \label{s:type-error-count}
 
 \begin{table}[t]\centering
@@ -1407,11 +1409,12 @@ telemetry system.
 %%  TypePackMismatch
 %%  UnificationTooComplex
 
-\Cref{t:type-error-count} sorts type errors by their popularity
+\Cref{t:type-error-count} sorts type errors by
+the frequency with which they appear
 in \mnonstrict{} and \mstrict{} mode.
 The purpose of this table is to discover and rank all errors that
-appear in the dataset, thus it is based on both keystroke and
-module-switch telemetry records even though edit ranges are not well-defined
+appear in the dataset; thus, it is based on both keystroke and
+module-switch telemetry records, even though edit ranges are not well-defined
 for the latter.
 The table does not include \mnocheck{} because all its type errors are
 \code{SyntaxError}s by definition.
