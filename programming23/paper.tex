@@ -2,8 +2,6 @@
 % vim: set fileencoding=utf-8 :
 
 % TODO BEFORE SUBMISSION
-% be consistent between "IDs" and "ids" [SK prefers "IDs" to avoid it being read as a word]
-% even more so between "ID" and "id" [NB: "id" is a word in English]
 % \usepackage[sort]{natbib} or otherwise manually fix cites to be in ascending order
 % redo fig 5 to have better resolution
 
@@ -111,6 +109,8 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 
 %\authorrunning{DRAFT do not distribute}
 
+\newcommand{\uid}{\textsc{id}}
+\newcommand{\IDE}{\textsc{ide}}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\FILL}{\textbf{FILL}}
 \newcommand{\dotscale}[1]{\scalebox{0.72}{#1}}
@@ -261,7 +261,7 @@ Creators program using the
 an extension of {Lua~5.1~\cite{lua}}.
 The main addition in Luau is a static type system that infers
 types for all Luau programs on the fly, as creators modify the code.
-These types are used primarily in IDE tooling such as autocomplete and
+These types are used primarily in \IDE{} tooling such as autocomplete and
 in API documentation~\cite{luau-autocomplete}, and indeed, creators
 may be unaware that a typechecker is analyzing their code.
 However, creators can opt in to receiving type error reports and they can write
@@ -278,7 +278,7 @@ students in code camps may begin in the \mnocheck{} mode that reports only
 syntax errors; hobbyists can use \mnonstrict{} mode to identify
 would-be runtime errors; and developers who need to ensure software
 quality can rely on \mstrict{} mode.
-(No matter the mode, a {\FS{}} type analysis still drives the IDE tools.)
+(No matter the mode, a {\FS{}} type analysis still drives the \IDE{} tools.)
 Luau's types aim to support untyped designs, in the spirit of migratory
 typing~\cite{tfffgksst-snapl-2017}, so that creators can switch modes without
 needing to restructure their code in major, potentially-breaking, ways.
@@ -386,8 +386,8 @@ limited to a small number of users.
 
 {Roblox Studio} is a workbench that
 combines {3D creation} tools and an Integrated
-Developer Environment (IDE), as seen in \cref{fig:roblox-studio}.
-The IDE includes an optional \emph{Script Analysis} widget that
+Developer Environment (\IDE{}), as seen in \cref{fig:roblox-studio}.
+The \IDE{} includes an optional \emph{Script Analysis} widget that
 reports syntax errors, type errors, and problems identified by
 lint tools. The main editor widget can also highlight
 source locations in code where reported errors occur.
@@ -411,7 +411,7 @@ will see highlights in their code but no further details.
   \includegraphics[width=.35\textwidth]{img/roblox-studio.png}
   \hspace{1cm}
   \includegraphics[width=.35\textwidth]{img/roblox-studio-ide.png}
-  \caption{{Roblox Studio 3D creation} tools (left) and IDE (right).}
+  \caption{{Roblox Studio 3D creation} tools (left) and \IDE{} (right).}
   \label{fig:roblox-studio}
 \end{figure}
 
@@ -444,7 +444,7 @@ behind the type systems.
 
 In addition to the main type analysis, Roblox Studio takes a second pass over
 every codebase with a \emph{\FS{}} analysis to infer autocomplete suggestions
-and drive other IDE tools.
+and drive other \IDE{} tools.
 To infer precise types,
 the \FS{} analysis uses rigorous checks very similar to those of
 \mstrict{} mode (but not identical: see \cref{s:strict-vs-forcedstrict})
@@ -559,7 +559,7 @@ See, for example, the lively discussion around telemetry in the Go
 toolchain~\cite{golang-telemetry}.
 
 Roblox Studio has a framework for reporting telemetry.
-Various features in the IDE use telemetry to measure their effectiveness.
+Various features in the \IDE{} use telemetry to measure their effectiveness.
 The Luau open source toolchain does \emph{not} report telemetry,
 as it is designed to be used in build environments such as Continuous Integration
 servers, where hermetic deterministic builds are expected.
@@ -613,7 +613,7 @@ Our type error telemetry has to meet all of the above constraints.
 
 \begin{figure}[t]\centering
   \begin{tabular}{|l|l|l|l|l|l|l|}\hline
-    ID & Time & Mode & Reason & Size Info & Overall Counts & Edit Range Counts
+    \uid{} & Time & Mode & Reason & Size Info & Overall Counts & Edit Range Counts
     \\\toprule
     \multicolumn{6}{c}{\raisebox{.5\normalbaselineskip}[0pt][0pt]{$\underbrace{\hspace{9cm}}$}} &
     \multicolumn{1}{c}{\raisebox{.5\normalbaselineskip}[0pt][0pt]{$\underbrace{\hspace{3cm}}$}} \\[-0.5ex]
@@ -647,7 +647,7 @@ or simply switched to another module.
 \Cref{f:tdata} shows the structure of our telemetry records:
 \begin{enumerate}
   \item
-    ID: a \panon{} identifier for the current session.
+    \uid{}: a \panon{} identifier for the current session.
   \item
     Time: one timestamp from the client and one from the server.
     %% timestamp explanation \cref{s:data-cleaning}
@@ -765,7 +765,7 @@ Roblox has a significant school-aged creator community.
 A close inspection of the data revealed two anomalies:
 \begin{enumerate}
   \item
-    Some records have identical timestamps and session IDs.
+    Some records have identical timestamps and session \uid{}s.
     We keep the first such record and discard the rest.
     (A human would have to switch modules twice or enter several keystrokes
      within 1ms to generate two such records legitimately.)
@@ -1678,7 +1678,7 @@ enough to be used on-the-fly in an IDE.
 But, few sessions use type analysis directly and the data presents little
 evidence that doing so would improve creators' quality of life.
 We conjecture that Luau needs further tailoring to match
-common idioms in Roblox scripts.
+common idioms in untyped code.
 Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
 \begin{description}
@@ -1903,27 +1903,26 @@ Our telemetry has two distinguishing characteristics:
 it includes no private information (both PII and source code details),
 and it sends data on
 randomly-selected runs of the type checker rather than specific events of interest.
-To the best of our knowledge, this design occupies a unique position relative to prior
-work~(\cref{t:telemetry-design}).\todo{Where do these labels come
-  from?!? There are no ``prior work'' citations either!}
+To the best of our knowledge, this design occupies a unique position relative
+to prior work, the two main strands of which we describe below and summarize
+in~\cref{t:telemetry-design}.
 
-In other professional-grade IDEs, such as VSCode~\cite{vscode-telemetry},
-IntelliJ~\cite{intellij-telemetry}, and \code{.NET}~\cite{dotnet-telemetry}, telemetry may include all sorts of
+In a \emph{classic} telemetry system, such as the ones in
+VSCode~\cite{vscode-telemetry}, IntelliJ~\cite{intellij-telemetry}, and
+\code{.NET}~\cite{dotnet-telemetry},
+telemetry may include all sorts of
 data: error reports, source code fragments, time\-stamps, and filepaths.
 Users may be able to opt out of some telemetry, but the details depend on the
 license agreement.
-Furthermore, at least in VSCode, IDE extensions can report their own telemetry.
+Furthermore, at least in VSCode, \IDE{} extensions can report their own telemetry.
 While this data can be invaluable for discovering bugs in production, it
 must be handled with extreme care.
-
 The Blackbox project similarly collects telemetry in broad strokes.
 Every Java program submitted for compilation goes into the Blackbox database (minus
 any comments above the main class) along with the compiler's response~\cite{bkmu-sigcse-2014}.
-%% Though somewhat intrusive,
 The millions of programs in the Blackbox dataset
 have enabled dozens of contributions to the area of CS
-education~\cite{bask-icer-2018}. However, these operate at the
-opposite end of privacy.
+education~\cite{bask-icer-2018}, but its telemetry does little to respect privacy.
 
 % BEN: saving space.
 % , ranging from categorization of novice
@@ -1937,20 +1936,18 @@ opposite end of privacy.
 % keep it. Is it that you can't freely get Blackbox, you have to ask
 % Neil Brown for permission or something?
 
-At the opposite end of the privacy spectrum, Go's design for \emph{transparent
-telemetry} reports only counter values~\cite{transparent-telemetry}.
+At the opposite end of the privacy spectrum, Go's design for \emph{transparent}
+telemetry reports only counter values~\cite{transparent-telemetry}.
 Unlike Roblox Studio, transparent telemetry includes no timestamps and no 
-session ids.
+session \uid{}s.
 While useful for learning about the frequency and distribution of
-specific events, the lack of timestamps and ids means it cannot track
+specific events, the lack of timestamps and \uid{}s means it cannot track
 edits over time (which we use in \cref{f:error-density}).
 % BEN: commented for space.
 % it cannot track 
 % The data is useful for learning about the frequency of specific events and the
 % distribution of events across clients (e.g., how many \code{CodeTooComplex}
 % errors arise? what is the average number of type errors?).
-% However, the lack of timestamps and ids means that it cannot track edits
-% over time (a feature that is quite useful to us, for example, in~\cref{f:error-density}).
 % In~\cref{f:error-density}, for example, we see that increases to the number
 % of type errors are quickly followed by decreases.
 % Without timestamps, we would be unable to rule out the possibility that users
@@ -2014,12 +2011,13 @@ Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021}
 for Racket and Alloy4Fun, respectively. Other more recent work has
 also studied edit sequences to infer intent~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
 A major difference is that we have only samples, not full sequences,
-which significantly impacts our study methods.\todo{Reasonable rewrite?}
+which significantly impacts our study methods.
 
 The BitFit project collects data about beginning students interactions in
-Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}; it does
-not collect source code.\todo{Does it sample? If not, say so!}
-However, its data do not contain details about errors.\todo{Really?!?}
+Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}.
+It does not collect source code, nor does it collect error messages;
+the telemetry simply counts all (i.e., without sampling) compile events, hint
+requests, etc. in a transparent~\cite{transparent-telemetry} manner.
 Other logging-based studies of Java programs use the full error message to
 draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}, which we
 cannot use to preserve privacy.
@@ -2028,8 +2026,7 @@ Much work~\cite{empirical-types,heeren-thesis} on the benefits of static types f
 small case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
 inverviews~\cite{cdhhjklwya-hatra-2020,gstf-hatra-2021,cams-oopsla-2020},
 or static
-corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019,bmvv-arxiv-2019}.\todo{Why
-  are we citing arXiv?}
+corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019}
 Controlled experiments are rare;
 Kleinschmager, et~al.\cite{khrts-icpc-2012} is a notable exception.
 Lerner et~al.~\cite{lfgc-pldi-2007} apply a type error repair tool on
