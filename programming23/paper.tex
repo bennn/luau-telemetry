@@ -1,6 +1,12 @@
 % -*- coding: utf-8; -*-
 % vim: set fileencoding=utf-8 :
 
+% TODO BEFORE SUBMISSION
+% be consistent between "IDs" and "ids" [SK prefers "IDs" to avoid it being read as a word]
+
+% TODO BEFORE FINAL
+% - uncomment acks
+
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
 
 \documentclass[english,submission,cleveref]{programming}
@@ -2017,15 +2023,17 @@ techniques, or controlled studies, or other means.
 % drove design of navigation tools,
 % opt-out possible~\cite{kindle-telemetry}
 
-Type error telemetry in Roblox Studio has two distinguishing characteristics:
-it includes no personal information (PII), and it sends data on
+Our telemetry has two distinguishing characteristics:
+it includes no private information (both PII and source code details),
+and it sends data on
 randomly-selected runs of the type checker rather than specific events of interest.
 To the best of our knowledge, this design occupies a unique position relative to prior
-work~(\cref{t:telemetry-design}).
+work~(\cref{t:telemetry-design}).\todo{Where do these labels come
+  from?!? There are no ``prior work'' citations either!}
 
 In other professional-grade IDEs, such as VSCode~\cite{vscode-telemetry},
 IntelliJ~\cite{intellij-telemetry}, and \code{.NET}~\cite{dotnet-telemetry}, telemetry may include all sorts of
-data: error reports, source code fragments, timestamps, and filepaths.
+data: error reports, source code fragments, time\-stamps, and filepaths.
 Users may be able to opt out of some telemetry, but the details depend on the
 license agreement.
 Furthermore, at least in VSCode, IDE extensions can report their own telemetry.
@@ -2038,23 +2046,35 @@ any comments above the main class) along with the compiler's response~\cite{bkmu
 %% Though somewhat intrusive,
 The millions of programs in the Blackbox dataset
 have enabled dozens of contributions to the area of CS
-education~\cite{bask-icer-2018}, ranging from categorization of novice
-errors~\cite{mk-fie-2014,m-masters-2016} to analyses of error frequency and
-time-to-fix~\cite{ab-sigcse-2015}.
-Related prior work used the GRUMPS telemetry system to collect 4.7 million
-keystroke-level actions from learners programming in
-Ada~\cite{tm-iticse-2004,tkdmceg-ascilite-2003}.
-This data is not available.
+education~\cite{bask-icer-2018}. However, these operate at the
+opposite end of privacy.
+
+% BEN: saving space.
+% , ranging from categorization of novice
+% errors~\cite{mk-fie-2014,m-masters-2016} to analyses of error frequency and
+% time-to-fix~\cite{ab-sigcse-2015}.
+% Related prior work used the GRUMPS telemetry system to collect 4.7 million
+% keystroke-level actions from learners programming in
+% Ada~\cite{tm-iticse-2004,tkdmceg-ascilite-2003}.
+% This data is not available.
+% BEN: Not sure what the above sentence means and whether we should
+% keep it. Is it that you can't freely get Blackbox, you have to ask
+% Neil Brown for permission or something?
 
 At the opposite end of the privacy spectrum, Go's design for \emph{transparent
 telemetry} reports only counter values~\cite{transparent-telemetry}.
 Unlike Roblox Studio, transparent telemetry includes no timestamps and no 
 session ids.
-The data is useful for learning about the frequency of specific events and the
-distribution of events across clients (e.g., how many \code{CodeTooComplex}
-errors arise? what is the average number of type errors?).
-However, the lack of timestamps and ids means that it cannot track edits
-over time (a feature that is quite useful to us, for example, in~\cref{f:error-density}).
+While useful for learning about the frequency and distribution of
+specific events, the lack of timestamps and ids means it cannot track
+edits over time (which we use in \cref{f:error-density}).
+% BEN: commented for space.
+% it cannot track 
+% The data is useful for learning about the frequency of specific events and the
+% distribution of events across clients (e.g., how many \code{CodeTooComplex}
+% errors arise? what is the average number of type errors?).
+% However, the lack of timestamps and ids means that it cannot track edits
+% over time (a feature that is quite useful to us, for example, in~\cref{f:error-density}).
 % In~\cref{f:error-density}, for example, we see that increases to the number
 % of type errors are quickly followed by decreases.
 % Without timestamps, we would be unable to rule out the possibility that users
