@@ -2203,16 +2203,9 @@ different issues.
 \label{s:conclusion}
 
 This paper presents the first large-scale analysis of developers' interactions with
-an industrial strength typechecker.
-With over 1.5 million telemetry records from over 340,000 sessions
-that took place during a three-month timespan, the data has plenty to say about
-type errors and their overlap with program edits.
-At the same time, the data is limited to avoid leaking personal
-and proprietary information: we know the number and kind of type errors
-that occurred, but nothing about the line(s) of code that the typechecker
-complained about.
-
-On the object level, the analysis offers several lessons for the Luau
+an industrial strength typechecker. It is nevertheless intentionally
+limited by the nature and frequency of sampling. Despite these restrictions,
+the analysis offers several lessons for the Luau
 developers and other maintainers of gradually-typed languages:
 \begin{itemize}
   \item
@@ -2248,7 +2241,7 @@ in Roblox Studio supports a variety of useful analyses:
     undesirable events rarely happen (e.g.,\code{UnificationTooComplex}).
   \item
     Testing the relationship between two counts can yield insights.
-    The gap between \mstrict{} and \FS{} errors In~\cref{f:tefs-compass}
+    The gap between \mstrict{} and \FS{} errors in~\cref{f:tefs-compass}
     revealed an issue with \mstrict{} checking.
   \item
     Reporting the overlap between type errors and the current (approximate) edit
@@ -2286,7 +2279,7 @@ In future work, it would be interesting to build statistical models of
 the ``average'' programmer using each typing mode and compare their error
 rates.
 While one could start modeling with the \mnocheck{} and \mnonstrict{}
-data, but there are too few \mstrict{} records at the moment due to our uniform
+data, there are too few \mstrict{} records at the moment due to our uniform
 sampling rate.
 The errors that we do see in \mstrict{} mode call for an in-depth analysis via
 talk-aloud interviews to discover why type mismatches occur and how how Luau
