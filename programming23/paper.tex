@@ -2132,29 +2132,35 @@ Luau recently adopted semantic subtyping to reduce false-positive type
 errors~\cite{CF05:GentleIntroduction,Jef22:SemanticSubtyping}, but the current
 telemetry has no way to tell if this
 internal extension is enabled or not.
-Three other aspects are worth rethinking.
-First, it would be useful to have fine-grained counts for \FS{} analysis
+
+Three other aspects are also worth rethinking:
+\begin{enumerate}
+
+  \item It would be useful to have fine-grained counts for \FS{} analysis
 errors and to know the specific reason behind errors such as \code{TypeMismatch}.
 But, this additional data could double the size of telemetry records.
-Second, although tracking edit ranges was useful, it made the telemetry system
+
+\item Although tracking edit ranges was useful, it made the telemetry system
 much more difficult to build and maintain.
 Tracking old and current errors at the module level would be far easier,
 though there is a risk that it is too coarse.
-Third, the massive number of syntax errors begs the question of how to skip
+
+\item The massive number of syntax errors begs the question of how to skip
 them.
 Shifting focus from arbitrary keystrokes to selected ones, such as closing
 parentheses or whitespaces, might increase the likelihood of well-formed
 code without losing the ``middle of things'' nature of the data.
 Another option is to ignore records that have a syntax error in the edit range.
+\end{enumerate}
 
-In future work, it would be interesting to build statistical models of
+It would also be interesting to build statistical models of
 the ``average'' programmer using each typing mode and compare their error
 rates.
 While one could start modeling with the \mnocheck{} and \mnonstrict{}
 data, there are too few \mstrict{} records at the moment due to our uniform
 sampling rate.
 The errors that we do see in \mstrict{} mode call for an in-depth analysis via
-talk-aloud interviews to discover why type mismatches occur and how how Luau
+talk-aloud interviews to discover why type mismatches occur and how Luau
 can better accommodate untyped idioms.
 
 
