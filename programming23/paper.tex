@@ -9,6 +9,7 @@
 
 % TODO BEFORE FINAL
 % - uncomment acks
+% - update all refs to artifacts to no longer be in future tense
 
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
 
@@ -77,7 +78,7 @@
 
 \begin{document}
 
-\title{Type Error Telemetry at Scale}
+\title{Privacy-Respecting Type Error Telemetry at Scale}
 % lean, lite, modest, non-intrusive, private, ...
 % {Millions of Type Errors} = 72M forced strict, 1/2M type error is disappointing!
 %% \subtitle{Impersonal Telemetry to Measure User Experience}
@@ -190,10 +191,9 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
   %% What problem or question does the paper
   %% address? How has this problem or question been
   %% addressed by others (if at all)?
-  Since Luau is currently being used by many creators, we want to collect their feedback
+  Since Luau is currently being used by many creators, we want to collect data
   to improve the language and, in particular, the type system.
-  The standard way to collect feedback at a large scale from creators working on
-  real projects is to deploy client-side telemetry; however, we cannot
+  The standard way to collect data is to deploy client-side telemetry; however, we cannot
   scrape personal data or proprietary information, which means we cannot
   collect source code fragments, error messages, or even filepaths.
   The research questions are thus about how to conduct telemetry that
@@ -201,7 +201,7 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 
   \paragraph{Approach}
   %% What was done that unveiled new knowledge?
-  We designed and implemented a pseudonymized, randomized telemetry system for Luau.
+  We designed and implemented a pseudonymized, randomly-sampling telemetry system for Luau.
   Telemetry records include a timestamp, a session id, a reason for sending,
   and a numeric summary of the most recent type analyses.
   This information lets us study type errors over time
