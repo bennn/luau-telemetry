@@ -5,6 +5,7 @@
 % be consistent between "IDs" and "ids" [SK prefers "IDs" to avoid it being read as a word]
 % even more so between "ID" and "id" [NB: "id" is a word in English]
 % \usepackage[sort]{natbib} or otherwise manually fix cites to be in ascending order
+% redo fig 5 to have better resolution
 
 % TODO BEFORE FINAL
 % - uncomment acks
@@ -703,7 +704,8 @@ telemetry records because there is only one inerval for errors to overlap with.
 This telemetry design is admittedly coarse-grained.
 For instance, it does not distinguish between edits that ignore a type
 error from edits that remove one error while introducing another.
-We acknowledge this and other threats in~\cref{s:threats}.
+We acknowledge this and other threats in~\cref{s:threats}.\todo{Do we?
+Double check.}
 The main advantages of this telemetry are the small size of each record
 and complete the lack of private information.
 Furthermore, despite the limitations, this telemetry supports a variety of
@@ -713,36 +715,33 @@ interesting conclusions that we showcase in the next section.
 \section{The Data}
 \label{s:data}
 
-Roblox Studio collected type error telemetry between February
+We collected type error telemetry in Roblox Studio between February
 and April 2023.
 Every Studio session had a small random chance of generating
 telemetry~(\cref{s:telemetry-records}).
 The chosen sessions generated a record whenever the user switched modules and
 randomly on each keystroke.
 In total, we collected over 1.5 million telemetry records.
-Roughly two thirds of records are due to keystrokes.
+Roughly two thirds are due to keystrokes.
 
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 Each vertical bar counts the number of records generated per hour according to
-a client-side timestamp.
-%% \todo{Do we need all this detail?}
-%% the vertical bars suggest we have lots of day-job developers, will point this out below
-The bars are labeled with a California time zone because that is the locale of
-the Roblox servers, which parsed the timestamps.
-Most buckets contain roughly one thousand records, but the number
-varies between a few dozen at minimum at over three thousand.
+a client-side timestamp.\todo{Not just per day?!?}
+The bars are labeled with a California time zone.
+Buckets\todo{What is a BUCKET as opposed to a BAR?}
+contain a few dozen to over 3,000 records, typically about 1,000.
 %% \FILL{} investigate one tower, what's happening?? all one session?
-There is a sharp drop in early April when the experiment was finished
-and the telemetry probe was removed, though there is a long tail as
-developers updated {Roblox Studio}.
-We do not know which timezone the records originated in, but since the counts
-tend to peak midday California time it seems that the majority
-of Roblox developers are following a Western Hemisphere schedule.
-The regular pattern of the peaks furthermore suggests that many creators
-follow a regular schedule; this may be due to a large community of
+Telemetry ended in early April; the long tail is due to developers
+updating Roblox Studio later.
+% BEN: I see no basis for this; nor is this at all interesting.
+% We do not know which timezone the records originated in, but since the counts
+% tend to peak midday California time it seems that the majority
+% of Roblox developers are following a Western Hemisphere schedule.
+The regular pattern of the peaks suggests that many creators
+follow a regular schedule; these may be
 professional developers.
-The counts for weekends (shaded regions) are often the tallest,
-as Roblox has a significant school-aged creator community.
+The tall weekend (shaded) regions could be because
+Roblox has a significant school-aged creator community.
 
 \begin{figure}[t]\centering
   %% TODO bigger text
@@ -771,7 +770,7 @@ A close inspection of the data revealed two anomalies:
     Some records have identical timestamps and session IDs.
     We keep the first such record and discard the rest.
     (A human would have to switch modules twice or enter several keystrokes
-     within one millisecond to generate two such records legitimately.)
+     within 1ms to generate two such records legitimately.)
 
    \item
      A few hundred records~(1,533) have negative edit ranges.
@@ -805,13 +804,16 @@ Three important characteristics of the recorded data are the size of the codebas
 the length of the sessions, and the number of type
 errors.
 We discuss these in turn.
-Codebase size and session length have long-tailed distributions
-with many small items and few very large ones.
-%% TODO check %% follow power-law distributions~\cite{csn-siamr-2009} 
-%% https://aaronclauset.github.io/powerlaws/
-%% bin version, is this relevant? sounds like no from abtract https://arxiv.org/pdf/1208.3524.pdf
-The number of type analysis errors is somewhat low~(explained in the next
-section), but sufficient to proceed with futher analysis.
+% Commenting these out because that's literally the rest of the
+% subsection. Say anything you want from here over there!
+% Codebase size and session length have long-tailed
+% distributions\todo{DID YOU DO A STATISTICAL TEST.}
+% with many small items and few very large ones.
+% %% TODO check %% follow power-law distributions~\cite{csn-siamr-2009} 
+% %% https://aaronclauset.github.io/powerlaws/
+% %% bin version, is this relevant? sounds like no from abtract https://arxiv.org/pdf/1208.3524.pdf
+% The number of type analysis errors is somewhat low~(explained in the next
+% section), but sufficient to proceed with futher analysis.
 
 
 \paragraph{Codebase Size}
@@ -847,7 +849,7 @@ section), but sufficient to proceed with futher analysis.
 \end{table}
 
 \Cref{t:codebase-size} summarizes the size of projects in the dataset.
-The middle four columns report the mean, standard deviation, median,
+The four numeric columns report the mean, standard deviation, median,
 and \percentile{99} for the number of lines
 and lines in edit range.\footnote{The data also contains the number of files in
 each project, but these numbers are difficult to relate to typechecking because
@@ -885,12 +887,10 @@ and 1,000 lines in edit ranges.
   \end{tabular}
 \end{table}
 
-\Cref{t:session-size} outlines the size of sessions using two metrics:
+\Cref{t:session-size} similarly outlines the size of sessions using two metrics:
 real time in seconds between the first and last record, and the total number of
 records.
-The middle columns report the mean, standard deviation,
-median, and \percentile{99}.
-Similar to the previous table~(\cref{t:codebase-size}), the distributions focus
+The plots focus
 on the lower-left fragment of the data, which again has a very long tail.
 %% comment on long-tail record counts?
 The longest sessions last several days and/or contain thousands of records,
@@ -938,7 +938,7 @@ type errors, \pct{1} for \FS{}).
 The large fraction of errors in the current module is encouraging
 for two reasons.
 First, it suggests that errors appear locally, as the result of edits to nearby
-code, rather than as the result of edits to far-away code that lives in another
+code, rather than as the result of edits to code that lives in another
 module.
 Second, it suggests that creators typically fix errors before switching
 to another module.
@@ -963,7 +963,8 @@ The low fraction of errors in the edit range sends a mixed message:
     analysis might report several errors and the edits only target one or two of them;
     creators might ignore errors entirely and edit other code; or
     creators might choose to edit a non-highlighted location to fix an error.
-    Our data cannot narrow down the answer.
+    While non-privacy-protecting analysis have answered such
+    questions~\cite{mfk-sigcse-2011}, our data cannot narrow down the answer.
 
 \end{itemize}
 
@@ -1130,7 +1131,7 @@ This confirms our expectation.
 %% \mstrict{} covers only a small number of telemetry records.
 The right plot, by contrast, does not support our hypothesis that \mnocheck{}
 records have more \FS{} errors than the other modes.
-Though \mnocheck{} does have the most \FS{} errors, its proportion matches
+Though \mnocheck{} does have the most \FS{} errors, its \emph{proportion} matches
 the proportion of \mnocheck{} records in the
 dataset~(\cref{f:total-records})---if every record had exactly one \FS{} error,
 the plot would be the same.
@@ -1139,7 +1140,8 @@ Digging further into \FS{} errors, the median number of such errors by mode is
 1 in \mnocheck{}, 3 in \mnonstrict{}, and 1 in \mstrict{}.
 Records in \mnocheck{} mode evidently do not have significantly more \FS{}
 errors.
-Furthermore, type analysis does not seem to reduce \FS{} errors.
+Furthermore, type analysis does not seem to reduce \FS{}
+errors.\todo{Isn't this a bit surprising?}
 
 
 \subsection{Type Errors vs. Program Edits}
@@ -1186,14 +1188,8 @@ Furthermore, type analysis does not seem to reduce \FS{} errors.
 The main focus of our telemetry design is to learn how type errors intersect
 with edit ranges.
 Indeed, most of the fields in a telemetry record are dedicated to this
-topic~(\cref{f:tdata}), and it helps to answer RQ2 from the introduction:
-\begin{description}
-  \item[RQ2.]
-    For modules that use type analysis:
-    which errors arise,
-    how do sessions respond,
-    and which errors tend to persist despite subsequent edits?
-\end{description}
+topic~(\cref{f:tdata}), and are directed to RQ2 on type errors
+(\cref{s:introduction}).
 
 Using the results of the previous and current type analysis from
 each telemetry record,~\cref{t:type-error-survival}
@@ -1207,12 +1203,12 @@ introduce (\addsym{}) at least one \code{CannotCallNonFunction} error.
 Four records keep the number for that error at the same, nonzero level,
 and twenty reduce the number of \code{CannotCallNonFunction} errors.
 
-All three counts are imprecise because our telemetry system cannot distinguish
-particular type errors.
-If a creator removes one \code{NotATable} error but then
-immediately introduces another on a different line,
-then the centor (\keepsym{}) column gets incremented
-instead of the increase (\addsym{}) and decrease (\dropsym{}) columns.
+% BEN: double-check, I think this says all you were trying to say.
+% "typically" because we COULD have gotten lucky.
+The counts are imprecise because of telemetry granularity.
+If a creator removes one error but then
+immediately introduces another on a different line, this typically manifests as
+a \keepsym{} rather than one \addsym{} and one \dropsym{}.
 
 This table is based on the 996,164 records generated from keystroke events.
 It ignores records based on module switches because those do not have
@@ -1235,28 +1231,29 @@ telemetry system.
     of this low overlap rate for future work.
 
   \item
-    \code{SyntaxError} and the related errors \code{UnknownSymbol} and
-    \code{UnknownProperty} are the most popular.
+    \code{SyntaxError} and the related \code{UnknownSymbol} and
+    \code{UnknownProperty} are most popular.
     If the edit range errors are indicative of type errors at large,
     then most errors in the data are likely due to typos.
     These errors also survive (\keepsym{}) the most often.
 
-    \subitem The random-keystroke strategy of our telemetry may be inflating
-    the number of typos because it has no way to avoid reporting edits that
-    happen in the middle of things.
+    Our telemetry strategy likely inflates
+    the number of typos because it cannot determine when a creator is
+    mid-edit.
     For example, a creator who writes a method call
-    \code{bucket.countFish()} letter-by-letter will see errors
-    including \code{UnknownSymbol(buck)} and \code{UnknownProperty(bucket.c)}.
-    Telemetry may pick these up;~\cref{s:conclusion} suggests ways
-    to avoid doing so in the future.
+    \code{bucket.countFish()} letter-by-letter will generate an
+    \code{UnknownSymbol} error for \code{buck} and
+    \code{UnknownProperty} for \code{bucket.c}, which may end up sampled.
+    \Cref{s:conclusion} suggests ways
+    to avoid this in the future.
 
   \item
     After the syntax errors, \code{CountMismatch}, \code{TypeMismatch}, and
     \code{GenericError} are the next most common \mnonstrict{} and \mstrict{}
     errors.
     A \code{CountMismatch} sends the wrong number of arguments to a function.
-    It may simply be a common error, but it may also be due to our random-keystroke
-    telemetry.
+    It may simply be a common error, but it may also be a
+    telemetry artifact.
     The high incidence of \code{TypeMismatch} and \code{GenericError} calls for
     further study in future work to determine precisely which error arose.
     (Some of the \code{GenericError}s come with context strings in the form of
@@ -1272,9 +1269,9 @@ telemetry system.
     %% Drop >= Add >= Rem ~= 18
     %% other nonzero      ~= 21 triples
     Ideally, the highest number in each column group should
-    be the number of decreases (\dropsym{}).
-    A decrease should happen when the creator sees an error,
-    edits around the highlighted code, and fixes it.
+    be decreases (\dropsym{}).
+    A decrease should happen when the creator sees an error and
+    fixes it.
     However, decreases are highest in only 18 of the 39 nonzero groups.
 
 %%  \item
@@ -1414,7 +1411,7 @@ telemetry system.
 %%  UnificationTooComplex
 
 \Cref{t:type-error-count} reports the percent of type errors that overlap with
-the edit range.
+the edit range.\todo{I DO NOT UNDERSTAND ANYTHING HERE.}
 The purpose of this table is to discover all specific errors in the dataset,
 thus it includes both keystroke-based and module-switch-based records---even
 though edit ranges are not well-defined for the latter.
@@ -1429,7 +1426,8 @@ by definition \code{SyntaxError}s.
 \begin{itemize}
   \item
     Syntax errors, in particular \code{UnknownSymbol}, are much more
-    common in \mnonstrict{} than \mstrict{}.
+    common in \mnonstrict{} than \mstrict{}.\todo{This is NOT a
+      ``syntax'' error? It's a typo!}
     This may be because \mnonstrict{} reports fewer errors in general.
 
   \item
@@ -1487,8 +1485,11 @@ None of these errors appear in edit ranges~(\cref{t:type-error-count}).
 For the specific case of \code{CodeTooComplex}, our telemetry tracked project-wide
 counts and found only 26 errors, which were spread across eleven
 records in three sessions.
-It is entirely possible that they all came from one session that
-deliberately pushed the limits of type analysis.
+Note that all three sessions \emph{could} have been from the same codebase.
+% BEN: I see no reason for this speculation. The only important thing
+% is the fact that this could have been all the same codebase.
+%It is entirely possible that they all came from one session that
+%deliberately pushed the limits of type analysis.
 %% Whatever the reason, the overall number is low enough to suggest that the
 %% internal limits are not posing barriers to typechecker adoption.
 
@@ -1619,7 +1620,7 @@ The ``maintain'' rows include cases where there are zero errors before and after
     three modes, they are at most \pct{2} apart.
     While some of this balance is due to module-switch records
     (if the two modules have different error counts, there will be a change),
-    most of the data is from keystrokes; thus it appears that sessions tend to
+    most of the data is from keystrokes; thus, it appears that sessions tend to
     fix errors highlighted by type analysis.
 
   \item
@@ -1657,6 +1658,7 @@ The ``maintain'' rows include cases where there are zero errors before and after
 \end{figure}
 
 \Cref{f:tefs-compass} takes a closer look at type errors (\tekey{}) and \FS{} errors (\fskey{}).
+\todo{I'm kinda' baffled.}
 For every pair of events in each session, we compare the change in
 type errors to the change in \FS{} errors and choose one of five categories.
 At a high level, the question at hand is whether the changes \emph{agree} or \emph{disagree}.
@@ -2241,6 +2243,8 @@ can better accommodate untyped idioms.
 %\end{itemize}
 %
 %\newpage
+
+\newpage
 
 \bibliography{bib}
 
