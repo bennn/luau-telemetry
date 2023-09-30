@@ -26,6 +26,7 @@
                  [plot-x-ticks no-ticks]
                  [plot-y-ticks no-ticks])
     (define NN (car x-data*))
+    (define FONT 'modern) ;; '(bold . modern)
     (plot-pict
       (for/list ((mm (in-list (cdr x-data*)))
                  (cc (in-list (list nocheck-color nonstrict-color strict-color)))
@@ -35,7 +36,7 @@
         (list
           (point-pict
             (vector x y)
-            (text (format "~a%" (rnd x)) 'modern 14)
+            (text (format "~a%" (rnd x)) FONT 20)
             #:point-sym 'none)
           (rectangles (list (vector
                               (ivl 0 x)
@@ -43,8 +44,8 @@
                       #:alpha 0.7
                       #:color cc
                       #:line-color cc)))
-      #:width 110
-      #:height 60
+      #:width 180
+      #:height 120
       #:y-max 1
       #:y-min -5
       #:x-min 0
