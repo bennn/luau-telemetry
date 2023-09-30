@@ -111,6 +111,7 @@ at the recently-named Kahlert School of Computing at the University of Utah.}
 \newcommand{\chkNo}{\wideas{}{\chkYes}}
 \newcommand{\pct}[1]{\SI{#1}{\percent}}
 \newcommand{\percentile}[1]{{#1}th~percentile}
+\newcommand{\ptile}[1]{\textsc{p}{#1}}
 \newcommand{\modefont}[1]{\texttt{#1}}
 \newcommand{\mnocheck}{\modefont{nocheck}}
 \newcommand{\mnonstrict}{\modefont{nonstrict}}
@@ -440,9 +441,10 @@ the side of suppressing the error.
 
 Both modes report the \code{UnknownProperty} error because
 misspellings of property names are common enough to report in both
-\mstrict{} and \mnonstrict{} mode. See~\cite{bfj-hatra-2021}
-for a more detailed discussion of the rationale for \mstrict{} and
-\mnonstrict{} mode.
+\mstrict{} and \mnonstrict{} mode.
+\mnocheck{} reports no error because the program is syntactically valid.
+See~\cite{bfj-hatra-2021} for a more detailed discussion of the rationale
+behind the type systems.
 
 \begin{figure}[t]\centering
   \includegraphics[width=.45\textwidth]{img/roblox-studio.png}
@@ -834,8 +836,10 @@ section), but sufficient to proceed with futher analysis.
 % 11,911 & \stddev{12}  &
 %  7,678 &              &
 % 51,761 &              &
+
+  %% FILL P99 or P01
   \begin{tabular}[t]{lrrrrl}
-    ~          & Mean  & Stddev & Median & \pct{99} Pct. & Distribution \\
+    ~          & Mean  & Stddev & Median & \ptile{99} & Distribution \\
     Lines      & 6,497 & \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
     Edit Range & 3,680 & \stddev{31} & 926   & 34,725 & \includegraphics[width=0.14\columnwidth,valign=M]{img/editrange-distribution.pdf}
     %% TODO x-axis starts at 1, not zero
@@ -849,7 +853,7 @@ and \percentile{99} for the number of lines
 and lines in edit range.\footnote{The data also contains the number of files in
 each project, but these numbers are difficult to relate to typechecking because
 projects may contain hundreds of files that define data assets.  For the
-record, the median file count is 7,678 and the 99th percentile is 51,761 files.
+record, the median file count is 7,678 and the \percentile{99} is 51,761 files.
 }
 The plots on the right show zoomed-in distributions of the line and edit range
 sizes.
@@ -874,7 +878,7 @@ and 1,000 lines in edit ranges.
   \label{t:session-size}
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
   \begin{tabular}{lrrrrl} \\
-    ~               & Mean & Stddev & Median & \pct{99} Pct. & Distribution \\
+    ~               & Mean & Stddev & Median & \ptile{99} & Distribution \\
     Time Span (sec) & 3,184 & \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
     Record Count    & 286 & 583         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
     %% TODO x-axis starts at 1
@@ -2212,6 +2216,7 @@ developers and other maintainers of gradually-typed languages:
   \item
     Sessions tend to fix errors immediately rather than dealing with them in a batch
     or ignoring the errors altogether~(\cref{f:error-density,f:error-changes}).
+    This should give Roblox confidence to make \mnonstrict{} the default in the future.
     % Changes to the number of errors balance one another~(\cref{f:error-density});
     % edits are equally likely to add or remove errors~(\cref{f:error-changes}).
   \item
