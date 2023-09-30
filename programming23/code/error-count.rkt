@@ -1,5 +1,4 @@
 #lang racket
-  \t
 
 (require
   "base.rkt"
@@ -9,7 +8,7 @@
 
 ;; ---
 
-(define out-kind 'png)
+(define out-kind 'pdf)
 
 (define (row->te x) (first x))
 (define (row->fs x) (second x))
@@ -171,7 +170,7 @@
           my-lines
           (hrule 0 #:alpha 0.5 #:color 0))
         #:width  700
-        #:height 180
+        #:height 120
         #:y-max  50
         #:y-min -50
         #:x-max 150
@@ -189,15 +188,15 @@
   #;(plot-error-density mode)
   #;(plot-error-diff mode)
   (plot-error-density-diff mode)
-  (plot-fs-density-diff mode)
+  #;(plot-fs-density-diff mode)
   (void))
 
 ;; ---
 
 (module+ main
   (printf "error-count, density~n")
-  (for-each simple-go roblox-mode*)
-  #;(for-each plot-go (values #;cddr roblox-mode*))
+  #;(for-each simple-go roblox-mode*)
+  (for-each plot-go (values #;cddr roblox-mode*))
   (void))
 
 

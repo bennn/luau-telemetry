@@ -71,6 +71,7 @@
                                 (printf "unused code ~a~n" (car kv))
                                 #f)))
                  (list (car kv) (pct (cdr kv) total-err))))
+  (printf "NEVER APPEAR: ~a~n" (for/list ((rr (in-list ranked)) #:when (zero? (cdr rr))) (car rr)))
   (tex-table pct*))
 
 (define (pct a b)
