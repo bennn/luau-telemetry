@@ -2,7 +2,6 @@
 % vim: set fileencoding=utf-8 :
 
 % TODO BEFORE SUBMISSION
-% \usepackage[sort]{natbib} or otherwise manually fix cites to be in ascending order
 
 % TODO BEFORE FINAL
 % - uncomment acks
@@ -335,7 +334,7 @@ Beyond their immediate revelance to {Luau},
 answers to these questions have broad implications for the design
 of gradually-typed languages.
 Luau represents a large-scale combination of ideas from
-gradual typing~\cite{st-sfp-2006,tfffgksst-snapl-2017,bat-ecoop-2014},
+gradual typing~\cite{bat-ecoop-2014,st-sfp-2006,tfffgksst-snapl-2017},
 success typing~\cite{lindahl2006practical},
 and semantic subtyping~\cite{CF05:GentleIntroduction,Jef22:SemanticSubtyping}.
 Lessons from this experience can inform future applications.
@@ -1468,7 +1467,7 @@ The table does not include \mnocheck{} because all its type errors are
 %% data = out/ctc-info.txt
 
 To deal with pathologies such as the worst-case time for ML-style type
-inference~\cite{m-popl-1990,ktu-caap-1990}, the typechecker
+inference~\cite{ktu-caap-1990,m-popl-1990}, the typechecker
 has internal limits that restrict the problems it will attempt to solve.
 Hitting a limit triggers one of the following errors:
 \code{CodeTooComplex},
@@ -1958,7 +1957,7 @@ edits over time (which we use in \cref{f:error-density}).
 One way to futher strengthen the privacy of any telemetry design, including
 transparent telemetry, is to systematically add noise to the data using
 techniques from differential
-privacy~\cite{zhlbr-cc-2020,epk-ccs-2014,wblj-usenix-2017}.
+privacy~\cite{epk-ccs-2014,wblj-usenix-2017,zhlbr-cc-2020}.
 Recent work about session-based data that could be added
 to Roblox Studio shows how to add noise to traces~\cite{zhlbr-cc-2020},
 how to account for known relationships between events~\cite{zhlbr-oopsla-2020},
@@ -2005,10 +2004,10 @@ interest~\cite{zfstt-ieeesensors-2022}.
 \paragraph{User Studies, Errors, and Type Errors}
 
 Our approach to data analysis is inspired by Marceau
-et~al.~\cite{mfk-onward-2011,mfk-sigcse-2011} and
+et~al.~\cite{mfk-sigcse-2011,mfk-onward-2011} and
 Macedo et~al.~\cite{mcpcsprs-abz-2020,mcpcsprs-scp-2021}
 for Racket and Alloy4Fun, respectively. Other more recent work has
-also studied edit sequences to infer intent~\cite{wk-koli-2020,lgk-pj-2022,rsgl-cpp-2020}.
+also studied edit sequences to infer intent~\cite{lgk-pj-2022,rsgl-cpp-2020,wk-koli-2020}.
 A major difference is that we have only samples, not full sequences,
 which significantly impacts our study methods and inferences.
 
@@ -2023,16 +2022,16 @@ Other logging-based studies of Java programs use the full error message to
 draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}, which we
 cannot use.
 
-Much work~\cite{empirical-types,heeren-thesis} on the benefits of static types focuses on
-small case studies~\cite{w-popl-1986,hw-scp-2004,td-tosem-2001},
-inverviews~\cite{cdhhjklwya-hatra-2020,gstf-hatra-2021,cams-oopsla-2020},
+Much work~\cite{heeren-thesis,empirical-types} on the benefits of static types focuses on
+small case studies~\cite{hw-scp-2004,td-tosem-2001,w-popl-1986},
+inverviews~\cite{cdhhjklwya-hatra-2020,cams-oopsla-2020,gstf-hatra-2021},
 or static
-corpuses~\cite{rppd-fse-2014,bhmvv-toplas-2019}
+corpuses~\cite{bhmvv-toplas-2019,rppd-fse-2014}
 Controlled experiments are rare;
 Kleinschmager, et~al.\cite{khrts-icpc-2012} is a notable exception.
 Lerner et~al.~\cite{lfgc-pldi-2007} apply a type error repair tool on
 over two thousand programs.
-Seidel et~al.~\cite{sscwj-oopsla-2017,sjw-jfp-2018} use five thousand programs
+Seidel et~al.~\cite{sjw-jfp-2018,sscwj-oopsla-2017} use five thousand programs
 to train data-driven methods for localizing errors.
 These are all on a vastly smaller scale than our study and also study
 different issues.
