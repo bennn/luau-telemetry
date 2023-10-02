@@ -2175,27 +2175,49 @@ can better accommodate untyped idioms.
 % NSF grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
 % to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
-%\newpage
-%
-%\appendix
-%
-%\section{Data Details}
-%
-%Tips for interpreting the data:
-%
-%\begin{itemize}
-%  \item
-%    Edit ranges are non-negative because we
-%    implemented the interval arithmetic for them using unsigned integers.
-%    To filter out negative edit ranges, we removed all ranges
-%    greater than 4 billion.
-%
-%  \item
-%  \item
-%  \item
-%\end{itemize}
-%
-%\newpage
+\newpage
+
+% \appendix
+% 
+% \section{Data Details}
+% 
+% Tips for interpreting the data:
+% 
+% \begin{itemize}
+%   \item
+%     A \code{"-"} entry denotes a zero.
+%     This data was not in the telemetry record.
+%     Kibana filled in the dash.
+%   \item
+%     Timestamps are California local time.
+%     %% (Daylight savings?)
+%   \item
+%   \item
+%     Edit ranges are non-negative because we
+%     implemented the interval arithmetic for them using unsigned integers.
+%     To filter out negative edit ranges, we removed all ranges
+%     greater than 4 billion.
+% 
+%   \item
+%   \item
+% \end{itemize}
+% 
+% \section{More Plots}
+% 
+% \begin{figure}[t]\centering
+%   %% +-200 background errors, same as ever! balanced
+%   \mnocheck{}
+%   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--fs-density-diff.pdf}
+% 
+%   \mnonstrict{}
+%   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--fs-density-diff.pdf}
+% 
+%   \mstrict{}
+%   \includegraphics[width=\columnwidth]{img/error-count-strict-row--fs-density-diff.pdf}
+%   \caption{Changes in \FS{} error density (errors / lines) over time (seconds).}
+%   \label{f:error-density}
+% \end{figure}
+
 
 \newpage
 
