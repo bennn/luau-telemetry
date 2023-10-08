@@ -18,7 +18,7 @@
                  [plot-y-far-ticks no-ticks]
                  [plot-x-ticks (time-dist-ticks)]
                  [plot-y-ticks (linear-major-y-ticks 3)]
-                 [plot-font-size 11]
+                 [plot-font-size 18]
                  [plot-font-family 'roman]
                  [rectangle-color bg-dark-blue]
                  [rectangle-line-color bg-dark-blue]

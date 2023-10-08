@@ -112,7 +112,7 @@
 (define (posix->iso x)
   (define str (datetime->iso8601 (posix->datetime x)))
   (define y-t* (string-split str "T"))
-  (car y-t*)
+  (string-append (car y-t*) " ")
   #;(define s-ms (string-split (second y-t*) "."))
   #;(string-append (car y-t*) " " (car s-ms)))
 
@@ -151,13 +151,14 @@
           [else
            (list (pre-tick (->posix d1) #true))]))))
   (define (time-dist-format ax-mix ax-max pt*)
-    (cons
-      (posix->iso (pre-tick-value (first pt*)))
-      (snoc
-        (posix->iso (pre-tick-value (last pt*)))
-        (for/list ((_ (in-list (cddr pt*)))
-                   (i (in-naturals)))
-          (make-string i)))))
+    (remove-duplicates
+      (cons
+        (posix->iso (pre-tick-value (first pt*)))
+        (snoc
+          (posix->iso (pre-tick-value (last pt*)))
+          (for/list ((_ (in-list (cddr pt*)))
+                     (i (in-naturals)))
+            (make-string i))))))
   (ticks time-dist-layout time-dist-format))
 
 (define (percent-ticks ymax)
