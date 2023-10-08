@@ -840,8 +840,7 @@ We discuss these in turn.
     ~          & Mean  & Stddev & Median & \ptile{99} & Distribution \\
     Lines      & 6,497 & \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
     Edit Range & 3,680 & \stddev{31} & 926   & 34,725 & \includegraphics[width=0.14\columnwidth,valign=M]{img/editrange-distribution.pdf}
-    %% TODO x-axis starts at 1, not zero
-    %% TODO much bigger font or much smaller plot!!!
+    %% TODO x-axis starts at 1, not zero ... do we have zeros?! may need to explain
   \end{tabular}
 \end{table}
 
@@ -880,7 +879,6 @@ and 1,000 lines in edit ranges.
     Time Span (sec) & 3,184 & \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
     Record Count    & 286 & 583         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
     %% TODO x-axis starts at 1
-    %% TODO huge font, or smaller plot
   \end{tabular}
 \end{table}
 
@@ -1100,7 +1098,6 @@ in a well-typed state.
   \newcommand{\labelbars}[1]{\begin{tabular}[t]{l@{}l} \raisebox{2ex}{\begin{tabular}[t]{r}\mnocheck{}\\\mnonstrict{}\\\mstrict{}\end{tabular}} & #1 \end{tabular}}
 
     \begin{tabular}[t]{cc}
-    %% TODO why text blurry??!
     Type errors & Background errors \\
     \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{img/error-by-mode-te.pdf}}
     & \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{img/error-by-mode-fs.pdf}}

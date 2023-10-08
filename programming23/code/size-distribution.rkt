@@ -61,7 +61,7 @@
                  [plot-y-far-ticks no-ticks]
                  [plot-x-ticks (linear-major-y-ticks 3)]
                  [plot-y-ticks (linear-major-y-ticks 3)]
-                 [plot-font-size 11]
+                 [plot-font-size 18]
                  [plot-font-family 'roman]
                  [rectangle-color bg-dark-blue]
                  [rectangle-line-color bg-dark-blue]
@@ -78,7 +78,7 @@
         out-kind
         #:width ww
         #:height hh
-        #:x-min 0
+        #:x-min 1
         #:x-max x-max
         #:y-min 0
         #:y-max y-max
@@ -126,7 +126,7 @@
 (module+ main
   (define out-kind 'pdf) ;; png
   (define fname "size-distributions.rktd")
-  #;(f:plot-codebase-distros
+  (f:plot-codebase-distros
     (build-path data-dir fname)
     (build-path data-dir (string-append "summary-of-" fname))
     out-kind
