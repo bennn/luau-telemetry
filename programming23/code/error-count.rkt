@@ -197,13 +197,8 @@
   #;(plot-error-count mode)
   #;(plot-error-density mode)
   #;(plot-error-diff mode)
-<<<<<<< HEAD
   (plot-error-density-diff mode)
-  #;(plot-fs-density-diff mode)
-=======
-  #;(plot-error-density-diff mode)
-  (plot-fs-density-diff mode #:y-max 200)
->>>>>>> error density FS, +-200
+  #;(plot-fs-density-diff mode #:y-max 200)
   (void))
 
 ;; ---
