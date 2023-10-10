@@ -741,7 +741,6 @@ The tall weekend (shaded) regions could be because
 Roblox has a significant school-aged creator community.
 
 \begin{figure}[t]\centering
-  %% TODO bigger text
   %% TODO weird artifact (|) in x-min label
   %% code/row-distribution.rkt
   \includegraphics[width=\columnwidth]{img/row-distribution.pdf}
@@ -878,7 +877,6 @@ and 1,000 lines in edit ranges.
     ~               & Mean & Stddev & Median & \ptile{99} & Distribution \\
     Time Span (sec) & 3,184 & \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
     Record Count    & 286 & 583         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
-    %% TODO x-axis starts at 1
   \end{tabular}
 \end{table}
 
@@ -1197,9 +1195,6 @@ introduce (\addsym{}) at least one \code{CannotCallNonFunction} error.
 Four records keep the number for that error at the same, nonzero level,
 and twenty reduce the number of \code{CannotCallNonFunction} errors.
 
-% BEN: double-check, I think this says all you were trying to say.
-% "typically" because we COULD have gotten lucky.
-% ben: I'd written "immediatly introduces" to rule out getting lucky. Deleted "immediately" and went with your version.
 The counts are imprecise because of telemetry granularity.
 If a creator removes one error but then
 introduces another on a different line, this typically manifests as
@@ -1481,12 +1476,6 @@ For the specific case of \code{CodeTooComplex}, our telemetry tracked project-wi
 counts and found only 26 errors, which were spread across eleven
 records in three sessions.
 Note that all three sessions \emph{could} have been from the same codebase.
-% BEN: I see no reason for this speculation. The only important thing
-% is the fact that this could have been all the same codebase.
-%It is entirely possible that they all came from one session that
-%deliberately pushed the limits of type analysis.
-%% Whatever the reason, the overall number is low enough to suggest that the
-%% internal limits are not posing barriers to typechecker adoption.
 
 
 \subsection{Density of Type Errors}
@@ -1495,7 +1484,6 @@ Note that all three sessions \emph{could} have been from the same codebase.
   %% FS plots look similar
   %% - much higher densities, same basic story
   %% - nocheck indeed the highest > NS > S
-  %% TODO draw units, bigger font
 
   \mnocheck{}
   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
