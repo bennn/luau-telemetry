@@ -168,7 +168,7 @@
                  [plot-y-far-ticks no-ticks]
                  [plot-x-ticks (linear-major-y-ticks 4)]
                  [plot-y-ticks (linear-major-y-ticks 3)]
-                 [plot-font-size 10]
+                 [plot-font-size 18]
                  [plot-font-family 'roman])
     (define out-file (build-path img-dir (string-replace (format "error-count-~a-~a.~a" mode (object-name row->y) out-kind) ">" "-")))
     (printf "plot-file ~a~n" (path->string (file-name-from-path out-file)))
@@ -197,8 +197,8 @@
   #;(plot-error-count mode)
   #;(plot-error-density mode)
   #;(plot-error-diff mode)
-  #;(plot-error-density-diff mode)
-  (plot-fs-density-diff mode)
+  (plot-error-density-diff mode)
+  #;(plot-fs-density-diff mode)
   (void))
 
 ;; ---
