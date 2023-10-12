@@ -1,0 +1,675 @@
+
+R version 4.3.1 (2023-06-16) -- "Beagle Scouts"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[R.app GUI 1.79 (8238) aarch64-apple-darwin20]
+
+> install.packages("poweRlaw")
+--- Please select a CRAN mirror for use in this session ---
+also installing the dependency ‘pracma’
+
+trying URL 'https://cran.wustl.edu/bin/macosx/big-sur-arm64/contrib/4.3/pracma_2.4.2.tgz'
+Content type 'application/x-gzip' length 1737031 bytes (1.7 MB)
+==================================================
+downloaded 1.7 MB
+
+trying URL 'https://cran.wustl.edu/bin/macosx/big-sur-arm64/contrib/4.3/poweRlaw_0.70.6.tgz'
+Content type 'application/x-gzip' length 3231035 bytes (3.1 MB)
+==================================================
+downloaded 3.1 MB
+
+
+The downloaded binary packages are in
+	/var/folders/qc/8hkvznf10cdcp1pvcy8hhk1r0000gn/T//RtmpNxppMW/downloaded_packages
+> library("poweRlaw")
+> help(data)
+starting httpd help server ... done
+> ls
+function (name, pos = -1L, envir = as.environment(pos), all.names = FALSE, 
+    pattern, sorted = TRUE) 
+{
+    if (!missing(name)) {
+        pos <- tryCatch(name, error = function(e) e)
+        if (inherits(pos, "error")) {
+            name <- substitute(name)
+            if (!is.character(name)) 
+                name <- deparse(name)
+            warning(gettextf("%s converted to character string", 
+                sQuote(name)), domain = NA)
+            pos <- name
+        }
+    }
+    all.names <- .Internal(ls(envir, all.names, sorted))
+    if (!missing(pattern)) {
+        if ((ll <- length(grep("[", pattern, fixed = TRUE))) && 
+            ll != length(grep("]", pattern, fixed = TRUE))) {
+            if (pattern == "[") {
+                pattern <- "\\["
+                warning("replaced regular expression pattern '[' by  '\\\\['")
+            }
+            else if (length(grep("[^\\\\]\\[<-", pattern))) {
+                pattern <- sub("\\[<-", "\\\\\\[<-", pattern)
+                warning("replaced '[<-' by '\\\\[<-' in regular expression pattern")
+            }
+        }
+        grep(pattern, all.names, value = TRUE)
+    }
+    else all.names
+}
+<bytecode: 0x127a5ff98>
+<environment: namespace:base>
+> pwd
+Error: object 'pwd' not found
+> getwd()
+[1] "/Users/ben"
+> setwd("code/uu/papers/luau-telemetry/programming23/out/distributions")
+> getwd()
+[1] "/Users/ben/code/uu/papers/luau-telemetry/programming23/out/distributions"
+> data("lines")
+Warning message:
+In data("lines") : data set ‘lines’ not found
+> data("lines.csv")
+Warning message:
+In data("lines.csv") : data set ‘lines.csv’ not found
+> data("lines.csv", lib.loc=".")
+Error in find.package(package, lib.loc, verbose = verbose) : 
+  there are no packages called ‘poweRlaw’, ‘stats’, ‘graphics’, ‘grDevices’, ‘utils’, ‘datasets’, ‘methods’, ‘base’
+> linescsv <- read.csv("lines.csv", header=FALSE)
+> head(linescsv, 3)
+  V1    V2
+1  0  1643
+2  1 48831
+3  2 36228
+> lines_sp = displ$new(linescsv$V2)
+> m_lines = lines_sp
+> est_lines = estimate_xmin(m_lines)
+> m_lines$setXmin(est_lines)
+> m_sp
+Error: object 'm_sp' not found
+> m_lines
+Reference class object of class "displ" 
+Field "xmin": 
+[1] 2
+Field "pars": 
+[1] 1.467888
+Field "no_pars": 
+[1] 1
+> est_lines
+$gof
+[1] 0.01487984
+
+$xmin
+[1] 2
+
+$pars
+[1] 1.467888
+
+$ntail
+[1] 4115
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "estimate_xmin"
+> m_pl = displ$new(moby)
+Error: object 'moby' not found
+> data("moby", package="powerlaw")
+Error in find.package(package, lib.loc, verbose = verbose) : 
+  there is no package called ‘powerlaw’
+> data("moby", package="poweRlaw")
+> m_pl = displ$new(moby)
+> est_pl = estimate_xmin(m_pl)
+e
+> est_pl
+$gof
+[1] 0.008252634
+
+$xmin
+[1] 7
+
+$pars
+[1] 1.952728
+
+$ntail
+[1] 2958
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "estimate_xmin"
+> bootstrap(m_pl, no_of_sims=5000, threads=4)
+Expected total run time for 5000 sims, using 4 threads is 721 seconds.
+Error in unserialize(node$con) : error reading from connection
+> bootstrap_p(m_pl)
+Parameters will be initially estimated via estimate_xmin
+Expected total run time for 100 sims, using 1 threads is 60.2 seconds.
+Error in unserialize(node$con) : error reading from connection
+> bootstrap_p(m_pl, threads=10)
+Parameters will be initially estimated via estimate_xmin
+Expected total run time for 100 sims, using 10 threads is 6.25 seconds.
+$p
+[1] 0.65
+
+$gof
+[1] 0.008252634
+
+$bootstraps
+            gof xmin     pars ntail
+1   0.014416732    7 1.945601  2978
+2   0.011360444    8 1.959478  2657
+3   0.006036243    7 1.982824  3006
+4   0.010653681    6 1.946808  3486
+5   0.007764548    6 1.942348  3411
+6   0.011386224    9 1.944548  2370
+7   0.005471068    7 1.957671  2938
+8   0.007143650    6 1.907864  3395
+9   0.011029475   16 1.934378  1288
+10  0.011848067    6 1.952749  3420
+11  0.009416712    5 1.904356  4058
+12  0.009089796    5 1.923561  4057
+13  0.007561739    9 1.928572  2369
+14  0.009143307    6 1.911560  3410
+15  0.005353095    5 1.914206  4116
+16  0.007894627    7 1.972461  2949
+17  0.006975430    8 1.976440  2612
+18  0.007269072    7 1.955377  2959
+19  0.008589483    8 1.965145  2659
+20  0.010263715    6 1.967227  3522
+21  0.008143888    6 1.916463  3479
+22  0.007909884    7 1.972745  2898
+23  0.008319211    9 1.982199  2407
+24  0.007177766    7 1.970622  2989
+25  0.006251695    6 1.945760  3483
+26  0.009534732    7 1.954577  2873
+27  0.005929182    6 1.921919  3392
+28  0.009882801    7 1.969392  2982
+29  0.011395315    8 1.980739  2654
+30  0.010458076    7 1.936508  2950
+31  0.006132375    6 1.977544  3419
+32  0.011319788    7 1.979814  2986
+33  0.010715492    5 1.939049  3958
+34  0.006760508    6 1.945047  3555
+35  0.010105802    6 1.943399  3320
+36  0.009139987   12 2.005769  1756
+37  0.009292792    7 1.936607  2977
+38  0.010816831   12 1.921772  1699
+39  0.009812100    6 1.934988  3388
+40  0.012132705    6 1.958685  3453
+41  0.007831704    7 1.911653  3067
+42  0.008182819    8 1.955747  2641
+43  0.010486417   10 1.994100  2140
+44  0.009122530    6 1.947169  3419
+45  0.015866049    7 1.980163  2986
+46  0.012966810   42 1.966071   528
+47  0.009939733    6 1.942175  3500
+48  0.011898849    6 1.960723  3462
+49  0.005360246    8 1.987996  2501
+50  0.007945161    6 1.958005  3443
+51  0.007024415    7 1.968150  2926
+52  0.014053430    8 1.961822  2629
+53  0.013710292    7 1.958285  2926
+54  0.008683220    6 1.962625  3440
+55  0.008183479    7 1.949086  2998
+56  0.012295474    6 1.958284  3498
+57  0.007614491    5 1.925859  4062
+58  0.011166768    6 1.987184  3414
+59  0.014654771   22 1.898642   926
+60  0.009483229    7 1.948059  2977
+61  0.014057442    5 1.914592  4055
+62  0.007986939    7 1.937101  2972
+63  0.008212111   10 1.994375  2065
+64  0.013594197   40 2.071058   561
+65  0.013290094    7 1.985511  3008
+66  0.007957127    6 1.943193  3334
+67  0.013559984    3 1.897937  6616
+68  0.010225245    6 1.972914  3435
+69  0.010467138    9 1.942395  2330
+70  0.005932599    6 1.958803  3426
+71  0.009417733   14 1.958476  1550
+72  0.011297952    6 1.945674  3434
+73  0.008884338    6 1.938363  3414
+74  0.009636540    6 1.956800  3360
+75  0.009914983   15 2.013509  1381
+76  0.014448016   10 1.976950  2124
+77  0.010953007    7 1.964893  2919
+78  0.010307232    7 1.958559  3074
+79  0.008125613    7 1.964999  2913
+80  0.008663848    7 1.971839  3005
+81  0.010672270    6 1.934391  3348
+82  0.010556834   10 1.977835  2124
+83  0.006597255    6 1.952557  3388
+84  0.010546166    5 1.956073  3957
+85  0.010579445    5 1.928398  4081
+86  0.008454830    8 1.931072  2611
+87  0.008001336    6 1.952036  3437
+88  0.010455700   11 1.975976  1808
+89  0.011221363    7 1.945952  2974
+90  0.008195994    6 1.948513  3421
+91  0.010952620    6 1.951549  3376
+92  0.010159189    7 1.966546  2890
+93  0.009682810    7 1.954862  3000
+94  0.006628109    7 1.926090  3074
+95  0.006780724    5 1.923418  4031
+96  0.010556494    6 1.943851  3408
+97  0.013548078    6 1.969522  3396
+98  0.009224083    6 1.915909  3393
+99  0.007242082    7 1.936562  2944
+100 0.007442305    6 1.948775  3444
+
+$sim_time
+[1] 1.831315
+
+$seed
+NULL
+
+$package_version
+[1] ‘0.70.6’
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "bs_p_xmin"
+> bootstrap_p(m_lines, threads=10)
+Expected total run time for 100 sims, using 10 threads is 36.4 seconds.
+$p
+[1] 0.1
+
+$gof
+[1] 0.01487984
+
+$bootstraps
+            gof xmin     pars ntail
+1   0.021316634    2 1.457559  4103
+2   0.010664248    2 1.453938  4114
+3   0.011501764    2 1.465504  4063
+4   0.008184985    2 1.468411  4131
+5   0.011231733    2 1.453544  4113
+6   0.007968217    2 1.469948  4091
+7   0.010437086    2 1.474830  4105
+8   0.009492810    2 1.470323  4172
+9   0.010001671    2 1.465348  4090
+10  0.015564950    2 1.474211  4197
+11  0.010816856    2 1.469127  4132
+12  0.010249191    2 1.467932  4053
+13  0.011003640    2 1.459714  4113
+14  0.010921243    2 1.472832  4068
+15  0.009804934    2 1.466452  4085
+16  0.009956970    2 1.466391  4093
+17  0.012817158    2 1.467329  4086
+18  0.011630808    2 1.455673  4151
+19  0.016639391    2 1.467468  4128
+20  0.012868141    2 1.455657  4109
+21  0.009686418    2 1.454279  4149
+22  0.011122272    2 1.477936  4155
+23  0.008107835    2 1.475940  4065
+24  0.010108021    2 1.476424  4189
+25  0.011543462    2 1.453651  4191
+26  0.015344734    6 1.454692  2223
+27  0.009583972    3 1.485684  3273
+28  0.009149465    2 1.467643  4031
+29  0.011000985    2 1.469357  4115
+30  0.011809505    2 1.473439  4024
+31  0.012876903    2 1.473361  4111
+32  0.011812799    2 1.467411  4077
+33  0.016324503    2 1.454754  4133
+34  0.013224489    2 1.474665  4087
+35  0.010211008    2 1.462062  4147
+36  0.008066611    2 1.468727  4060
+37  0.014569828    5 1.456991  2439
+38  0.012150391    2 1.475199  4064
+39  0.010739852    2 1.458910  4126
+40  0.011677281    4 1.465227  2761
+41  0.011280112    2 1.467115  4103
+42  0.013841703    2 1.471584  4138
+43  0.014768134    2 1.464889  4060
+44  0.008909598    2 1.469045  4083
+45  0.007000180    2 1.475938  4125
+46  0.013851675    2 1.477369  4185
+47  0.013251218    2 1.457081  4080
+48  0.009034507    2 1.474693  4090
+49  0.015767258    2 1.475012  4096
+50  0.014100974    2 1.463264  4133
+51  0.009224994    2 1.486792  4144
+52  0.011025656    2 1.479220  4153
+53  0.015773451    2 1.475390  4057
+54  0.011048497    2 1.461422  4135
+55  0.007347380    2 1.472369  4134
+56  0.009419322    2 1.475827  4133
+57  0.009785227    2 1.463425  4106
+58  0.012366360    4 1.470289  2747
+59  0.011782890    2 1.472431  4148
+60  0.011570239    3 1.470390  3176
+61  0.011687359    2 1.463571  4138
+62  0.013198906    2 1.483457  4144
+63  0.009957866    2 1.468606  4131
+64  0.015611976    2 1.471146  4183
+65  0.013751403    2 1.471820  4115
+66  0.010008300    2 1.470490  4182
+67  0.014680173    2 1.452824  4092
+68  0.008556125    2 1.475121  4127
+69  0.013479773    2 1.459182  4141
+70  0.011508302    2 1.472900  4124
+71  0.012532877    2 1.455157  4152
+72  0.010135737    3 1.454611  3297
+73  0.011748321    2 1.475474  4084
+74  0.012584968    2 1.471966  4078
+75  0.010496530    2 1.467679  4112
+76  0.021416869    2 1.471085  4138
+77  0.011423231    2 1.464077  4104
+78  0.013933805    2 1.467515  4150
+79  0.011371985    2 1.464201  4137
+80  0.012650689    2 1.468697  4147
+81  0.008133727    2 1.463230  4088
+82  0.013914241    2 1.480973  4078
+83  0.014091175    2 1.469187  4129
+84  0.013296227    2 1.472081  4127
+85  0.009823131    2 1.470162  4125
+86  0.011218589    2 1.463657  4180
+87  0.014160888    2 1.461522  4146
+88  0.010892802    2 1.462747  4073
+89  0.011500848    2 1.465267  4168
+90  0.010227366    2 1.452353  4098
+91  0.009128723    2 1.467465  4120
+92  0.011169865    2 1.458258  4174
+93  0.013184086    2 1.462423  4132
+94  0.009452148    2 1.467181  4146
+95  0.012502988    2 1.466555  4155
+96  0.012949414    2 1.461674  4100
+97  0.010129471    2 1.475640  4111
+98  0.009808466    2 1.474108  4154
+99  0.017157835    2 1.476276  4162
+100 0.010258583    2 1.460513  4091
+
+$sim_time
+[1] 5.207021
+
+$seed
+NULL
+
+$package_version
+[1] ‘0.70.6’
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "bs_p_xmin"
+> bootstrap_p(m_pl, threads=20)$p
+Parameters will be initially estimated via estimate_xmin
+Expected total run time for 100 sims, using 20 threads is 2.9 seconds.
+[1] 0.7
+> editrangecsv <- read.csv("editrange.csv")
+> timespancsv <- read.csv("timespan.csv")
+> eventcountcsv <- read.csv("eventcount.csv")
+Error in file(file, "rt") : cannot open the connection
+In addition: Warning message:
+In file(file, "rt") :
+  cannot open file 'eventcount.csv': No such file or directory
+> eventcountcsv <- read.csv("event-count.csv")
+> m_editrange = displ$new(editrangecsv$V2)
+Error in floor(x) : non-numeric argument to mathematical function
+> editrangecsv <- read.csv("editrange.csv", header=FALSE)
+> timespancsv <- read.csv("timespan.csv", header=FALSE)
+> eventcountcsv <- read.csv("event-count.csv",header=FALSE)
+> head(editrangecsv, 3)
+  V1      V2
+1  0    2241
+2  1 1115037
+3  2  101071
+> m_editrange = displ$new(editrangecsv$V2)
+> m_timespan = displ$new(timespancsv$V2)
+> m_eventcount = displ$new(eventcountcsv$V2)
+> est_editrange = estimate_xmin(m_editrange)
+xmin search space truncated at 1e+05
+        You have three options
+                     1. Increase xmax in estimate_xmins
+                     2. Specify xmins explicitly
+                     3. Ignore and hope for the best (which may be OK)
+> est_eventcount = estimate_xmin(m_eventcount)
+xmin search space truncated at 1e+05
+        You have three options
+                     1. Increase xmax in estimate_xmins
+                     2. Specify xmins explicitly
+                     3. Ignore and hope for the best (which may be OK)
+> est_timespan = estimate_xmin(m_timespan)
+> est_editrange
+$gof
+[1] 0.01839345
+
+$xmin
+[1] 3
+
+$pars
+[1] 1.484856
+
+$ntail
+[1] 716
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "estimate_xmin"
+> m_editrange$setXmin(1)
+> m_timespan$setXmin(1)
+> m_eventcount$setXmin(1)
+> est_timespan
+$gof
+[1] 0.03323752
+
+$xmin
+[1] 111
+
+$pars
+[1] 2.888653
+
+$ntail
+[1] 359
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "estimate_xmin"
+> est_eventcount
+$gof
+[1] 0.04517276
+
+$xmin
+[1] 3
+
+$pars
+[1] 1.333079
+
+$ntail
+[1] 125
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "estimate_xmin"
+> bootstrap_p(m_editrange, threads=11)
+Parameters will be initially estimated via estimate_xmin
+xmin search space truncated at 1e+05
+        You have three options
+                     1. Increase xmax in estimate_xmins
+                     2. Specify xmins explicitly
+                     3. Ignore and hope for the best (which may be OK)
+Some of your data is larger than xmax. The xmax parameter is
+            the upper bound of the xmin search space. You could try increasing
+            it. If the estimated values are below xmax, it's probably OK not to
+            worry about this.
+Expected total run time for 100 sims, using 11 threads is 5.05 seconds.
+$p
+[1] 0.69
+
+$gof
+[1] 0.01839345
+
+$bootstraps
+            gof xmin     pars ntail
+1   0.019952939    3 1.509869   712
+2   0.025647466    6 1.470067   501
+3   0.013992938    1 1.520978  1633
+4   0.028264088    1 1.541468  1633
+5   0.013842422    3 1.493411   717
+6   0.015913050    3 1.500301   711
+7   0.020888633    1 1.525377  1633
+8   0.019381956    3 1.468198   721
+9   0.026882794    3 1.476976   704
+10  0.022254197    1 1.521052  1633
+11  0.023831516    1 1.515832  1633
+12  0.018892759    3 1.469468   714
+13  0.027268956    1 1.522333  1633
+14  0.023165376    1 1.514271  1633
+15  0.018758969    2 1.494879   923
+16  0.022635139    1 1.533086  1633
+17  0.011628761    1 1.556433  1633
+18  0.018990232    3 1.508052   684
+19  0.017864015    3 1.494305   688
+20  0.009382395    1 1.503770  1633
+21  0.031594336    3 1.470076   687
+22  0.027080868    3 1.500612   691
+23  0.026890278    6 1.426537   506
+24  0.027525574    2 1.491842   955
+25  0.019530918    3 1.479863   693
+26  0.014199387    2 1.474311   963
+27  0.021565731    3 1.473392   703
+28  0.025168119    1 1.530823  1633
+29  0.029393201    1 1.532696  1633
+30  0.018865239    1 1.519332  1633
+31  0.021551010    2 1.514315   944
+32  0.030331050    3 1.474297   693
+33  0.027508681    2 1.502077   935
+34  0.026263144    1 1.517084  1633
+35  0.017177100    5 1.459842   511
+36  0.024566830    3 1.489267   667
+37  0.019567982    1 1.513688  1633
+38  0.013567917    3 1.486657   740
+39  0.008908912    1 1.547605  1633
+40  0.027150906    4 1.464213   596
+41  0.020563837    3 1.515774   695
+42  0.020897942    2 1.510215   951
+43  0.018347581    3 1.480748   728
+44  0.022498081    5 1.461862   537
+45  0.020014607    3 1.486028   732
+46  0.024221443    3 1.453632   709
+47  0.029720116    3 1.470854   661
+48  0.014060608    3 1.500719   691
+49  0.019474483    1 1.537970  1633
+50  0.017734107    3 1.443805   686
+51  0.023158457    3 1.489395   709
+52  0.022729655    3 1.439940   733
+53  0.016647015    1 1.524373  1633
+54  0.020871095    2 1.492178   959
+55  0.016596920    3 1.487108   719
+56  0.023096781   20 1.488412   274
+57  0.018819564    2 1.497096   947
+58  0.024118637    1 1.556109  1633
+59  0.024918761    3 1.484516   693
+60  0.024260012    3 1.499010   698
+61  0.014569996    2 1.485390   957
+62  0.026154368    2 1.485522   956
+63  0.014240552    2 1.504015   924
+64  0.020261466    4 1.495435   596
+65  0.023565799    2 1.509706   947
+66  0.016229974    3 1.477922   729
+67  0.025218768    3 1.465529   700
+68  0.015754608    3 1.451640   767
+69  0.017147335    1 1.503201  1633
+70  0.024901919    3 1.478274   710
+71  0.015864512    1 1.519087  1633
+72  0.026837270    3 1.471910   723
+73  0.025596700    2 1.483606   935
+74  0.012844212    1 1.520861  1633
+75  0.024797549    3 1.475278   709
+76  0.014061141    1 1.520038  1633
+77  0.019874432    7 1.446794   440
+78  0.023334840    4 1.446953   623
+79  0.028652572    3 1.480928   699
+80  0.016231336    3 1.468994   717
+81  0.017678005    4 1.464111   624
+82  0.031196586    3 1.476828   685
+83  0.020837420    3 1.488190   708
+84  0.021463297    2 1.506783   941
+85  0.012507260    4 1.477749   591
+86  0.020204879    3 1.465671   715
+87  0.019385692    3 1.461840   719
+88  0.009137807    1 1.529360  1633
+89  0.022259099    3 1.480557   694
+90  0.027537282    1 1.531776  1633
+91  0.029073057    1 1.514831  1633
+92  0.019109366    4 1.467936   594
+93  0.017394305    5 1.453392   529
+94  0.022701303    3 1.463766   693
+95  0.023951248    2 1.481161   954
+96  0.014728286    1 1.529838  1633
+97  0.028428175    1 1.532827  1633
+98  0.032167347    5 1.461509   522
+99  0.015209400    3 1.489845   720
+100 0.016558242    1 1.519141  1633
+
+$sim_time
+[1] 1.644043
+
+$seed
+NULL
+
+$package_version
+[1] ‘0.70.6’
+
+$distance
+[1] "ks"
+
+attr(,"class")
+[1] "bs_p_xmin"
+> bootstrap_p(m_editrange, threads=11)$p
+Parameters will be initially estimated via estimate_xmin
+xmin search space truncated at 1e+05
+        You have three options
+                     1. Increase xmax in estimate_xmins
+                     2. Specify xmins explicitly
+                     3. Ignore and hope for the best (which may be OK)
+Some of your data is larger than xmax. The xmax parameter is
+            the upper bound of the xmin search space. You could try increasing
+            it. If the estimated values are below xmax, it's probably OK not to
+            worry about this.
+Expected total run time for 100 sims, using 11 threads is 4.93 seconds.
+[1] 0.73
+> bootstrap_p(m_timespan, threads=11)$p
+Parameters will be initially estimated via estimate_xmin
+Expected total run time for 100 sims, using 11 threads is 4.53 seconds.
+[1] 0.23
+> bootstrap_p(m_eventcount, threads=11)$p
+Parameters will be initially estimated via estimate_xmin
+xmin search space truncated at 1e+05
+        You have three options
+                     1. Increase xmax in estimate_xmins
+                     2. Specify xmins explicitly
+                     3. Ignore and hope for the best (which may be OK)
+Some of your data is larger than xmax. The xmax parameter is
+            the upper bound of the xmin search space. You could try increasing
+            it. If the estimated values are below xmax, it's probably OK not to
+            worry about this.
+Expected total run time for 100 sims, using 11 threads is 2.99 seconds.
+[1] 0.86
+> 
