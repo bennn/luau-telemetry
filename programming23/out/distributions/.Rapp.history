@@ -1,0 +1,27 @@
+install.packages("poweRlaw")
+library("poweRlaw")
+help(data)
+ls
+pwd
+getwd()
+setwd("code/uu/papers/luau-telemetry/programming23/out/distributions")
+getwd()
+data("lines")
+data("lines.csv")
+data("lines.csv", lib.loc=".")
+linescsv <- read.csv("lines.csv", header=FALSE)
+head(linescsv, 3)
+lines_sp = displ$new(linescsv$V2)
+m_lines = lines_sp
+est_lines = estimate_xmin(m_lines)
+m_lines$setXmin(est_lines)
+m_sp
+m_lines
+est_lines
+m_pl = displ$new(moby)
+data("moby", package="powerlaw")
+data("moby", package="poweRlaw")
+m_pl = displ$new(moby)
+est_pl = estimate_xmin(m_pl)
+est_pl
+bootstrap(m_pl, no_of_sims=5000, threads=4)
