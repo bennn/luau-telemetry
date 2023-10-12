@@ -800,16 +800,6 @@ Three important characteristics of the recorded data are the size of the codebas
 the length of the sessions, and the number of type
 errors.
 We discuss these in turn.
-% Commenting these out because that's literally the rest of the
-% subsection. Say anything you want from here over there!
-% Codebase size and session length have long-tailed
-% distributions\todo{DID YOU DO A STATISTICAL TEST.}
-% with many small items and few very large ones.
-% %% TODO check %% follow power-law distributions~\cite{csn-siamr-2009} 
-% %% https://aaronclauset.github.io/powerlaws/
-% %% bin version, is this relevant? sounds like no from abtract https://arxiv.org/pdf/1208.3524.pdf
-% The number of type analysis errors is somewhat low~(explained in the next
-% section), but sufficient to proceed with futher analysis.
 
 
 \paragraph{Codebase Size}
@@ -859,11 +849,16 @@ a long tail to the right) and the y-axis counts up to 1,000 telemetry records
 
 There is a huge amount of variation across projects.
 The largest ones have over 50,000 lines of code
-while the smallest have merely 1 line of code.
+while the smallest have zero lines of code.
+%% TODO filter the zero lines? what happens in that data?? run a query
 Unsurprisingly, these wide-ranging numbers come with large standard
 deviations.
 The median values are more reasonable, with roughly 3,000 lines of code
 and 1,000 lines in edit ranges.
+
+%% power law test~\cite{csn-siamr-2009,g-jss-2015}
+%%  lines     xmin = 2 alpha = 1.46 p = 0.1 (low!)
+%%  editrange xmin = 1 alpha = 1.48 p = 0.73
 
 
 \paragraph{Session Size}
@@ -888,12 +883,13 @@ on the lower-left fragment of the data, which again has a very long tail.
 %% comment on long-tail record counts?
 The longest sessions last several days and/or contain thousands of records,
 while the shortest last a few milliseconds or include just one record.
-% Likewise, both plots in the figure follow a power-law distribution
-% (especially for record count).
+%% 0 ms = 1 event
 A median session runs on the order of minutes and consists of a few dozen events.
-%% The median time is 14 minutes and the median 
-%% The median number of records is 138.
-% These numbers are reasonable.
+
+%% power law test~\cite{csn-siamr-2009,g-jss-2015}
+%%  timespan    xmin = 1 alpha = 2.88 p = 0.23
+%%  event-count xmin = 1 alpha = 1.33 p = 0.86
+
 
 
 \paragraph{Number of Type Analysis Errors}

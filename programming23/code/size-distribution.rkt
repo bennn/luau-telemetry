@@ -1,5 +1,8 @@
 #lang racket/base
 
+(provide
+  distro-cleanup)
+
 (require
   "base.rkt"
   plot/no-gui
@@ -45,12 +48,17 @@
   (define out-file (build-path img-dir (format "~a-distribution.~a" key out-kind)))
   (define -x* (box '()))
   (define -y* (box '()))
+  (define dummy-min 99)
+  (define *xmin (box dummy-min))
   (define (cons! z z*) (set-box! z* (cons #;insert z (unbox z*))))
   (define my-bars
     (rectangles
       #:alpha 0.4
       (for*/list (((-kk vv) (in-hash h#))
-                   (kk (in-value (or -kk -1)))
+                   (kk (in-value
+                         (begin
+                           (set-box! *xmin (min (or -kk dummy-min) (unbox *xmin)))
+                           (or -kk -1))))
                    #:when (begin
                             #;(cons! kk -x*)
                             #;(cons! vv -y*)
@@ -78,7 +86,7 @@
         out-kind
         #:width ww
         #:height hh
-        #:x-min 1
+        #:x-min (unbox *xmin)
         #:x-max x-max
         #:y-min 0
         #:y-max y-max
@@ -99,17 +107,19 @@
   ;; (timespan event-count editrange lines files)
   (for (((kk -vv) (in-hash h#))
         #:when (or (not keys) (memq kk keys)))
-    (define vv
-      (cond
-        [(eq? kk 'editrange)
-         (value-cleaning (lambda (n) (< n 4000000000)) -vv)]
-        [(eq? kk 'timespan)
-         (key-normalize (lambda (k) (quotient k 1000)) -vv)]
-        [else
-          -vv]))
+    (define vv (distro-cleanup kk -vv))
     (define summary (hash-ref s# kk))
     (f:plot-simple-distro vv summary kk out-kind #:x-max x-max #:y-max y-max))
   (void))
+
+(define (distro-cleanup kk -vv)
+  (cond
+    [(eq? kk 'editrange)
+     (value-cleaning (lambda (n) (< n 4000000000)) -vv)]
+    [(eq? kk 'timespan)
+     (key-normalize (lambda (k) (quotient k 1000)) -vv)]
+    [else
+      -vv]))
 
 (define (value-cleaning f h#)
   (for/hash (((k v) (in-hash h#))
