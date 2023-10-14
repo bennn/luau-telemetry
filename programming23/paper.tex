@@ -1949,6 +1949,18 @@ While we could fuzz the total number of type errors, if we were to
 fuzz the number of \code{CodeTooComplex} errors, it might drastically
 affect our inferences.
 
+Prio and Poplar demonstrate a telemetry method to compute public aggregates
+over private data using a middle layer of
+servers~\cite{cb-nsdi-2017,bbcgi-sp-2021}.
+Clients can depend on strong privacy guarantees even if other clients and some
+servers (but not all) are malicious.
+The design has been deployed in Mozilla Firefox to monitor blocklist
+usage~\cite{mozilla-prio}.
+Luau telemetry might benefit from a redesign to use middle-layer servers,
+though it is unclear what data from type analysis would support meaningful
+aggregates.
+%% In particular, the data would still need to be relatively small to trasmit.
+
 Cooperative bug isolation is a method for designing
 telemetry systems~\cite{liblit-thesis}.
 The focus is not on privacy, but rather on how to collect a small amount of
