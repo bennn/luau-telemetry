@@ -108,6 +108,7 @@ Kahlert School of Computing at the University of Utah.}
 
 %\authorrunning{DRAFT do not distribute}
 
+\newcommand{\etal}{et~al.}
 \newcommand{\uid}{\textsc{id}}
 \newcommand{\IDE}{\textsc{ide}}
 \newcommand{\code}[1]{\texttt{#1}}
@@ -182,7 +183,7 @@ Kahlert School of Computing at the University of Utah.}
   The creators form a broad group, ranging from novices writing
   their first script to professional developers; thus, Luau
   must support a wide audience.
-  As part of its efforts to support all kinds programmers, Luau includes an
+  As part of its efforts to support all kinds of programmers, Luau includes an
   optional, gradual type system and goes to great lengths to minimize false
   positive errors.
 
@@ -694,14 +695,14 @@ update appropriately on every edit. This can result in very large and
 imprecise edit ranges, for example, if the user edits at the beginning and end
 of the file.
 The upshot of this strategy is that it reduces the size and complexity of
-telemetry records because there is only one inerval for errors to overlap with.
+telemetry records because there is only one interval for errors to overlap with.
 
 This telemetry design is admittedly coarse-grained.
-For instance, it does not distinguish between edits that ignore a type
+For instance, it does not distinguish edits that ignore a type
 error from edits that remove one error while introducing another.
 We acknowledge this and other threats in~\cref{s:threats}.
 The main advantages of this telemetry are the small size of each record
-and complete the lack of private information.
+and the complete lack of private information.
 Furthermore, despite the limitations, this telemetry supports a variety of
 inferences that we showcase in the next section.
 
@@ -806,7 +807,7 @@ We discuss these in turn.
 %\label{s:codebase-size}
 
 \begin{table}[t]\centering
-  \caption{Size of analyzed code: number of files, number of lines, and lines in edit range}
+  \caption{Size of analyzed code: number of lines and lines in edit range}
   \label{t:codebase-size}
   % ;; (list* (max* vv) (median < vv) mm (stddev/mean mm vv) (percentile* vv)))
   % ;; percentile* = 0.95 -- 0.99
@@ -952,7 +953,7 @@ The low fraction of errors in the edit range sends a mixed message:
     analysis might report several errors and the edits only target one or two of them;
     creators might ignore errors entirely and edit other code; or
     creators might choose to edit a non-highlighted location to fix an error.
-    While non-privacy-protecting analysis have answered such
+    While non-privacy-protecting analyses have answered such
     questions~\cite{mfk-sigcse-2011}, our data cannot narrow down the answer.
 
 \end{itemize}
@@ -2020,14 +2021,14 @@ cannot use.
 
 Much work~\cite{heeren-thesis,empirical-types} on the benefits of static types focuses on
 small case studies~\cite{hw-scp-2004,td-tosem-2001,w-popl-1986},
-inverviews~\cite{cdhhjklwya-hatra-2020,cams-oopsla-2020,gstf-hatra-2021},
+interviews~\cite{cdhhjklwya-hatra-2020,cams-oopsla-2020,gstf-hatra-2021},
 or static
-corpuses~\cite{bhmvv-toplas-2019,rppd-fse-2014}
+corpuses~\cite{bhmvv-toplas-2019,rppd-fse-2014}.
 Controlled experiments are rare;
-Kleinschmager, et~al.\cite{khrts-icpc-2012} is a notable exception.
-Lerner et~al.~\cite{lfgc-pldi-2007} apply a type error repair tool on
+Kleinschmager \etal{}~\cite{khrts-icpc-2012} is a notable exception.
+Lerner \etal{}~\cite{lfgc-pldi-2007} apply a type error repair tool on
 over two thousand programs.
-Seidel et~al.~\cite{sjw-jfp-2018,sscwj-oopsla-2017} use five thousand programs
+Seidel \etal{}~\cite{sjw-jfp-2018,sscwj-oopsla-2017} use five thousand programs
 to train data-driven methods for localizing errors.
 These are all on a vastly smaller scale than our study and also study
 different issues.
@@ -2051,7 +2052,6 @@ different issues.
 % https://link.springer.com/content/pdf/10.1023/a:1008040416962.pdf
 
 % \cite{}
-% heeren
 % constraint-based type inference;
 % general te criteria:
 % - target audience (novice / expert)
@@ -2118,7 +2118,7 @@ in Roblox Studio supports a variety of useful analyses:
     Timestamps give useful, low-level insights about the frequency of keystrokes,
     the length of sessions, and actions over time.
     The event ordering that timestamps provide was invaluable; e.g., for learning
-    that error deltas bounce up and down rather than rising shaply, then falling~(\cref{f:error-density}).
+    that error deltas bounce up and down rather than rising sharply, then falling~(\cref{f:error-density}).
 \end{itemize}
 
 One aspect of the telemetry that we would change for next time is to provide
