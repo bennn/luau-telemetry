@@ -1662,76 +1662,76 @@ common idioms in untyped code.
 Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
 \begin{description}
-  \item[How many sessions use type analysis?]
-    A mere \pct{10} of sessions (and of telemetry records overall) opt-in to
-    type checking~(\cref{f:dataset-overview}).
-    Most of these use \mnonstrict{} mode, and fewer than \pct{1}
-    use \mstrict{} mode.
+  \item[RQ1.]\leavevmode
+    \begin{description}
+      \item[- How many sessions use type analysis?]
+        A mere \pct{10} of sessions (and of telemetry records overall) opt-in to
+        type checking~(\cref{f:dataset-overview}).
+        Most of these use \mnonstrict{} mode, and fewer than \pct{1}
+        use \mstrict{} mode.
 
-  \item[How often do projects contain modules with different analysis modes?]
-    Sessions rarely combine analysis modes.
-    Only 512 of \nK{340} sessions ($<\pct{0.15}$) switched to modules with different
-    analysis modes.
-    This number may be a significant underapproximation because we have data
-    only on modules that the creator chose to open, but the widespread use
-    of \mnocheck{} mode suggests that it is not off by much.
+      \item[- How often do projects contain modules with different modes?]
+        Sessions rarely combine analysis modes.
+        Only 512 of \nK{340} sessions ($<\pct{0.15}$) switched to modules with different
+        analysis modes.
+        This number may be a significant underapproximation because we have data
+        only on modules that the creator chose to open, but the widespread use
+        of \mnocheck{} mode suggests that it is not off by much.
 
-  \item[How often do sessions turn analysis off?]
-    Sessions rarely disable type analysis after opting in.
-    Only 233 of the \nK{340} sessions ($<\pct{0.07}$)
-    switch to a weaker mode.
-    One-fourth of the downgrades switch from \mstrict{}
-    to \mnonstrict{}, and therefore keep some type analysis.
-    The remainder switch from \mstrict{} to \mnocheck{} (\pct{50})
-    or from \mnonstrict{} to \mnocheck{} (\pct{25}).
-    %% FILL more insight if we match ups and downs together??
+      \item[- How often do sessions turn analysis off?]
+        Sessions rarely disable type analysis after opting in.
+        Only 233 of the \nK{340} sessions ($<\pct{0.07}$)
+        switch to a weaker mode.
+        One-fourth of the downgrades switch from \mstrict{}
+        to \mnonstrict{}, and therefore keep some type analysis.
+        The remainder switch from \mstrict{} to \mnocheck{} (\pct{50})
+        or from \mnonstrict{} to \mnocheck{} (\pct{25}).
+        %% FILL more insight if we match ups and downs together??
 
-    %% upgrade
-    %% 519 total sessions
-    %% 176 with up
-    %% 263 total up
-    %% #hash((nocheck . 0) (nonstrict . 44) (strict . 132))
-    %%  nocheck : 0.00\%
-    %%  strict : 75.00\%
-    %%  nonstrict : 25.00\%
-    %%%% #hash(((strict nocheck) . 88)
-    %%%%       (nonstrict . 0)
-    %%%%       (strict . 0)
-    %%%%       ((nonstrict nocheck) . 44)
-    %%%%       (nocheck . 0)
-    %%%%       ((strict nonstrict) . 44))
-    %%%%  (strict nonstrict) : 25.00\%
-    %%%%  nocheck : 0.00\%
-    %%%%  (nonstrict nocheck) : 25.00\%
-    %%%%  strict : 0.00\%
-    %%%%  nonstrict : 0.00\%
-    %%%%  (strict nocheck) : 50.00\%
-    %%
-    %% downgrade
-    %% 515 total sessions
-    %% 233 with down
-    %% 320 total down
-    %% #hash((nocheck . 0) (nonstrict . 64) (strict . 169))
-    %%  nocheck : 0.00\%
-    %%  strict : 72.53\%
-    %%  nonstrict : 27.47\%
-    %%%% #hash(((strict nocheck) . 116)
-    %%%%       (nonstrict . 0)
-    %%%%       (strict . 0)
-    %%%%       ((nonstrict nocheck) . 64)
-    %%%%       (nocheck . 0)
-    %%%%       ((strict nonstrict) . 53))
-    %%%%  (strict nonstrict) : 22.75\%
-    %%%%  nocheck : 0.00\%
-    %%%%  (nonstrict nocheck) : 27.47\%
-    %%%%  strict : 0.00\%
-    %%%%  nonstrict : 0.00\%
-    %%%%  (strict nocheck) : 49.79\%
+        %% upgrade
+        %% 519 total sessions
+        %% 176 with up
+        %% 263 total up
+        %% #hash((nocheck . 0) (nonstrict . 44) (strict . 132))
+        %%  nocheck : 0.00\%
+        %%  strict : 75.00\%
+        %%  nonstrict : 25.00\%
+        %%%% #hash(((strict nocheck) . 88)
+        %%%%       (nonstrict . 0)
+        %%%%       (strict . 0)
+        %%%%       ((nonstrict nocheck) . 44)
+        %%%%       (nocheck . 0)
+        %%%%       ((strict nonstrict) . 44))
+        %%%%  (strict nonstrict) : 25.00\%
+        %%%%  nocheck : 0.00\%
+        %%%%  (nonstrict nocheck) : 25.00\%
+        %%%%  strict : 0.00\%
+        %%%%  nonstrict : 0.00\%
+        %%%%  (strict nocheck) : 50.00\%
+        %%
+        %% downgrade
+        %% 515 total sessions
+        %% 233 with down
+        %% 320 total down
+        %% #hash((nocheck . 0) (nonstrict . 64) (strict . 169))
+        %%  nocheck : 0.00\%
+        %%  strict : 72.53\%
+        %%  nonstrict : 27.47\%
+        %%%% #hash(((strict nocheck) . 116)
+        %%%%       (nonstrict . 0)
+        %%%%       (strict . 0)
+        %%%%       ((nonstrict nocheck) . 64)
+        %%%%       (nocheck . 0)
+        %%%%       ((strict nonstrict) . 53))
+        %%%%  (strict nonstrict) : 22.75\%
+        %%%%  nocheck : 0.00\%
+        %%%%  (nonstrict nocheck) : 27.47\%
+        %%%%  strict : 0.00\%
+        %%%%  nonstrict : 0.00\%
+        %%%%  (strict nocheck) : 49.79\%
+  \end{description}
 
-
-
-
-  \item[For modules that use type analysis (\mstrict{} and \mnonstrict{}):]\leavevmode
+  \item[RQ2. For modules that use type analysis (\mstrict{} and \mnonstrict{}):]\leavevmode
     \begin{description}
       \item[- Which errors arise?]
         Syntax errors are extremely common~(over \pct{50},~\cref{t:type-error-count}), 
@@ -1780,7 +1780,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
     \end{description}
 
-  \item[What impact does type analysis have on the number of \FS{} errors?]
+  \item[RQ3. What impact does type analysis have on the number of \FS{} errors?]
     Opting in to type analysis has little impact on \FS{} errors.
     The percent of \FS{} errors in \mnocheck{} code matches the percent of
     sessions using \mnocheck{} mode~(\cref{f:error-by-mode}); whereas,
