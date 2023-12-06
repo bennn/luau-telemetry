@@ -722,8 +722,8 @@ Roughly two thirds are due to keystrokes.
 \Cref{f:records-per-hour} provides a time-ordered distribution of the data.
 The x-axis is labeled with a California time zone; the thin vertical lines
 mark the start of a new day.
-Each day has 24 records, one per hour, represented by a blue bar
-indicating the number of records generated in that hour.
+For each of the 24 hours in each day, there is one blue bar
+indicating the number of records generated during that hour.
 Each hour has a few dozen to over 3,000 records, typically about
 1,000.\footnote{We conjecture the very low bars are due to outage on
   the logging server, but need to investigate further.}
@@ -2070,10 +2070,11 @@ different issues.
 \label{s:conclusion}
 
 This paper presents the first large-scale analysis of developers' interactions with
-an industrial strength typechecker. It is nevertheless intentionally
-limited by the nature and frequency of sampling. Despite these restrictions,
+an industrial strength typechecker in a privacy-respecting way.
+Despite the intentionally-restricted data,
 the analysis offers several lessons for the Luau
 developers and other maintainers of gradually-typed languages:
+%% TODO more lessons?
 \begin{itemize}
   \item
     Nearly all sessions (\pct{90}) use the default ``no check''
