@@ -509,20 +509,20 @@ a brief description.
 
 Luau modules provide reusable libraries, which may be
 {imported} by other scripts.
-Imports therefore form a graph in general,
-though it is an error in \mstrict{} mode to create an import cycle
-and edges are removed to make the graph acyclic.
-%% \QALAN{}: do all modes remove the edges?
+Imports therefore form a graph in general, though the analysis
+removes edges to ensure an acyclic graph.
+In \mstrict{} mode, it is an error to create an import cycle.
 
 Typechecking analyzes the entire module graph, but it also keeps track of which
 modules have been edited to avoid repeating work.
 Any script that the creator modifies gets marked as dirty,
 and any script that is dirty or that transitively imports a dirty
 module gets analyzed by the typechecker.
-In the common case when typechecking is performed for autocomplete,
-only the current script gets checked because it is the only dirty
-script, and because nothing it requires can transitively require it, since
-the module graph is acyclic.
+When typechecking is performed for autocomplete, the common
+case is that only the current script gets checked because it
+is the only dirty script.
+(Since the module graph is acyclic, nothing that the current
+script requires can transitively require it.)
 With this strategy, the typechecker can run after every keystroke without
 slowing down Roblox Studio.
 
