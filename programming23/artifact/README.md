@@ -8,8 +8,17 @@ fs = forced strict = background
 * main.pdf = final output
 * main.tex = TODO
 * out/ = ready for "paper"
+  - sessions.txt = 347598 sessions
+  - overview.txt = 
+  - size-distributions.rktd
+  - summary-of-size-distributions.rktd
+  - ss-*.rktd
+* code/
+  - row-distribution.rkt
+  - sdupdate.rkt
+  - size-distribution.rkt
 * data.tar.gz = on zenodo
-* render.rkt = ... recreate img/
+* render.rkt = ... recreate out/
   - 
 * prepare.rkt = data to ... render inputs
   - unless out/full-dataset.csv exists, needs data/ files
@@ -27,24 +36,22 @@ fs = forced strict = background
 [ ] ben-preprocessed data (cleaned?)
 [ ] pdf for images, tables
 [ ] ugly format tables
-[ ] code
-  - code/error-count
 [ ] script with commands for everything which is ....
   - out/error-density-ss-nocheck.rktd
   - out/error-density-ss-nonstrict.rktd
   - out/error-density-ss-strict.rktd
   - 
 
-  - img/row-distribution.pdf
-  - img/lines-distribution.pdf
-  - img/editrange-distribution.pdf
-  - img/timespan-distribution.pdf
-  - img/event-count-distribution.pdf
-  - img/error-by-mode-te.pdf
-  - img/error-by-mode-fs.pdf
-  - img/error-count-nocheck-row--te-density-diff.pdf
-  - img/error-count-nonstrict-row--te-density-diff.pdf
-  - img/error-count-strict-row--te-density-diff.pdf
+  - out/row-distribution.pdf
+  - out/lines-distribution.pdf
+  - out/editrange-distribution.pdf
+  - out/timespan-distribution.pdf
+  - out/event-count-distribution.pdf
+  - out/error-by-mode-te.pdf
+  - out/error-by-mode-fs.pdf
+  - out/error-count-nocheck-row--te-density-diff.pdf
+  - out/error-count-nonstrict-row--te-density-diff.pdf
+  - out/error-count-strict-row--te-density-diff.pdf
 [ ] docker
 
 

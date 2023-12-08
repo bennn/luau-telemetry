@@ -2033,7 +2033,13 @@
         (t:count-te-region dd))
       (with-outfile "out/sessions.txt" (t:session-overview dd tt))
       (with-outfile "out/ctc-info.txt" (ctc-info dd))
-      #;(f:plot-clienttime-distro dd)
+      (define sg# (group-sessions dd tt))
+      (for (((kk vv) (in-hash sg#)))
+        (with-outfile (format "out/ss-~a.rktd" kk)
+          (displayln "(")
+          (for-each writeln vv)
+          (displayln ")")))
+      (f:plot-clienttime-distro dd)
       (void))
      ((modswitch) ;; KEEP
       (define modswitch-csv "out/modswitch.csv")
@@ -2147,9 +2153,6 @@
         #;"huge-ctime")
       ;; TODO old + curr TS FS in module ... just do all
       (for ((fn (in-list '( "out/ss-strict.rktd"
-                            #;"out/ss-multimod.rktd"
-                            #;"out/ss-hasup.rktd"
-                            #;"out/ss-hasdown.rktd"
                             "out/ss-nonstrict.rktd"
                             "out/ss-nocheck.rktd"))))
         (parameterize ((pretty-print-columns 200))
