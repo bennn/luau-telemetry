@@ -52,6 +52,8 @@ fs = forced strict = background
   - out/error-count-nocheck-row--te-density-diff.pdf
   - out/error-count-nonstrict-row--te-density-diff.pdf
   - out/error-count-strict-row--te-density-diff.pdf
+  - out/type-error-survival-ss-*.rktd
+  - out/te-editrange-ss-*.rktd
 [ ] docker
 
 

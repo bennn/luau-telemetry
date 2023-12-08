@@ -15,9 +15,14 @@
 %% ---
 \subsection*{Figure 3: Records per Hour}
 
+Plot from \texttt{code/row-distribution.rkt}, which uses the dataset
+\texttt{out/row-distribution.rktd}, which comes from running
+\texttt{prepare.rkt --mode main}.
+
 \includegraphics[width=\columnwidth]{out/row-distribution.pdf}
 
-Lines 1-2 of \texttt{out/overview.txt} give the reason for sending:
+Lines 1-2 of \texttt{out/overview.txt} (output of \texttt{prepare.rkt --mode main})
+give the reason for sending:
 
 \begin{verbatim}
  1504736 total logs = 1341348 nocheck + 156883 nonstrict + 6505 strict
@@ -28,7 +33,9 @@ Lines 1-2 of \texttt{out/overview.txt} give the reason for sending:
 %% ---
 \subsection*{Table 2: Size of Analyzed Code}
 
-From \texttt{out/summary-of-size-distributions.rktd}:
+From \texttt{out/summary-of-size-distributions.rktd},\\
+which is the output of \texttt{code/sdupdate.rkt}\\
+on \texttt{out/size-distributions.rktd}:
 
 {\footnotesize
 \verbatiminput{out/summary-of-size-distributions.rktd}
@@ -49,10 +56,10 @@ From \texttt{out/summary-of-size-distributions.rktd}:
 See previous section for mean, stddev, median, and P99.
 
 \begin{minipage}{0.5\columnwidth}
-  \textbf{Timespan:}
+  \textbf{Timespan:}\\
   \includegraphics[width=0.4\columnwidth]{out/timespan-distribution.pdf}
 \end{minipage}\begin{minipage}{0.5\columnwidth}
-  \textbf{Event Count / Record Count:}
+  \textbf{Event Count / Record Count:}\\
   \includegraphics[width=0.4\columnwidth]{out/event-count-distribution.pdf}
 \end{minipage}
 
@@ -93,15 +100,26 @@ module switches:
   320 mode downgrades
 \end{verbatim}
 
-Correct up/down-grade numbers are in \texttt{out/downgrade-count.txt}:
+Correct up/down-grade numbers are in \texttt{out/downgrade-count.txt},
+which is the output of \texttt{code/downgrade-count.rkt} after running
+the following commands to generate data:
 
-\includeverbatim{out/downgrade-count.txt}
+\begin{verbatim}
+PLTSTDERR="error info@luau" racket prepare.rkt --mode divide-sessions
+PLTSTDERR="error info@luau" racket prepare.rkt --mode session-query
+PLTSTDERR="error info@luau" racket prepare.rkt --mode aggregate-te
+\end{verbatim}
 
-TODO ^^^
+% \includeverbatim{out/downgrade-count.txt}
+
+% TODO
 
 
 %% ---
 \subsection*{Figure 5: Type and Background Errors Grouped by Mode}
+
+These plots come from \texttt{code/error-by-mode.rkt}, which uses
+hard-coded data from \texttt{out/overview.txt}:
 
 { \newcommand{\labelbars}[1]{\begin{tabular}[t]{l@{}l} \raisebox{2ex}{\begin{tabular}[t]{r}\mnocheck{}\\\mnonstrict{}\\\mstrict{}\end{tabular}} & #1 \end{tabular}}
   \begin{tabular}[t]{cc}
@@ -115,13 +133,25 @@ TODO ^^^
 %% ---
 \subsection*{Table 5: Specific Errors in Edit Range}
 
+Output from \texttt{code/type-error-survival.rkt}
+run on \texttt{code/type-error-survival-ss-*.rktd}:
+
 TODO
 
 
 %% ---
 \subsection*{Table 6: Type Error Popularity}
 
+Output from \texttt{code/type-error-count.rkt}
+run on \texttt{code/te-editrange-ss-*.rktd}:
+
 TODO
+
+
+\subsubsection*{Internal Limits, Code Too Complex}
+
+Data from \texttt{out/ctc-info.txt}, which comes from
+\texttt{prepare.rkt --mode main}:
 
 {\footnotesize
 \verbatiminput{out/ctc-info.txt}
@@ -131,9 +161,47 @@ TODO
 %% ---
 \subsection*{Figure 6: Type Error Density}
 
-\includegraphics[width=\columnwidth]{out/error-count-nocheck-row--te-density-diff.pdf}
-\includegraphics[width=\columnwidth]{out/error-count-nonstrict-row--te-density-diff.pdf}
-\includegraphics[width=\columnwidth]{out/error-count-strict-row--te-density-diff.pdf}
+Plot output from \texttt{code/error-count.rkt}
+on \texttt{out/error-density-ss-*.rktd}.
+(It also prints text output.):
+
+\includegraphics[width=0.8\columnwidth]{out/error-count-nocheck-row--te-density-diff.pdf}
+\includegraphics[width=0.8\columnwidth]{out/error-count-nonstrict-row--te-density-diff.pdf}
+\includegraphics[width=0.8\columnwidth]{out/error-count-strict-row--te-density-diff.pdf}
+
+
+\subsection*{Figure 7: Type Error Density}
+
+Shuffled text output from \texttt{code/error-count.rkt}
+on \texttt{out/error-density-ss-*.rktd}:
+
+\begin{verbatim}
+TE
+  nocheck & 48378 & (\pct{46.83}) & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
+FS
+  nocheck & 270763 & (\pct{36.99}) & 238696 & [\pct{32.61}] & 222588 & [\pct{30.41}] \\
+TE mod
+  nocheck & 20085 & (\pct{49.83}) & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
+FS mod
+  nocheck & 259865 & (\pct{39.09}) & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
+TE
+  nonstrict & 19491 & (\pct{39.63}) & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
+FS
+  nonstrict & 35330 & (\pct{37.28}) & 29483 & [\pct{31.11}] & 29955 & [\pct{31.61}] \\
+TE mod
+  nonstrict & 13030 & (\pct{40.22}) & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
+FS mod
+  nonstrict & 33988 & (\pct{39.74}) & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
+TE
+  strict & 733 & (\pct{39.18}) & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
+FS
+  strict & 574 & (\pct{33.71}) & 561 & [\pct{32.94}] & 568 & [\pct{33.35}] \\
+TE mod
+  strict & 419 & (\pct{39.31}) & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
+FS mod
+  strict & 488 & (\pct{36.53}) & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
+\end{verbatim}
+
 
 
 \end{document}
