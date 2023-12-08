@@ -10,7 +10,7 @@
 
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
 
-\documentclass[english,submission,cleveref]{programming}
+\documentclass[english,cleveref]{programming}
 %% use 'submission' for initial submission, remove it for camera-ready (see 5.1)
 
 \usepackage{todonotes}
@@ -367,7 +367,7 @@ limited to a small number of users.
   \item
     An available dataset of over 1.5 million telemetry records
     and scripts to analyze them.
-    \emph{We intend to submit these in an artifact.}
+    \emph{TODO We intend to submit these in an artifact.}
 
 \end{itemize}
 
@@ -497,8 +497,8 @@ a brief description.
     \code{CodeTooComplex} & Type analysis failed, cannot understand the code. \\
     %% \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit \\
     \code{GenericError}
-    & Generic label for other non-type errors, such as\\
-    & \hbox{}~~looping over an unordered table.
+    & Generic label for other non-type errors,\\
+    & \hbox{}~~such as looping over an unordered table.
     %% attempting to extend a type that does not describe a class
     %% attempting to iterate over a table without a clear order
 
@@ -725,8 +725,10 @@ mark the start of a new day.
 For each of the 24 hours in each day, there is one blue bar
 indicating the number of records generated during that hour.
 Each hour has a few dozen to over 3,000 records, typically about
-1,000.\footnote{We conjecture the very low bars are due to outage on
+1,000.
+{We conjecture the very low bars are due to outage on
   the logging server, but need to investigate further.}
+The tall bars are FILL TODO.
 %% \FILL{} investigate one tower, what's happening?? all one session?
 Telemetry ended in early April; the long tail is due to developers
 updating Roblox Studio later.
@@ -827,7 +829,7 @@ We discuss these in turn.
 %  7,678 &              &
 % 51,761 &              &
   \begin{tabular}[t]{lrrrrl}
-    ~          & Mean  & Stddev & Median & \ptile{99} & Distribution \\
+    ~          & Mean  & Stddev & Median & \ptile{99} & Distribution \\\midrule
     Lines      & 6,497 & \stddev{22} & 3,115 & 50,547 & \includegraphics[width=0.14\columnwidth,valign=M]{img/lines-distribution.pdf} \\
     Edit Range & 3,680 & \stddev{31} & 926   & 34,725 & \includegraphics[width=0.14\columnwidth,valign=M]{img/editrange-distribution.pdf}
     %% TODO x-axis starts at 1, not zero ... do we have zeros?! may need to explain
@@ -870,7 +872,7 @@ and 1,000 lines in edit ranges.
   \label{t:session-size}
   %% NOTE max time = 1 million seconds = 15 days ...  +100 are over 2 days
   \begin{tabular}{lrrrrl}
-    ~               & Mean & Stddev & Median & \ptile{99} & Distribution \\
+    ~               & Mean & Stddev & Median & \ptile{99} & Distribution \\\midrule
     Time Span (sec) & 3,184 & \stddev{16} & 845 & 35,450 & \includegraphics[width=0.14\columnwidth,valign=M]{img/timespan-distribution.pdf} \\
     Record Count    & 286 & 583         & 138 & 3,302  & \includegraphics[width=0.14\columnwidth,valign=M]{img/event-count-distribution.pdf}
   \end{tabular}
@@ -967,7 +969,8 @@ The low fraction of errors in the edit range sends a mixed message:
       \begin{tabular}[t]{r@{~~}l@{~}r}
          1,341,348 & \mnocheck{}          & [\pct{89.14}] \\
            156,883 & \mnonstrict{}        & [\pct{10.43}] \\
-             6,505 & \mstrict{}           & [\pct{ 0.43}]
+             6,505 & \mstrict{}           & [\pct{ 0.43}] \\
+             {}
       \end{tabular}
     \caption{Analysis modes in 1,504,736 records.}
     \label{f:total-records}
@@ -1214,12 +1217,12 @@ telemetry system.
     The numbers in the table are low overall.
     For instance, the highest \mstrict{} count is 38
     records out of the 6,505 total~(\cref{f:dataset-overview}).
-    \Cref{s:count-analysis-errors} discussions the implications
+    \Cref{s:count-analysis-errors} discusses the implications
     of this low overlap rate for future work.
 
   \item
     \code{SyntaxError} and the related \code{UnknownSymbol} and
-    \code{UnknownProperty} are most popular.
+    \code{UnknownProperty} are the most common.
     If the edit range errors are indicative of type errors at large,
     then most errors in the data are likely due to typos.
     These errors also survive (\keepsym{}) the most often.
@@ -1300,7 +1303,7 @@ telemetry system.
   %% {(all of the type errors in \mnocheck{} mode are \code{SyntaxError}s).}
   \label{t:type-error-count}
   \begin{tabular}{l@{~~}l}
-    \mnonstrict{} & \mstrict{} \\
+    \mnonstrict{} & \mstrict{} \\\midrule
     \begin{tabular}[t]{l@{~}r}
       \code{UnknownSymbol} & \pct{62.13} \\
       \code{SyntaxError} & \pct{15.42} \\
@@ -1505,6 +1508,7 @@ Density is the number of type errors divided by the number of lines.
 The x axis counts time in seconds from the start of the session.
 Most sessions last a few dozen seconds~(\cref{t:session-size}), so the axis
 ends at 150 seconds.
+%% TODO explain why 150 ... shows some tail but not whole thing
 The y axis shows changes to errors over time; a positive number means errors
 increased since the last record, and a negative number represents a decrease.
 While there are a few errors that go outside the plot bounds
@@ -1551,6 +1555,7 @@ very useful because there are many more sessions than colors.
 \label{s:strict-vs-forcedstrict}
 
 \begin{figure}[t]\centering
+  %% code/error-count.rkt
   % TODO use bars instead, percent only, don't care about counts
 
   % TE: nocheck & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
@@ -1891,7 +1896,8 @@ to prior work, the two main strands of which we describe below and summarize
 in~\cref{t:telemetry-design}.
 
 In a \emph{classic} telemetry system, such as the ones in
-VSCode~\cite{vscode-telemetry}, IntelliJ~\cite{intellij-telemetry}, and
+VSCode~\cite{vscode-telemetry}, IntelliJ~\cite{intellij-telemetry},
+Eclipse~\cite{eclipse-udc}, and
 \code{.NET}~\cite{dotnet-telemetry},
 telemetry may include all sorts of
 data: error reports, source code fragments, time\-stamps, and filepaths.
@@ -1900,24 +1906,6 @@ license agreement.
 Furthermore, at least in VSCode, \IDE{} extensions can report their own telemetry.
 While this data can be invaluable for discovering bugs in production, it
 must be handled with extreme care.
-The Blackbox project similarly collects telemetry in broad strokes.
-Every Java program submitted for compilation goes into the Blackbox database (minus
-any comments above the main class) along with the compiler's response~\cite{bkmu-sigcse-2014}.
-The millions of programs in the Blackbox dataset
-have enabled dozens of contributions to the area of CS
-education~\cite{bask-icer-2018}, but its telemetry does little to respect privacy.
-
-% BEN: saving space.
-% , ranging from categorization of novice
-% errors~\cite{mk-fie-2014,m-masters-2016} to analyses of error frequency and
-% time-to-fix~\cite{ab-sigcse-2015}.
-% Related prior work used the GRUMPS telemetry system to collect 4.7 million
-% keystroke-level actions from learners programming in
-% Ada~\cite{tm-iticse-2004,tkdmceg-ascilite-2003}.
-% This data is not available.
-% BEN: Not sure what the above sentence means and whether we should
-% keep it. Is it that you can't freely get Blackbox, you have to ask
-% Neil Brown for permission or something?
 
 At the opposite end of the privacy spectrum, Go's design for \emph{transparent}
 telemetry reports only counter values~\cite{transparent-telemetry}.
@@ -1926,15 +1914,6 @@ session \uid{}s.
 While useful for learning about the frequency and distribution of
 specific events, the lack of timestamps and \uid{}s means it cannot track
 edits over time (which we use in \cref{f:error-density}).
-% BEN: commented for space.
-% it cannot track 
-% The data is useful for learning about the frequency of specific events and the
-% distribution of events across clients (e.g., how many \code{CodeTooComplex}
-% errors arise? what is the average number of type errors?).
-% In~\cref{f:error-density}, for example, we see that increases to the number
-% of type errors are quickly followed by decreases.
-% Without timestamps, we would be unable to rule out the possibility that users
-% build up a mountain of type errors and then slowly reduce them to zero.
 
 
 \paragraph{Telemetry Enhancements: What and How to Sample}
@@ -1943,10 +1922,10 @@ One way to futher strengthen the privacy of any telemetry design, including
 transparent telemetry, is to systematically add noise to the data using
 techniques from differential
 privacy~\cite{epk-ccs-2014,wblj-usenix-2017,zhlbr-cc-2020}.
-Recent work about session-based data that could be added
-to Roblox Studio shows how to add noise to traces~\cite{zhlbr-cc-2020},
+Recent work shows how to add noise to traces~\cite{zhlbr-cc-2020},
 how to account for known relationships between events~\cite{zhlbr-oopsla-2020},
 and how to choose the noise on the client side~\cite{hlzbr-ecoop-2021}.
+Roblox Studio could benefit from these techniques.
 Applying differential privacy is subtle, however.
 While we could fuzz the total number of type errors, if we were to
 fuzz the number of \code{CodeTooComplex} errors, it might drastically
@@ -1966,8 +1945,8 @@ aggregates.
 
 Cooperative bug isolation is a method for designing
 telemetry systems~\cite{liblit-thesis}.
-The focus is not on privacy, but rather on how to collect a small amount of
-data from each user and perform statistically-sound analyses.
+The goal is to collect a small amount of data from each user and perform
+statistically-sound analyses; privacy is not a main concern.
 Each feature of interest \emph{within} a user's codebase has a uniform-random
 probability of contributing telemetry.
 The system-builder can analyze this telemetry with predicates to identify
@@ -2008,16 +1987,25 @@ also studied edit sequences to infer intent~\cite{lgk-pj-2022,rsgl-cpp-2020,wk-k
 A major difference is that we have only samples, not full sequences,
 which significantly impacts our study methods and inferences.
 
-The BitFit project collects data about beginning students interactions in
-Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}.
-It does not collect source code, nor does it collect error messages;
-the telemetry simply counts all (i.e., without sampling) compile events, hint
-requests, etc. While it does operate in a
-transparent~\cite{transparent-telemetry} manner, it only provides
-coarse-grained information that would be insufficient in our study.
-Other logging-based studies of Java programs use the full error message to
-draw conclusions~\cite{bgimgm-cse-2016,dlc-iticse-2014}, which we
-cannot use.
+There is a rich body of work that uses IDE instrumentation to study programmers
+(e.g.,~\cite{hl-icse-2010,j-ieeesoft-2013,kje-ase-2010, mmlb-swvis-2014, ncvjd-ecoop-2013, rl-icse-2008, we-xp-2004}).
+WatchDog records the time that programmers spend reading, writing, and testing
+code~\cite{blpgz-icse-2016}.
+TDD-Guide collects similar data to teach testing methods~\cite{mdk-xp-2008}.
+Examplar logs programs to give students feedback on their tests~\cite{pgnwk-koli-2022,wk-icer-2019}.
+The Blackbox project collects Java programs and has enabled
+dozens of contributions to the area of CS education~\cite{bask-icer-2018,bkmu-sigcse-2014}.
+Other logging-based studies of Java programs draw conclusions from compiler error
+messages~\cite{bgimgm-cse-2016,dlc-iticse-2014}.
+The GRUMPS telemetry system collected 4.7 million keystroke-level actions from
+Ada learners~\cite{tkdmceg-ascilite-2003,tm-iticse-2004}.
+None of the above are sufficiently private to work for Roblox Studio
+The BitFit project counts notable events (compile program, ask for hint, etc.)
+for Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}.
+While it does operate in a transparent~\cite{transparent-telemetry} manner, it
+only provides coarse-grained information that would be insufficient in our
+study.
+
 
 Much work~\cite{heeren-thesis,empirical-types} on the benefits of static types focuses on
 small case studies~\cite{hw-scp-2004,td-tosem-2001,w-popl-1986},
@@ -2050,15 +2038,6 @@ different issues.
 % https://dl.acm.org/doi/proceedings/10.1145/266399
 % nothing sounds big ... empirical yes, large no
 % https://link.springer.com/content/pdf/10.1023/a:1008040416962.pdf
-
-% \cite{}
-% constraint-based type inference;
-% general te criteria:
-% - target audience (novice / expert)
-% - output format (text / viz)
-% - interactivity (yes / no)
-% - heuristics (yes / no)
-% - primary-or-external (most type errors are easy, some could really use dedicated help)
 
 % \cite{t-hatra-2021}
 % plan for a large user-centered study of proof assistants,

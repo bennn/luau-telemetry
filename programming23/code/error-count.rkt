@@ -205,8 +205,8 @@
 
 (module+ main
   (printf "error-count, density~n")
-  #;(for-each simple-go roblox-mode*)
-  (for-each plot-go (values #;cddr roblox-mode*))
+  (for-each simple-go roblox-mode*)
+  #;(for-each plot-go (values #;cddr roblox-mode*))
   (void))
 
 
