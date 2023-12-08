@@ -200,7 +200,7 @@
   (parse-datetime (unstr str) "MMM d, y @ HH:mm:ss.S"))
 
 (define (type-error-codes)
-  (file->value (build-path data-dir "typeerror.rktd")))
+  (file->value (build-path data-dir "../type-error.rktd")))
 
 (define (intcode->str code* ii)
   (for/first ((kv (in-list code*))

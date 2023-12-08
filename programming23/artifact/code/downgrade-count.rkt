@@ -44,15 +44,17 @@
   (void))
 
 (module+ main
-  (let ((what "upgrade"))
-    (displayln what)
-    (go (build-path data-dir "error-density-ss-hasup.rktd") what))
-  (let ((what "downgrade"))
-    (displayln what)
-    (go (build-path data-dir "error-density-ss-hasdown.rktd") what))
-  #;(newline)
-  #;(count-modswitch (build-path data-dir "error-density-ss-multimod.rktd"))
-  (void))
+  (with-output-to-file (build-path data-dir "downgrade-count.txt")
+    (lambda ()
+      (let ((what "upgrade"))
+        (displayln what)
+        (go (build-path data-dir "error-density-ss-hasup.rktd") what))
+      (let ((what "downgrade"))
+        (displayln what)
+        (go (build-path data-dir "error-density-ss-hasdown.rktd") what))
+      #;(newline)
+      #;(count-modswitch (build-path data-dir "error-density-ss-multimod.rktd"))
+      (void))))
 
 
 

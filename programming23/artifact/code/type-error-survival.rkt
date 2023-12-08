@@ -47,7 +47,7 @@
 (define (tex-table row*)
   (printf "\\begin{tabular}{lr@{~~}r@{~~}rr@{~~}r@{~~}rr@{~~}r@{~~}r}~n")
   (printf "  & \\zerowidth{\\mnocheck{}} & & & \\zerowidth{\\mnonstrict{}} & & & \\zerowidth{\\mstrict{}} & & \\\\~n")
-  (printf "  & \\rcell{Add} & \\ycell{Keep} & \\gcell{Drop} & \\rcell{Add} & \\ycell{Keep} & \\gcell{Drop} & \\rcell{Add} & \\ycell{Keep} & \\gcell{Drop} \\\\\\midrule~n")
+  (printf "  & \\rcell{Add} & \\ycell{Keep} & \\gcell{Drop} & \\rcell{Add} & \\ycell{Keep} & \\gcell{Drop} & \\rcell{Add} & \\ycell{Keep} & \\gcell{Drop} \\\\\\hline~n")
   (for ((row (in-list row*)))
     (printf "  ~a " (first row))
     (for ((triple (in-list (cdr row))))

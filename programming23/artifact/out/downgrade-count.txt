@@ -1,0 +1,30 @@
+upgrade
+519 total sessions
+176 with upgrade
+#hash((nonstrict . 0)
+      ((nonstrict nocheck) . 44)
+      ((strict nonstrict) . 44)
+      ((strict nocheck) . 88)
+      (strict . 0)
+      (nocheck . 0))
+ nonstrict : 0.00\%
+ (nonstrict nocheck) : 25.00\%
+ (strict nonstrict) : 25.00\%
+ (strict nocheck) : 50.00\%
+ strict : 0.00\%
+ nocheck : 0.00\%
+downgrade
+515 total sessions
+233 with downgrade
+#hash((nonstrict . 0)
+      ((nonstrict nocheck) . 64)
+      ((strict nonstrict) . 53)
+      ((strict nocheck) . 116)
+      (strict . 0)
+      (nocheck . 0))
+ nonstrict : 0.00\%
+ (nonstrict nocheck) : 27.47\%
+ (strict nonstrict) : 22.75\%
+ (strict nocheck) : 49.79\%
+ strict : 0.00\%
+ nocheck : 0.00\%

@@ -1,5 +1,7 @@
 \documentclass{article}
 
+\usepackage{xcolor}
+\usepackage{colortbl}
 \usepackage{graphicx}
 \usepackage[margin=2cm]{geometry}
 \usepackage{verbatim}
@@ -7,10 +9,18 @@
 
 \begin{document}
 
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\pct}[1]{$#1\,\%$}
 \newcommand{\modefont}[1]{\texttt{#1}}
 \newcommand{\mnocheck}{\modefont{nocheck}}
 \newcommand{\mnonstrict}{\modefont{nonstrict}}
 \newcommand{\mstrict}{\modefont{strict}}
+\newcommand{\gcell}[1]{\cellcolor{green!20}#1}
+\newcommand{\ycell}[1]{\cellcolor{yellow!18}#1}
+\newcommand{\ocell}[1]{\cellcolor{orange!29}#1}
+\newcommand{\rcell}[1]{\cellcolor{red!30}$\!\!$#1$\!\!$}
+\newcommand{\zerowidth}[1]{\makebox[0pt][l]{#1}}
+\let\midrule=\hrule
 
 %% ---
 \subsection*{Figure 3: Records per Hour}
@@ -43,10 +53,10 @@ on \texttt{out/size-distributions.rktd}:
 
 \begin{minipage}{0.5\columnwidth}
   \textbf{Lines:}\\
-  \includegraphics[width=\columnwidth]{out/lines-distribution.pdf}
+  \includegraphics[width=0.4\columnwidth]{out/lines-distribution.pdf}
 \end{minipage}\begin{minipage}{0.5\columnwidth}
   \textbf{Edit Range:}\\
-  \includegraphics[width=\columnwidth]{out/editrange-distribution.pdf}
+  \includegraphics[width=0.4\columnwidth]{out/editrange-distribution.pdf}
 \end{minipage}
 
 
@@ -90,7 +100,7 @@ Line 1 of \texttt{out/overview.txt} partitions logs by mode:
 
 Lines 9-13 of \texttt{out/overview.txt} partition sessions and report on upgrades and downgrades,
 \emph{but} the final two numbers are incorrect (upgrade and downgrade) because they include
-module switches:
+data from module switches:
 
 \begin{verbatim}
  347598 sessions
@@ -110,9 +120,9 @@ PLTSTDERR="error info@luau" racket prepare.rkt --mode session-query
 PLTSTDERR="error info@luau" racket prepare.rkt --mode aggregate-te
 \end{verbatim}
 
-% \includeverbatim{out/downgrade-count.txt}
+Output:
 
-% TODO
+\verbatiminput{out/downgrade-count.txt}
 
 
 %% ---
@@ -136,16 +146,169 @@ hard-coded data from \texttt{out/overview.txt}:
 Output from \texttt{code/type-error-survival.rkt}
 run on \texttt{code/type-error-survival-ss-*.rktd}:
 
-TODO
+\begin{tabular}{lr@{~}r@{~}rr@{~}r@{~}rr@{~}r@{~}r}
+  & \zerowidth{\mnocheck{}} & & & \zerowidth{\mnonstrict{}} & & & \zerowidth{\mstrict{}} & & \\
+  & \rcell{Add} & \ycell{Keep} & \gcell{Drop} & \rcell{Add} & \ycell{Keep} & \gcell{Drop} & \rcell{Add} & \ycell{Keep} & \gcell{Drop} \\\hline
+  TypeMismatch & {0} & {0} & {0} & {103} & {51} & {80} & {13} & {6} & {18} \\
+  UnknownSymbol & {0} & {0} & {0} & {1992} & {438} & {1797} & {38} & {18} & {35} \\
+  UnknownProperty & {0} & {0} & {0} & {256} & {156} & {208} & {16} & {18} & {22} \\
+  NotATable & {0} & {0} & {0} & {4} & {1} & {5} & {2} & {0} & {1} \\
+  CannotExtendTable & {0} & {0} & {0} & {6} & {8} & {1} & {0} & {0} & {1} \\
+  OnlyTablesCanHaveMethods & {0} & {0} & {0} & {0} & {0} & {2} & {0} & {0} & {0} \\
+  DuplicateTypeDefinition & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
+  CountMismatch & {0} & {0} & {0} & {184} & {42} & {157} & {9} & {2} & {9} \\
+  FunctionDoesNotTakeSelf & {0} & {0} & {0} & {3} & {4} & {1} & {0} & {0} & {0} \\
+  OccursCheckFailed & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {1} \\
+  UnknownRequire & {0} & {0} & {0} & {43} & {30} & {37} & {5} & {3} & {3} \\
+  IncorrectGenericParameterCount & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
+  SyntaxError & {0} & {0} & {8290} & {0} & {0} & {1149} & {0} & {0} & {29} \\
+  UnknownPropButFoundLikeProp & {0} & {0} & {0} & {20} & {17} & {13} & {0} & {0} & {0} \\
+  GenericError & {0} & {0} & {0} & {177} & {47} & {149} & {5} & {0} & {8} \\
+  CannotCallNonFunction & {0} & {0} & {0} & {12} & {2} & {13} & {1} & {0} & {1} \\
+  ExtraInformation & {0} & {0} & {0} & {46} & {6} & {33} & {1} & {0} & {1} \\
+  ModuleHasCyclicDependency & {0} & {0} & {0} & {9} & {5} & {8} & {0} & {0} & {0} \\
+  IllegalRequire & {0} & {0} & {0} & {7} & {1} & {11} & {0} & {0} & {0} \\
+  FunctionExitsWithoutReturning & {0} & {0} & {0} & {6} & {1} & {5} & {7} & {3} & {5} \\
+  CannotInferBinaryOperation & {0} & {0} & {0} & {0} & {1} & {0} & {5} & {6} & {6} \\
+  MissingProperties & {0} & {0} & {0} & {8} & {3} & {6} & {5} & {3} & {3} \\
+  OptionalValueAccess & {0} & {0} & {0} & {21} & {45} & {15} & {4} & {2} & {4} \\
+\end{tabular}
 
 
 %% ---
 \subsection*{Table 6: Type Error Popularity}
 
 Output from \texttt{code/type-error-count.rkt}
-run on \texttt{code/te-editrange-ss-*.rktd}:
+run on \texttt{code/te-editrange-ss-*.rktd}.
 
-TODO
+This script produces output for all three modes: \mnocheck{}, \mnonstrict{}, and \mstrict{}.
+The paper combines \mnonstrict{} and \mstrict{} into one table.
+
+\subsubsection*{\mnocheck{}}
+
+unused code IllegalRequire
+unused code UnknownSymbol
+unused code TypeMismatch
+unused code NormalizationTooComplex
+unused code DynamicPropertyLookupOnClassesUnsafe
+unused code MissingUnionProperty
+unused code UnknownProperty
+unused code TypePackMismatch
+unused code DuplicateTypeDefinition
+unused code UnknownRequire
+unused code TypesAreUnrelated
+unused code MissingProperties
+unused code FunctionExitsWithoutReturning
+unused code CannotExtendTable
+unused code FunctionDoesNotTakeSelf
+unused code UnificationTooComplex
+unused code GenericError
+unused code NotATable
+unused code OnlyTablesCanHaveMethods
+unused code CodeTooComplex
+unused code InternalError
+unused code FunctionRequiresSelf
+unused code UnknownPropButFoundLikeProp
+unused code CannotInferBinaryOperation
+unused code IncorrectGenericParameterCount
+unused code OptionalValueAccess
+unused code DuplicateGenericParameter
+unused code CountMismatch
+unused code OccursCheckFailed
+unused code DeprecatedApiUsed
+unused code CannotCallNonFunction
+unused code ModuleHasCyclicDependency
+unused code SwappedGenericTypeParameter
+unused code ExtraInformation
+NEVER APPEAR: (IllegalRequire UnknownSymbol TypeMismatch NormalizationTooComplex DynamicPropertyLookupOnClassesUnsafe MissingUnionProperty UnknownProperty TypePackMismatch DuplicateTypeDefinition UnknownRequire TypesAreUnrelated MissingProperties FunctionExitsWithoutReturning CannotExtendTable FunctionDoesNotTakeSelf UnificationTooComplex GenericError NotATable OnlyTablesCanHaveMethods CodeTooComplex InternalError FunctionRequiresSelf UnknownPropButFoundLikeProp CannotInferBinaryOperation IncorrectGenericParameterCount OptionalValueAccess DuplicateGenericParameter CountMismatch OccursCheckFailed DeprecatedApiUsed CannotCallNonFunction ModuleHasCyclicDependency SwappedGenericTypeParameter ExtraInformation)
+
+\begin{tabular}{lr}
+  \code{SyntaxError} & \pct{100.00} \\
+\end{tabular}
+
+\subsubsection*{\mnonstrict{}}
+
+unused code NormalizationTooComplex
+unused code DynamicPropertyLookupOnClassesUnsafe
+unused code TypePackMismatch
+unused code UnificationTooComplex
+unused code CodeTooComplex
+unused code InternalError
+unused code FunctionRequiresSelf
+unused code IncorrectGenericParameterCount
+unused code DuplicateGenericParameter
+unused code OccursCheckFailed
+unused code DeprecatedApiUsed
+unused code SwappedGenericTypeParameter
+NEVER APPEAR: (NormalizationTooComplex DynamicPropertyLookupOnClassesUnsafe TypePackMismatch UnificationTooComplex CodeTooComplex InternalError FunctionRequiresSelf IncorrectGenericParameterCount DuplicateGenericParameter OccursCheckFailed DeprecatedApiUsed SwappedGenericTypeParameter)
+
+\begin{tabular}{lr}
+  \code{UnknownSymbol} & \pct{62.13} \\
+  \code{SyntaxError} & \pct{15.42} \\
+  \code{UnknownProperty} & \pct{8.28} \\
+  \code{UnknownRequire} & \pct{3.13} \\
+  \code{TypeMismatch} & \pct{2.44} \\
+  \code{CountMismatch} & \pct{2.26} \\
+  \code{OptionalValueAccess} & \pct{2.07} \\
+  \code{GenericError} & \pct{2.06} \\
+  \code{UnknownPropButFoundLikeProp} & \pct{0.44} \\
+  \code{CannotExtendTable} & \pct{0.42} \\
+  \code{ExtraInformation} & \pct{0.32} \\
+  \code{ModuleHasCyclicDependency} & \pct{0.23} \\
+  \code{IllegalRequire} & \pct{0.20} \\
+  \code{NotATable} & \pct{0.15} \\
+  \code{CannotCallNonFunction} & \pct{0.15} \\
+  \code{MissingProperties} & \pct{0.09} \\
+  \code{FunctionExitsWithoutReturning} & \pct{0.07} \\
+  \code{FunctionDoesNotTakeSelf} & \pct{0.07} \\
+  \code{MissingUnionProperty} & \pct{0.02} \\
+  \code{CannotInferBinaryOperation} & \pct{0.02} \\
+  \code{OnlyTablesCanHaveMethods} & \pct{0.01} \\
+  \code{DuplicateTypeDefinition} & \pct{0.00} \\
+  \code{TypesAreUnrelated} & \pct{0.00} \\
+\end{tabular}
+
+\subsubsection*{\mstrict{}}
+
+unused code NormalizationTooComplex
+unused code DynamicPropertyLookupOnClassesUnsafe
+unused code MissingUnionProperty
+unused code TypePackMismatch
+unused code DuplicateTypeDefinition
+unused code FunctionDoesNotTakeSelf
+unused code UnificationTooComplex
+unused code OnlyTablesCanHaveMethods
+unused code CodeTooComplex
+unused code InternalError
+unused code FunctionRequiresSelf
+unused code DuplicateGenericParameter
+unused code DeprecatedApiUsed
+unused code SwappedGenericTypeParameter
+NEVER APPEAR: (NormalizationTooComplex DynamicPropertyLookupOnClassesUnsafe MissingUnionProperty TypePackMismatch DuplicateTypeDefinition FunctionDoesNotTakeSelf UnificationTooComplex OnlyTablesCanHaveMethods CodeTooComplex InternalError FunctionRequiresSelf DuplicateGenericParameter DeprecatedApiUsed SwappedGenericTypeParameter)
+
+\begin{tabular}{lr}
+  \code{UnknownSymbol} & \pct{23.97} \\
+  \code{TypeMismatch} & \pct{20.46} \\
+  \code{UnknownProperty} & \pct{18.88} \\
+  \code{SyntaxError} & \pct{9.31} \\
+  \code{CannotInferBinaryOperation} & \pct{6.94} \\
+  \code{MissingProperties} & \pct{4.04} \\
+  \code{FunctionExitsWithoutReturning} & \pct{2.99} \\
+  \code{OptionalValueAccess} & \pct{2.99} \\
+  \code{CountMismatch} & \pct{2.99} \\
+  \code{UnknownRequire} & \pct{2.37} \\
+  \code{GenericError} & \pct{2.28} \\
+  \code{NotATable} & \pct{1.32} \\
+  \code{ExtraInformation} & \pct{0.35} \\
+  \code{UnknownPropButFoundLikeProp} & \pct{0.26} \\
+  \code{IllegalRequire} & \pct{0.18} \\
+  \code{IncorrectGenericParameterCount} & \pct{0.18} \\
+  \code{CannotCallNonFunction} & \pct{0.18} \\
+  \code{TypesAreUnrelated} & \pct{0.09} \\
+  \code{CannotExtendTable} & \pct{0.09} \\
+  \code{OccursCheckFailed} & \pct{0.09} \\
+  \code{ModuleHasCyclicDependency} & \pct{0.09} \\
+\end{tabular}
 
 
 \subsubsection*{Internal Limits, Code Too Complex}
@@ -166,13 +329,15 @@ on \texttt{out/error-density-ss-*.rktd}.
 (It also prints text output.):
 
 \includegraphics[width=0.8\columnwidth]{out/error-count-nocheck-row--te-density-diff.pdf}
+
 \includegraphics[width=0.8\columnwidth]{out/error-count-nonstrict-row--te-density-diff.pdf}
+
 \includegraphics[width=0.8\columnwidth]{out/error-count-strict-row--te-density-diff.pdf}
 
 
 \subsection*{Figure 7: Type Error Density}
 
-Shuffled text output from \texttt{code/error-count.rkt}
+From reordered text output from \texttt{code/error-count.rkt}
 on \texttt{out/error-density-ss-*.rktd}:
 
 \begin{verbatim}
