@@ -65,6 +65,7 @@
     (save-pict+
       (build-path img-dir (format "error-by-mode-~a.~a" tt out-kind))
       (mini-bars dd)
+      out-kind
       #;(add-rectangle-background
         (mini-bars dd)
         #:x-margin 8

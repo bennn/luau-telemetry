@@ -88,6 +88,8 @@ Lines 3-8 of \texttt{out/overview.txt}:
  olde 13836 non-stx + 28565 syntax in edit regions
 \end{verbatim}
 
+Current errors in edit range = (14917 + 16007) = 30924
+
 
 %% ---
 \subsection*{Figure 4: Overview of Type Analysis Modes}
@@ -109,6 +111,8 @@ data from module switches:
   341 mode upgrades
   320 mode downgrades
 \end{verbatim}
+
+There are 642 = (347598 - 346956) multi-mode sessions.
 
 Correct up/down-grade numbers are in \texttt{out/downgrade-count.txt},
 which is the output of \texttt{code/downgrade-count.rkt} after running
@@ -134,8 +138,8 @@ hard-coded data from \texttt{out/overview.txt}:
 { \newcommand{\labelbars}[1]{\begin{tabular}[t]{l@{}l} \raisebox{2ex}{\begin{tabular}[t]{r}\mnocheck{}\\\mnonstrict{}\\\mstrict{}\end{tabular}} & #1 \end{tabular}}
   \begin{tabular}[t]{cc}
     Type errors & Background errors \\
-    \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{out/error-by-mode-te.pdf}}
-    & \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{out/error-by-mode-fs.pdf}}
+    \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{out/error-by-mode-te.png}}
+    & \labelbars{\includegraphics[width=0.20\columnwidth,valign=M]{out/error-by-mode-fs.png}}
   \end{tabular}
 }
 
@@ -144,34 +148,35 @@ hard-coded data from \texttt{out/overview.txt}:
 \subsection*{Table 5: Specific Errors in Edit Range}
 
 Output from \texttt{code/type-error-survival.rkt}
-run on \texttt{code/type-error-survival-ss-*.rktd}:
+run on \texttt{code/type-error-survival-ss-*.rktd}
+and then sorted alphabetically:
 
 \begin{tabular}{lr@{~}r@{~}rr@{~}r@{~}rr@{~}r@{~}r}
   & \zerowidth{\mnocheck{}} & & & \zerowidth{\mnonstrict{}} & & & \zerowidth{\mstrict{}} & & \\
   & \rcell{Add} & \ycell{Keep} & \gcell{Drop} & \rcell{Add} & \ycell{Keep} & \gcell{Drop} & \rcell{Add} & \ycell{Keep} & \gcell{Drop} \\\hline
-  TypeMismatch & {0} & {0} & {0} & {103} & {51} & {80} & {13} & {6} & {18} \\
-  UnknownSymbol & {0} & {0} & {0} & {1992} & {438} & {1797} & {38} & {18} & {35} \\
-  UnknownProperty & {0} & {0} & {0} & {256} & {156} & {208} & {16} & {18} & {22} \\
-  NotATable & {0} & {0} & {0} & {4} & {1} & {5} & {2} & {0} & {1} \\
-  CannotExtendTable & {0} & {0} & {0} & {6} & {8} & {1} & {0} & {0} & {1} \\
-  OnlyTablesCanHaveMethods & {0} & {0} & {0} & {0} & {0} & {2} & {0} & {0} & {0} \\
-  DuplicateTypeDefinition & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
-  CountMismatch & {0} & {0} & {0} & {184} & {42} & {157} & {9} & {2} & {9} \\
-  FunctionDoesNotTakeSelf & {0} & {0} & {0} & {3} & {4} & {1} & {0} & {0} & {0} \\
-  OccursCheckFailed & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {1} \\
-  UnknownRequire & {0} & {0} & {0} & {43} & {30} & {37} & {5} & {3} & {3} \\
-  IncorrectGenericParameterCount & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
-  SyntaxError & {0} & {0} & {8290} & {0} & {0} & {1149} & {0} & {0} & {29} \\
-  UnknownPropButFoundLikeProp & {0} & {0} & {0} & {20} & {17} & {13} & {0} & {0} & {0} \\
-  GenericError & {0} & {0} & {0} & {177} & {47} & {149} & {5} & {0} & {8} \\
   CannotCallNonFunction & {0} & {0} & {0} & {12} & {2} & {13} & {1} & {0} & {1} \\
-  ExtraInformation & {0} & {0} & {0} & {46} & {6} & {33} & {1} & {0} & {1} \\
-  ModuleHasCyclicDependency & {0} & {0} & {0} & {9} & {5} & {8} & {0} & {0} & {0} \\
-  IllegalRequire & {0} & {0} & {0} & {7} & {1} & {11} & {0} & {0} & {0} \\
-  FunctionExitsWithoutReturning & {0} & {0} & {0} & {6} & {1} & {5} & {7} & {3} & {5} \\
+  CannotExtendTable & {0} & {0} & {0} & {6} & {8} & {1} & {0} & {0} & {1} \\
   CannotInferBinaryOperation & {0} & {0} & {0} & {0} & {1} & {0} & {5} & {6} & {6} \\
+  CountMismatch & {0} & {0} & {0} & {184} & {42} & {157} & {9} & {2} & {9} \\
+  DuplicateTypeDefinition & {0} & {0} & {0} & {1} & {0} & {0} & {0} & {0} & {0} \\
+  ExtraInformation & {0} & {0} & {0} & {46} & {6} & {33} & {1} & {0} & {1} \\
+  FunctionDoesNotTakeSelf & {0} & {0} & {0} & {3} & {4} & {1} & {0} & {0} & {0} \\
+  FunctionExitsWithoutReturning & {0} & {0} & {0} & {6} & {1} & {5} & {7} & {3} & {5} \\
+  GenericError & {0} & {0} & {0} & {177} & {47} & {149} & {5} & {0} & {8} \\
+  IllegalRequire & {0} & {0} & {0} & {7} & {1} & {11} & {0} & {0} & {0} \\
+  IncorrectGenericParameterCount & {0} & {0} & {0} & {0} & {0} & {0} & {1} & {0} & {1} \\
   MissingProperties & {0} & {0} & {0} & {8} & {3} & {6} & {5} & {3} & {3} \\
+  ModuleHasCyclicDependency & {0} & {0} & {0} & {9} & {5} & {8} & {0} & {0} & {0} \\
+  NotATable & {0} & {0} & {0} & {4} & {1} & {5} & {2} & {0} & {1} \\
+  OccursCheckFailed & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {0} & {1} \\
+  OnlyTablesCanHaveMethods & {0} & {0} & {0} & {0} & {0} & {2} & {0} & {0} & {0} \\
   OptionalValueAccess & {0} & {0} & {0} & {21} & {45} & {15} & {4} & {2} & {4} \\
+  SyntaxError & {0} & {0} & {8290} & {0} & {0} & {1149} & {0} & {0} & {29} \\
+  TypeMismatch & {0} & {0} & {0} & {103} & {51} & {80} & {13} & {6} & {18} \\
+  UnknownPropButFoundLikeProp & {0} & {0} & {0} & {20} & {17} & {13} & {0} & {0} & {0} \\
+  UnknownProperty & {0} & {0} & {0} & {256} & {156} & {208} & {16} & {18} & {22} \\
+  UnknownRequire & {0} & {0} & {0} & {43} & {30} & {37} & {5} & {3} & {3} \\
+  UnknownSymbol & {0} & {0} & {0} & {1992} & {438} & {1797} & {38} & {18} & {35} \\
 \end{tabular}
 
 
@@ -328,17 +333,18 @@ Plot output from \texttt{code/error-count.rkt}
 on \texttt{out/error-density-ss-*.rktd}.
 (It also prints text output.):
 
-\includegraphics[width=0.8\columnwidth]{out/error-count-nocheck-row--te-density-diff.pdf}
+\includegraphics[width=0.8\columnwidth]{out/error-count-nocheck-row--te-density-diff.png}
 
-\includegraphics[width=0.8\columnwidth]{out/error-count-nonstrict-row--te-density-diff.pdf}
+\includegraphics[width=0.8\columnwidth]{out/error-count-nonstrict-row--te-density-diff.png}
 
-\includegraphics[width=0.8\columnwidth]{out/error-count-strict-row--te-density-diff.pdf}
+\includegraphics[width=0.8\columnwidth]{out/error-count-strict-row--te-density-diff.png}
 
 
 \subsection*{Figure 7: Type Error Density}
 
 From reordered text output from \texttt{code/error-count.rkt}
-on \texttt{out/error-density-ss-*.rktd}:
+on \texttt{out/error-density-ss-*.rktd}.
+Here is the raw, unsorted output:
 
 \begin{verbatim}
 TE

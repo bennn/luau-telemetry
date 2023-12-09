@@ -225,7 +225,7 @@
 (define (rnd n)
   (~r #:precision '(= 2) n))
 
-(define (save-pict+ fn pp)
+(define (save-pict+ fn pp [kind 'png])
   (printf "save-pict: ~a~n" (file-name-from-path fn))
-  (save-pict fn pp))
+  (save-pict fn pp kind))
 
