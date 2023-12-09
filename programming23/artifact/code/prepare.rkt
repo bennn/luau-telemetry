@@ -1,7 +1,7 @@
 #lang racket
 
 ;; TODO
-;; - [X] error lines, set min session lench (already had that! want max too .. still not too helpful)
+;; - [X] error lines, set min session length (already had that! want max too .. still not too helpful)
 ;; - [X] put nonstrict typeError + forcedStrict on same plot, are you fixing FS despite not seeing?
 ;; - [X] new plot
 ;; - [X] err delta try without lines
@@ -73,7 +73,8 @@
 
 ;; ---
 
-(define-runtime-path data-dir "data")
+(define-runtime-path input-data-dir "../data")
+(define-runtime-path output-data-dir "../out")
 (define-logger luau)
 
 (current-timezone "America/Los_Angeles") ;; does this even help? times seem from the data either way :/
@@ -789,7 +790,7 @@
 
 (define (make-size-distribution filename*)
       (define size# (make-hash))
-      (define title* (csv->title* "out/full-dataset.csv"))
+      (define title* (csv->title* (build-path output-data-dir "full-dataset.csv")))
       (for ((fn (in-list filename*)))
         (define row->ctime (row->datetime (title-index title* key:ctime)))
         (define row->files (compose1 string->number* (idx->getter title* key:files)))
@@ -1560,7 +1561,7 @@
       (hash-add1 acc (getx rr))))
   (define hh (sort (hash->list count#) < #:key car))
   (void
-    (with-output-to-file "out/row-distribution.rktd"
+    (with-output-to-file (build-path output-data-dir "row-distribution.rktd")
       #:exists 'replace
       (lambda ()
         (writeln hh))))
@@ -1605,7 +1606,7 @@
         #:alpha 0.2))
     (define-values [out-file out-kind]
       (let ((out-kind 'pdf))
-        (values (format "out/row-distribution.~a" out-kind) out-kind)))
+        (values (build-path output-data-dir (format "row-distribution.~a" out-kind)) out-kind)))
     (plot-file
       (list weekend-shade my-bars)
       out-file
@@ -2010,8 +2011,8 @@
     [("-m" "--mode") mf "mode: (or/c 'explore 'analyze)" (set-box! *mode (string->symbol mf))]
     #:args -data-csv*
     (define data-csv* ( #;take-some values
-                        (if (not (null? -data-csv*)) -data-csv* (glob (build-path data-dir "*.csv")))))
-    (define full-csv "out/full-dataset.csv")
+                        (if (not (null? -data-csv*)) -data-csv* (glob (build-path input-data-dir "*.csv")))))
+    (define full-csv (build-path output-data-dir "full-dataset.csv"))
     (define (full-data)
       (define dd
         (let ()
@@ -2028,21 +2029,21 @@
     (case (unbox *mode)
      ((main) ;; KEEP
       (define-values [dd tt] (full-data))
-      (with-outfile "out/overview.txt"
+      (with-outfile (build-path output-data-dir "overview.txt")
         (t:dataset-overview dd tt)
         (t:count-te-region dd))
-      (with-outfile "out/sessions.txt" (t:session-overview dd tt))
-      (with-outfile "out/ctc-info.txt" (ctc-info dd))
+      (with-outfile (build-path output-data-dir "sessions.txt") (t:session-overview dd tt))
+      (with-outfile (build-path output-data-dir "ctc-info.txt") (ctc-info dd))
       (define sg# (group-sessions dd tt))
       (for (((kk vv) (in-hash sg#)))
-        (with-outfile (format "out/ss-~a.rktd" kk)
+        (with-outfile (build-path output-data-dir (format "ss-~a.rktd" kk))
           (displayln "(")
           (for-each writeln vv)
           (displayln ")")))
       (f:plot-clienttime-distro dd)
       (void))
      ((modswitch) ;; KEEP
-      (define modswitch-csv "out/modswitch.csv")
+      (define modswitch-csv (build-path output-data-dir "modswitch.csv"))
       (define (modswitch-data)
         (define dd
           (if (file-exists? modswitch-csv)
@@ -2054,14 +2055,14 @@
         (define tt (timelines dd))
         (values dd tt))
       (define-values [dd tt] (modswitch-data))
-      (with-outfile "out/modswitch-overview.txt"
+      (with-outfile (build-path output-data-dir "modswitch-overview.txt")
         (t:dataset-overview dd tt)
         (t:count-te-region dd)))
      ((ds divide-sessions) ;; KEEP
       (define-values [dd tt] (full-data))
       (define sg# (group-sessions dd tt))
       (for (((kk vv) (in-hash sg#)))
-        (with-outfile (format "out/ss-~a.rktd" kk)
+        (with-outfile (build-path output-data-dir (format "ss-~a.rktd" kk))
           (displayln "(")
           (for-each writeln vv)
           (displayln ")")))
@@ -2086,30 +2087,31 @@
         #;ctc-render)
       (query-stream full-csv my-query-fn my-render-fn))
      ((gap)
-      (session-gaps (file->value "out/sessions.txt")))
+      (session-gaps (file->value (build-path output-data-dir "sessions.txt"))))
      ((size-distro) ;; KEEP
-      (define filename* '(
-           "out/ss-strict.rktd"
-           "out/ss-nonstrict.rktd"
-           "out/ss-nocheck.rktd"
-           "out/ss-hasup.rktd"
-           "out/ss-hasdown.rktd"
-           "out/ss-multimod.rktd"))
+      (define filename* (map (lambda (s) (build-path output-data-dir s)) '(
+           "ss-strict.rktd"
+           "ss-nonstrict.rktd"
+           "ss-nocheck.rktd"
+           "ss-hasup.rktd"
+           "ss-hasdown.rktd"
+           "ss-multimod.rktd")))
       (define size#
         (make-size-distribution filename*))
-      (with-outfile "out/size-distributions.rktd" (pretty-write size#))
+      (with-outfile (build-path output-data-dir "size-distributions.rktd") (pretty-write size#))
       (void))
      ((cte count-te-editrange)
-      (define title* (csv->title* "out/full-dataset.csv"))
-      (for ((fn (in-list '("out/ss-strict.rktd"
-                           "out/ss-nonstrict.rktd"
-                           "out/ss-nocheck.rktd"))))
+      (define title* (csv->title* (build-path output-data-dir "full-dataset.csv")))
+      (for ((fn (in-list (map (lambda (s) (build-path output-data-dir s)) '(
+                           "ss-strict.rktd"
+                           "ss-nonstrict.rktd"
+                           "ss-nocheck.rktd")))))
         (parameterize ((pretty-print-columns 200))
-          (with-outfile (format "out/te-editrange-~a" (path->string (file-name-from-path fn)))
+          (with-outfile (build-path output-data-dir (format "te-editrange-~a" (path->string (file-name-from-path fn))))
             (t:count-te-region/session title* (file->value fn))))))
      ((ate aggregate-te)
       (define mode* '(strict nonstrict nocheck))
-      (define (m->fn m) (format "out/error-density-ss-~a.rktd" m))
+      (define (m->fn m) (build-path output-data-dir (format "error-density-ss-~a.rktd" m)))
       (define row->te first)
       (define row->fs second)
       (for ((mm (in-list mode*)))
@@ -2140,7 +2142,7 @@
                   ;; med# avg#
           (void))))
      ((sq session-query)
-      (define title* (csv->title* "out/full-dataset.csv"))
+      (define title* (csv->title* (build-path output-data-dir "full-dataset.csv")))
       (define my-query ((lambda (x) values)
                         #;huge-ctime?
                         title*))
@@ -2152,11 +2154,12 @@
         "error-density"
         #;"huge-ctime")
       ;; TODO old + curr TS FS in module ... just do all
-      (for ((fn (in-list '( "out/ss-strict.rktd"
-                            "out/ss-nonstrict.rktd"
-                            "out/ss-nocheck.rktd"))))
+      (for ((fn (in-list (map (lambda (s) (build-path output-data-dir s))
+                         '( "ss-strict.rktd"
+                            "ss-nonstrict.rktd"
+                            "ss-nocheck.rktd")))))
         (parameterize ((pretty-print-columns 200))
-          (with-outfile (format "out/~a-~a" my-name (path->string (file-name-from-path fn)))
+          (with-outfile (build-path output-data-dir (format "~a-~a" my-name (path->string (file-name-from-path fn))))
             (begin
               (printf ";; (list TE FS TE-MOD FS-MOD TE-EDIT FS-EDIT LINES EDIT SWITCH CTIME)~n")
               #;(printf ";; (list TE-RANGE FS-RANGE OLDE-TE-RANGE OLDE-FS-RANGE)~n")
@@ -2166,31 +2169,32 @@
                   (my-render row*))))))
         (void)))
      ((sfold session-fold)
-      (define title* (csv->title* "out/full-dataset.csv"))
+      (define title* (csv->title* (build-path output-data-dir "full-dataset.csv")))
       (define-values [my-fold my-init] (te-survival title*))
       (define my-name "type-error-survival")
-      (for ((fn (in-list '("out/ss-strict.rktd"
-                           "out/ss-nonstrict.rktd"
-                           "out/ss-nocheck.rktd"))))
+      (for ((fn (in-list (map (lambda (s) (build-path output-data-dir s))
+                         '("ss-strict.rktd"
+                           "ss-nonstrict.rktd"
+                           "ss-nocheck.rktd")))))
         (define vv (file->value fn))
         (define fold-res
           (for/fold ((acc my-init))
                     ((row* (in-list vv)))
             (my-fold acc row*)))
         (parameterize ((pretty-print-columns 200))
-          (with-outfile (format "out/~a-~a" my-name (path->string (file-name-from-path fn)))
+          (with-outfile (build-path output-data-dir (format "~a-~a" my-name (path->string (file-name-from-path fn))))
             (pretty-write fold-res)))))
      ((benc plot-explore)
-      (define title* (csv->title* "out/full-dataset.csv"))
-      (define pp (plot-explore title* '(
-            "out/ss-strict.rktd"
-            "out/ss-nonstrict.rktd"
-            "out/ss-nocheck.rktd"
+      (define title* (csv->title* (build-path output-data-dir "full-dataset.csv")))
+      (define pp (plot-explore title* (map (lambda (s) (build-path output-data-dir s)) '(
+            "ss-strict.rktd"
+            "ss-nonstrict.rktd"
+            "ss-nocheck.rktd"
 
-      ;    "out/ss-hasup.rktd"
-      ;   "out/ss-hasdown.rktd"
-      ;    "out/ss-multimod.rktd"
-        )))
+      ;    "ss-hasup.rktd"
+      ;   "ss-hasdown.rktd"
+      ;    "ss-multimod.rktd"
+        ))))
       (save-pict "plot-explore.png" pp))
      ((explore) (explore data-csv*))
      ((overview) (t:dataset-overview* data-csv*))

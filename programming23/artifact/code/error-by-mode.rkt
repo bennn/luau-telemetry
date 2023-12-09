@@ -54,7 +54,7 @@
       #:x-label #f
       #:y-label #f)))
 
-(define out-kind 'pdf)
+(define out-kind 'png)
 
 (module+ main
   (define title* '("Type error" "Background error"))

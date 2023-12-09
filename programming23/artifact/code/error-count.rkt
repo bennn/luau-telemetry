@@ -8,7 +8,7 @@
 
 ;; ---
 
-(define out-kind 'pdf)
+(define out-kind 'png)
 
 (define (row->te x) (first x))
 (define (row->fs x) (second x))
