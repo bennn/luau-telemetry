@@ -45,6 +45,7 @@
 
 (module+ main
   (with-output-to-file (build-path data-dir "downgrade-count.txt")
+    #:exists 'replace
     (lambda ()
       (let ((what "upgrade"))
         (displayln what)

@@ -7,7 +7,6 @@ install:
 export: clean cleandata
 	cd out ; for X in out/error-density-ss-nocheck.rktd out/ss-nocheck.rktd out/ss-nonstrict.rktd ; do tar -czf ${X}.tar.gz ${X} ; rm ${X} ; done ; cd ..
 	cd .. ; tar -czf artifact.tar.gz artifact ; cd -
-	git checkout -- .
 
 cleandata:
 	rm -f data/*.csv
