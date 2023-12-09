@@ -1463,7 +1463,8 @@ The table does not include \mnocheck{} because all its type errors are
 To deal with pathologies such as the worst-case time for ML-style type
 inference~\cite{ktu-caap-1990,m-popl-1990}, the typechecker
 has internal limits that restrict the problems it will attempt to solve.
-Hitting a limit triggers one of the following errors:
+Hitting a limit triggers one of the following errors along with a message
+that the analysis failed to understand the code:
 \code{CodeTooComplex},
 \code{NormalizationTooComplex}, or
 \code{UnificationTooComplex}.
