@@ -6,13 +6,13 @@ This artifact packages the data for the paper:
  _Privacy-Respecting Type Error Telemetry at Scale_
 
 URL
-TODO
+https://doi.org/10.5281/zenodo.10313778
 
 md5sum artifact.tar.gz
-28e1d1451d549868698959cc42a4c869
+fa3e50c5913015084413bc89f440af5a
 
 md5sum data.tar.gz
-a62fa9e50258efda1756b6f85f71a799  data.tar.gz
+a62fa9e50258efda1756b6f85f71a799
 
 
 ### Getting Started
