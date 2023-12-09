@@ -34,7 +34,8 @@
   (define num-down 0)
   (define num-same 0)
   (void
-    (for ((row* (in-list row**)))
+    (for ((row* (in-list (map (lambda (rr*) (filter-not row->switchedmodule rr*)) row**)))
+          #:unless (or (null? row*) (null? (cdr row*))))
       (for/fold ((prev (getter (car row*))))
                 ((row (in-list (cdr row*))))
         (define curr (getter row))
@@ -47,7 +48,9 @@
         curr)))
   (define-values [pct-up pct-same pct-down]
     (let ((bot (+ num-up num-down num-same)))
-      (apply values (map (lambda (n) (pct n bot)) (list num-up num-same num-down)))))
+      (if (zero? bot)
+        (values "na" "na" "na")
+        (apply values (map (lambda (n) (pct n bot)) (list num-up num-same num-down))))))
   (printf "  ~a & ~a & (\\pct{~a}) & ~a & [\\pct{~a}] & ~a & [\\pct{~a}] \\\\~n"
           mode num-up pct-up
                num-same pct-same
@@ -154,7 +157,8 @@
         (/ (- (row->ctime rr) x0) 1000))
       (points
         (filter values
-          (for/list ((rr (in-list row*)))
+          (for/list ((rr (in-list row*))
+                     #:unless (row->switchedmodule rr))
             (define x (row->x rr))
             (define y (row->y rr))
             (and x y
@@ -189,7 +193,7 @@
         #:y-label #f
         #:x-label #f
         ))
-    (save-pict out-file (freeze pp))
+    (save-pict out-file (freeze pp) out-kind)
     (void)))
 
 ;; TODO density, counts
@@ -206,7 +210,7 @@
 (module+ main
   (printf "error-count, density~n")
   (for-each simple-go roblox-mode*)
-  #;(for-each plot-go (values #;cddr roblox-mode*))
+  (for-each plot-go (values #;cddr roblox-mode*))
   (void))
 
 

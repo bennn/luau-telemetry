@@ -2,7 +2,7 @@
 % vim: set fileencoding=utf-8 :
 
 % TODO BEFORE SUBMISSION
-% - error-by-mode* *density-diff* make sure PDF not PNG use vim to check
+% - units on all plots
 
 % TODO BEFORE FINAL
 % - explain edit range computations
@@ -625,7 +625,7 @@ Our type error telemetry has to meet all of the above constraints.
 \end{figure}
 
 The type error telemetry for a Roblox Studio session is gathered as a series of
-records, all with the same per-session \panon{} session identifier.
+records, all with the same  \panon{} session identifier.
 This allows us to correlate telemetry across a single
 session, but not between sessions.
 In order to avoid swamping the telemetry servers, the client reports on a subset
@@ -648,7 +648,7 @@ or simply switched to another module.
 \Cref{f:tdata} shows the structure of our telemetry records:
 \begin{enumerate}
   \item
-    \uid{}: a \panon{} identifier for the current session.
+    \uid{}: a \panon{} identifier (16-digit random number) for the current session.
   \item
     Time: one timestamp from the client and one from the server.
     %% timestamp explanation \cref{s:data-cleaning}
@@ -1508,15 +1508,15 @@ Density is the number of type errors divided by the number of lines.
 \Cref{f:error-density} plots changes to error density for every session in the dataset.
 The x axis counts time in seconds from the start of the session.
 Most sessions last a few dozen seconds~(\cref{t:session-size}), so the axis
-ends at 150 seconds.
-%% TODO explain why 150 ... shows some tail but not whole thing
+ends at 150 seconds to show some but not all of the long tail.
 The y axis shows changes to errors over time; a positive number means errors
 increased since the last record, and a negative number represents a decrease.
 While there are a few errors that go outside the plot bounds
 (max \mnocheck{}: 101, max \mnonstrict{}: 3577, max \mstrict{}: 87), we focus
 on $\pm{}50$ errors because most of the mass is in that region.
-The points are color-coded to give each session the same color, but this is not
-very useful because there are many more sessions than colors.
+The points are color-coded by their session.
+There are many colors througout the plot, which shows that the data comes
+from many different sessions and is not dominated by a few high-traffic sessions.
 
 
 \paragraph{Observations}
@@ -1545,8 +1545,11 @@ very useful because there are many more sessions than colors.
     (in particular the one with over 3,000 errors!) whereas most \mstrict{}
     sessions pay close attention to it.
 
-  %% \item
-  %%   TODO plot FS with a much bigger range ... tells a different story about buildup?
+  \item
+    When a color appears above the x axis, the same color usually appears below it as well.
+    For example, \mnocheck{} has a cluster of purple points near the 20 second mark
+    and $\pm 30$ density, which suggests that one session repeatedly added and removed errors.
+    The next subsection conducts a thorough analysis.
 
 \end{itemize}
 
@@ -1559,6 +1562,7 @@ very useful because there are many more sessions than colors.
   %% code/error-count.rkt
   % TODO use bars instead, percent only, don't care about counts
 
+  %% with ALL data, modswitch + no switch
   % TE: nocheck & 48378 & [\pct{46.83}] & 9440 & [\pct{9.14}] & 45479 & [\pct{44.03}] \\
   % TE: nonstrict & 19491 & [\pct{39.63}] & 9567 & [\pct{19.45}] & 20121 & [\pct{40.91}] \\
   % TE: strict & 733 & [\pct{39.18}] & 368 & [\pct{19.67}] & 770 & [\pct{41.15}] \\
@@ -1574,6 +1578,33 @@ very useful because there are many more sessions than colors.
   % FS mod: nocheck & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
   % FS mod: nonstrict & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
   % FS mod: strict & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
+
+  %% with NON-moduleswitch data
+% TE
+%   nocheck & 961 & (\pct{38.50}) & 694 & [\pct{27.80}] & 841 & [\pct{33.69}] \\
+% FS
+%   nocheck & 156422 & (\pct{37.19}) & 153965 & [\pct{36.61}] & 110194 & [\pct{26.20}] \\
+% TE mod
+%   nocheck & 0 & (\pct{na}) & 0 & [\pct{na}] & 0 & [\pct{na}] \\
+% FS mod
+%   nocheck & 153913 & (\pct{36.96}) & 152735 & [\pct{36.68}] & 109807 & [\pct{26.37}] \\
+% TE
+%   nonstrict & 8623 & (\pct{37.67}) & 5263 & [\pct{22.99}] & 9004 & [\pct{39.34}] \\
+% FS
+%   nonstrict & 18927 & (\pct{37.41}) & 17791 & [\pct{35.17}] & 13872 & [\pct{27.42}] \\
+% TE mod
+%   nonstrict & 7185 & (\pct{36.61}) & 4768 & [\pct{24.30}] & 7672 & [\pct{39.09}] \\
+% FS mod
+%   nonstrict & 18573 & (\pct{37.09}) & 17604 & [\pct{35.15}] & 13905 & [\pct{27.76}] \\
+% TE
+%   strict & 442 & (\pct{38.27}) & 244 & [\pct{21.13}] & 469 & [\pct{40.61}] \\
+% FS
+%   strict & 296 & (\pct{31.66}) & 360 & [\pct{38.50}] & 279 & [\pct{29.84}] \\
+% TE mod
+%   strict & 251 & (\pct{35.35}) & 204 & [\pct{28.73}] & 255 & [\pct{35.92}] \\
+% FS mod
+%   strict & 272 & (\pct{32.04}) & 317 & [\pct{37.34}] & 260 & [\pct{30.62}] \\
+
   \begin{tabular}{l@{~~}lr@{}rr@{}rr@{}r}
     & & \zerowidth{\rbox{\addsym{}}} & & \zerowidth{\ybox{\keepsym{}}} & & \zerowidth{\gbox{\dropsym{}}} \\\midrule
     type error  & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
