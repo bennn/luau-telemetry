@@ -699,9 +699,17 @@ To track the edit range, we record a start and end position, which we
 update appropriately on every edit. This can result in very large and
 imprecise edit ranges, for example, if the user edits at the beginning and end
 of the file.
-We acknowledge this and other threats in~\cref{s:threats}.
 The upshot of this strategy is that it reduces the size and complexity of
 telemetry records because there is only one interval for errors to overlap with.
+
+This telemetry design is admittedly coarse-grained.
+For instance, it does not distinguish between edits that remove one error
+while introducing another.
+We acknowledge this and other threats in~\cref{s:threats}.
+The main advantages of this telemetry are the small size of each record and
+the complete lack of private information.
+Furthermore, despite the limitations, this telemetry supports a variety of
+inferences that we showcase in the next section.
 
 
 \section{The Data}
@@ -1190,11 +1198,6 @@ In the \mnonstrict{} columns, for example, seventeen records
 introduce (\addsym{}) at least one \code{CannotCallNonFunction} error.
 Four records keep the number for that error at the same, nonzero level,
 and twenty reduce the number of \code{CannotCallNonFunction} errors.
-
-The counts are imprecise because of telemetry granularity.
-If a creator removes one error but then
-introduces another on a different line, this can manifest as
-a keep (\keepsym{}) rather than one add (\addsym{)} and one drop (\dropsym{}).
 
 This table is based on the 996,164 records generated from keystroke events.
 It ignores records based on module switches because those do not have
@@ -1691,14 +1694,6 @@ from~\cref{s:introduction}.
 The answers confirm several aspects of Luau's design, but
 at the same time offer several directions for future improvements.
 
-Luau has an efficient type checker that can
-analyze thousands of lines of code~(\cref{t:codebase-size}) quickly
-enough to be used on-the-fly in an IDE.
-But, few sessions use type analysis directly.
-We conjecture that Luau needs further tailoring to match
-common idioms in untyped code.
-Discovering these idioms is a question for future work~(\cref{s:conclusion}).
-
 \begin{description}
   \item[RQ1.]\leavevmode
     \begin{description}
@@ -1707,6 +1702,14 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
         type checking~(\cref{f:dataset-overview}).
         Most of these use \mnonstrict{} mode, and fewer than \pct{1}
         use \mstrict{} mode.
+
+        Luau has an efficient type checker that can
+        analyze thousands of lines of code~(\cref{t:codebase-size}) quickly
+        enough to be used on-the-fly in an IDE.
+        But, few sessions use type analysis directly.
+        We conjecture that Luau needs further tailoring to match
+        common idioms in untyped code.
+        Discovering these idioms is a question for future work~(\cref{s:conclusion}).
 
       \item[- How often do projects contain modules with different modes?]
         Sessions rarely combine analysis modes.
@@ -1859,6 +1862,12 @@ recruiting participants.
 Second, the edit ranges are a coarse approximation of actual edits.
 They begin at the lowest edited line of code and end at the highest
 edited line, even if nothing between those lines changed.
+On a related note, the computatation that determines whether an old
+type error overlaps with the current edit range has many edge cases,
+especially to handle deletions, and may mis-count.
+This could explain why~\cref{t:type-error-survival} reports zero syntax errors
+that overlap with the current edit range; if the fix is to delete code,
+then the edit range is empty.
 
 Third, session-based data has limitations.
 A creator who closes and reopens Roblox Studio every day has
@@ -2023,21 +2032,19 @@ A major difference is that we have only samples, not full sequences,
 which significantly impacts our study methods and inferences.
 
 There is a rich body of work that uses IDE instrumentation to study programmers
-(e.g.,~\cite{pgnwk-koli-2022,wk-icer-2019,hl-icse-2010,j-ieeesoft-2013,kje-ase-2010, mmlb-swvis-2014, ncvjd-ecoop-2013, rl-icse-2008, we-xp-2004}).
+(e.g.,~\cite{pgnwk-koli-2022,wk-icer-2019,hl-icse-2010,j-ieeesoft-2013,kje-ase-2010, mmlb-swvis-2014, ncvjd-ecoop-2013, rl-icse-2008, we-xp-2004,bgimgm-cse-2016,dlc-iticse-2014}).
+The Blackbox project has accumulated terabytes of Java code over a ten-year span,
+and has thereby enabled dozens of contributions to CS education~\cite{bask-icer-2018,bkmu-sigcse-2014}.
+The GRUMPS telemetry system collected over four million keystroke-level actions to study
+student programmers~\cite{tkdmceg-ascilite-2003,tm-iticse-2004}.
 WatchDog records the time that programmers spend reading, writing, and testing
 code~\cite{blpgz-icse-2016}.
 TDD-Guide collects similar data to teach testing methods~\cite{mdk-xp-2008}.
-The Blackbox project collects Java programs and has enabled
-dozens of contributions to the area of CS education~\cite{bask-icer-2018,bkmu-sigcse-2014}.
-Other logging-based studies of Java programs draw conclusions from compiler error
-messages~\cite{bgimgm-cse-2016,dlc-iticse-2014}.
-The GRUMPS telemetry system collected 4.7 million keystroke-level actions from
-Ada learners~\cite{tkdmceg-ascilite-2003,tm-iticse-2004}.
 None of the above are sufficiently private to work for Roblox Studio.
 The BitFit project counts notable events (compile program, ask for hint, etc.)
 for Java~\cite{ekc-wccce-2016,anna-russo-kennedy-ms-2006}.
 While it does operate in a transparent~\cite{transparent-telemetry} manner, it
-only provides coarse-grained information that would be insufficient in our
+provides only coarse-grained information that would be insufficient in our
 study.
 
 
