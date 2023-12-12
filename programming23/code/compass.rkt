@@ -2,6 +2,7 @@
 
 (require
   "base.rkt"
+  (only-in "error-count.rkt" *current-row-filter* make-row-filter)
   plot/no-gui
   )
 
@@ -17,13 +18,15 @@
 (define (row->fs rr) (second rr))
 
 (define (compass-plot mode)
+  (printf "mdoe ~a~n" mode)
   (define fname (mode->filename mode))
   (define out-file (build-path img-dir (format "compass-~a.~a" mode out-kind)))
   (define row** (file->value fname))
+  (define rfilter (make-row-filter))
   (define h# (init#))
   (void
-    (for ((row* (in-list row**))
-          #:unless (null? (cdr row*)))
+    (for ((row* (in-list (map (lambda (rr*) (filter rfilter rr*)) row**)))
+          #:unless (or (null? row*) (null? (cdr row*))))
       (define curr (first row*))
       ;; TODO !maybe! want old vs curr in range ... instead of overall
       (for/fold ((prev-te (row->te curr))
@@ -64,7 +67,7 @@
            (num-total (apply + num*))
            (_ (set-box! *ymax (apply max (map (lambda (n) (npct n num-total)) num*))))
            )
-#;(displayln (vector "te only" (npct num-te num-total)))
+(displayln (vector "te only" (npct num-te num-total)))
       (discrete-histogram
         (list
           (vector "zero" (npct num-zero num-total))
@@ -75,7 +78,8 @@
         #:color neutral-color
         #:line-color neutral-color)))
   (define ymax 50 #;(round-10 (unbox *ymax)))
-  (parameterize ([plot-x-far-ticks no-ticks]
+    (void)
+  #;(parameterize ([plot-x-far-ticks no-ticks]
                  [plot-y-far-ticks no-ticks]
                  #;[plot-x-ticks (linear-major-y-ticks 4)]
                  [plot-y-ticks (percent-ticks ymax)]
@@ -108,12 +112,14 @@
   (build-path data-dir (format "error-density-ss-~a.rktd" mm)))
 
 (define (go mode*)
-  (for-each compass-plot mode*))
+  (parameterize ((*current-row-filter* 'yes-switch))
+    (for-each compass-plot mode*)))
 
 
 ;; ---
 
 (module+ main
-  (go (values #;cddr roblox-mode*))
+  (go (values #;cddr
+              roblox-mode*))
   (void))
 

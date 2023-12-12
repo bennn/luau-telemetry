@@ -6,7 +6,7 @@ This artifact packages the data for the paper:
  _Privacy-Respecting Type Error Telemetry at Scale_
 
 URL
-https://doi.org/10.5281/zenodo.10313778
+https://zenodo.org/doi/10.5281/zenodo.10275213
 
 md5sum artifact.tar.gz
 fa3e50c5913015084413bc89f440af5a

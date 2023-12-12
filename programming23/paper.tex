@@ -121,6 +121,7 @@ Kahlert School of Computing at the University of Utah.}
 \newcommand{\chkMaybe}{\wideas{\dotscale{\Circle}}{\chkYes}}
 \newcommand{\chkNo}{\wideas{}{\chkYes}}
 \newcommand{\pct}[1]{\SI{#1}{\percent}}
+\newcommand{\nanpct}{n/a}
 \newcommand{\percentile}[1]{{#1}th~percentile}
 \newcommand{\ptile}[1]{\textsc{p}{#1}}
 \newcommand{\modefont}[1]{\texttt{#1}}
@@ -279,7 +280,7 @@ students in code camps may begin in the \mnocheck{} mode that reports only
 syntax errors; hobbyists can use \mnonstrict{} mode to identify
 would-be runtime errors; and developers who need to ensure software
 quality can rely on \mstrict{} mode.
-(No matter the mode, a {\FS{}} type analysis still drives the \IDE{} tools.)
+Also, no matter the mode, a {\FS{}} type analysis runs to guide \IDE{} tools~(\cref{s:context}).
 Luau's types aim to support untyped designs, in the spirit of migratory
 typing~\cite{tfffgksst-snapl-2017}, so that creators can switch modes without
 needing to restructure their code in major, potentially-breaking, ways.
@@ -367,8 +368,7 @@ limited to a small number of users.
 
   \item
     An available dataset of over 1.5 million telemetry records
-    and scripts to analyze them.
-    \emph{TODO We intend to submit these in an artifact.}
+    and scripts to analyze them: \url{https://zenodo.org/doi/10.5281/zenodo.10275213}
 
 \end{itemize}
 
@@ -495,7 +495,7 @@ a brief description.
     \code{CountMismatch} & Arity mismatch for a function. \\
     %% \code{CannotCallNonFunction} & Called a value that is not a function. \\
     \code{IncorrectGenericParamCount} & Arity mismatch for a generic type. \\
-    \code{CodeTooComplex} & Type analysis failed, cannot understand the code. \\
+    \code{CodeTooComplex} & Type analysis failed~(\cref{s:code-too-complex}). \\
     %% \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit \\
     \code{GenericError}
     & Generic label for other non-type errors,\\
@@ -588,25 +588,29 @@ Telemetry in Roblox Studio faces three major constraints:
     slowing down the editing experience.
 
   \item
-    Telemetry \emph{must transmit a small amount of data}---not too many records
-    with not too much information inside---to avoid overloading the servers.
+    Telemetry \emph{must transmit a small amount of data} to avoid overloading the servers.
+    This constrains both the number of records the system can transmit and the size of each record.
 
 \end{enumerate}
-Cox~\cite{transparent-telemetry} discusses in detail the privacy implications
-and tradeoffs in telemetry.
+See Cox~\cite{transparent-telemetry} for further discussion of
+the privacy implications and tradeoffs in telemetry.
 
 In addition, due to the architecture of Roblox Studio,
 there is some information that is not available to the
 typechecker:
 \begin{itemize}
   \item
-    Lifecycle events including as save, run, quit, and publish.\footnote{Publish events
+    Lifecycle events including save, run, quit, and publish.
+    {(Publish events
     cannot be reported at any rate because they are public, and could be used
-    to match a telemetry session to a creator.}
+    to match a telemetry session to a creator.)}
   \item
     GUI state: in particular, whether the Script Analysis widget is visible.
 \end{itemize}
 Our type error telemetry has to meet all of the above constraints.
+This means that it cannot send event-based telemetry on IDE lifecycle events
+(due to Studio's architecture) and it cannot send full results from every type
+analysis because that would overwhelm the data-collection server.
 
 
 \subsection{Telemetry Records}
@@ -648,7 +652,7 @@ or simply switched to another module.
 \Cref{f:tdata} shows the structure of our telemetry records:
 \begin{enumerate}
   \item
-    \uid{}: a \panon{} identifier (16-digit random number) for the current session.
+    \uid{}: a \panon{} identifier (15-digit random number) for the current session.
   \item
     Time: one timestamp from the client and one from the server.
     %% timestamp explanation \cref{s:data-cleaning}
@@ -661,8 +665,8 @@ or simply switched to another module.
   \item
     Size Info: number of lines in the codebase and number of lines in the edit range.
   \item
-    Overall Counts: summarizes type errors and \FS{} errors during the
-    last two invocations of type analysis, and additionally reports the number
+    Overall Counts: summary of type errors and \FS{} errors during the
+    last two invocations of type analysis, and the number
     of times type analysis hit an internal limit on problem
     size~(see~\cref{s:code-too-complex} for details).
     For each invocation and each kind of
@@ -674,7 +678,7 @@ or simply switched to another module.
       \item errors in the current edit range.
     \end{itemize}
   \item
-    Edit Range Counts: these list specific errors that arose in the last two
+    Edit Range Counts: list of specific errors that arose in the last two
     type analyses and overlap with the current edit range.
     Since there are 35 possible errors~(\cref{s:context}), there can be up to 70 counts
     in a telemetry record.
@@ -695,17 +699,9 @@ To track the edit range, we record a start and end position, which we
 update appropriately on every edit. This can result in very large and
 imprecise edit ranges, for example, if the user edits at the beginning and end
 of the file.
+We acknowledge this and other threats in~\cref{s:threats}.
 The upshot of this strategy is that it reduces the size and complexity of
 telemetry records because there is only one interval for errors to overlap with.
-
-This telemetry design is admittedly coarse-grained.
-For instance, it does not distinguish edits that ignore a type
-error from edits that remove one error while introducing another.
-We acknowledge this and other threats in~\cref{s:threats}.
-The main advantages of this telemetry are the small size of each record
-and the complete lack of private information.
-Furthermore, despite the limitations, this telemetry supports a variety of
-inferences that we showcase in the next section.
 
 
 \section{The Data}
@@ -727,17 +723,13 @@ For each of the 24 hours in each day, there is one blue bar
 indicating the number of records generated during that hour.
 Each hour has a few dozen to over 3,000 records, typically about
 1,000.
-{We conjecture the very low bars are due to outage on
-  the logging server, but need to investigate further.}
-The tall bars are FILL TODO.
-%% \FILL{} investigate one tower, what's happening?? all one session?
-Telemetry ended in early April; the long tail is due to developers
-updating Roblox Studio later.
-% BEN: I see no basis for this; nor is this at all interesting.
-%% ben: basis = it's where the peaks are
-% We do not know which timezone the records originated in, but since the counts
-% tend to peak midday California time it seems that the majority
-% of Roblox developers are following a Western Hemisphere schedule.
+We conjecture the very low bars are due to outage on
+the logging server and that the very tall bars are due to
+user scripts that generated a huge number of keystrokes.
+%% TODO investigate one tower, what's happening?? all one session?
+Telemetry ended in early April; however, there are short bars in the mid-April
+range from developers who waited a few days to update Roblox Studio.
+
 The regular pattern of the peaks suggests that many creators
 follow a regular schedule; these may be
 professional developers.
@@ -851,7 +843,7 @@ For example, the x-axis of the first plot counts up to 1,000 lines (not showing
 a long tail to the right) and the y-axis counts up to 1,000 telemetry records
 (not showing a tall spike on the left).
 
-There is a huge amount of variation across projects.
+There is a huge amount of variation across sessions.
 The largest ones have over 50,000 lines of code
 while the smallest have zero lines of code.
 %% TODO filter the zero lines? what happens in that data?? run a query
@@ -922,24 +914,26 @@ In total, there are over 590,000 type errors.
 The number of \FS{} errors is much larger, at 72 million, because this analysis
 uses rigorous checks and runs on every module no matter what type analysis
 mode the module declares.
-(Furthermore, \FS{} checks run silently, so creators have no
-awareness of or incentive to fix these errors.)
+Furthermore, \FS{} checks run silently, so creators have no
+awareness of or incentive to fix these errors.
 Approximately half the analysis errors occurred in the current module,
-and a small fraction overlapped with the current edit range~(\pct{5} for
+and a small fraction of these overlapped with the current edit range~(\pct{5} for
 type errors, \pct{1} for \FS{}).
+The other errors point to different modules in the codebase.
 
-The large fraction of errors in the current module is encouraging
-for two reasons.
+The fraction of errors in the current module is relatively high because projects
+contain many modules, all of which might contain latent type errors.
+This high fraction is encouraging for two reasons.
 First, it suggests that errors appear locally, as the result of edits to nearby
 code, rather than as the result of edits to code that lives in another
 module.
-Second, it suggests that creators typically fix errors before switching
+Second, it suggests that creators fix errors before switching
 to another module.
 
 The low fraction of errors in the edit range sends a mixed message:
 \begin{itemize}
   \item
-    On one hand, it suggests that edits successfully remove errors.
+    On one hand, it may be that edits successfully remove errors.
     This is true, however, only for type errors and not for \FS{} errors.
     There are 11,479 more type errors from the previous analysis
     that overlap with the current edit range~(\pct{27} difference),
@@ -1039,6 +1033,7 @@ Creators might get discouraged or overwhelmed by a high error count.
 The data does not support this explanation.
 On average, mode-upgrades resulted in 3 additional
 type errors (stddev 7, median 0).
+This data excludes module switch records and considers only keystroke events.
 The worst-case increase was quite high at 57 type errors, but exceptional.
 In another exception, upgrading modes removed three type errors,
 possibly due to other edits being rolled in with the
@@ -1134,7 +1129,8 @@ Digging further into \FS{} errors, the median number of such errors by mode is
 Records in \mnocheck{} mode evidently do not have significantly more \FS{}
 errors.
 Furthermore, type analysis does not seem to reduce \FS{}
-errors; this is surprising and~\cref{s:tefs-compass} has more to say about it.
+errors.
+This is surprising;~\cref{s:tefs-compass} explores further.
 
 
 \subsection{Type Errors vs. Program Edits}
@@ -1181,8 +1177,7 @@ errors; this is surprising and~\cref{s:tefs-compass} has more to say about it.
 The main focus of our telemetry design is to learn how type errors intersect
 with edit ranges.
 Indeed, most of the fields in a telemetry record are dedicated to this
-topic~(\cref{f:tdata}), and are directed to RQ2 on type errors
-(\cref{s:introduction}).
+topic~(\cref{f:tdata}), and are directed to RQ2 on type errors .
 
 Using the results of the previous and current type analysis from
 each telemetry record,~\cref{t:type-error-survival}
@@ -1198,8 +1193,8 @@ and twenty reduce the number of \code{CannotCallNonFunction} errors.
 
 The counts are imprecise because of telemetry granularity.
 If a creator removes one error but then
-introduces another on a different line, this typically manifests as
-a \keepsym{} rather than one \addsym{} and one \dropsym{}.
+introduces another on a different line, this can manifest as
+a keep (\keepsym{}) rather than one add (\addsym{)} and one drop (\dropsym{}).
 
 This table is based on the 996,164 records generated from keystroke events.
 It ignores records based on module switches because those do not have
@@ -1222,19 +1217,23 @@ telemetry system.
     of this low overlap rate for future work.
 
   \item
-    \code{SyntaxError} and the related \code{UnknownSymbol} and
+    \code{SyntaxError} and the related errors \code{UnknownSymbol} and
     \code{UnknownProperty} are the most common.
     If the edit range errors are indicative of type errors at large,
-    then most errors in the data are likely due to typos.
-    These errors also survive (\keepsym{}) the most often.
+    then most errors in the data are likely due to typos during edits.
+    These errors also survive (\keepsym{}) the more than any other.
 
-    Our telemetry strategy likely inflates
-    the number of typos because it cannot determine when a creator is
-    mid-edit.
+    Curiously, the number of syntax errors never decreases or stays the same.
+    This may be because the easy fix is to press undo, and telemetry cannot
+    see undo events.
+
+    %% TODO awkward
+    Our telemetry strategy likely inflates the number of typos because it cannot
+    determine when a creator is mid-edit.
     For example, a creator who writes a method call
     \code{bucket.countFish()} letter-by-letter will generate an
     \code{UnknownSymbol} error for \code{buck} and
-    \code{UnknownProperty} for \code{bucket.c}, which may end up sampled.
+    \code{UnknownProperty} for \code{bucket.c}, which may end up getting sampled.
     \Cref{s:conclusion} suggests ways
     to avoid this in the future.
 
@@ -1416,16 +1415,16 @@ The table does not include \mnocheck{} because all its type errors are
 
 \begin{itemize}
   \item
-    Syntax errors, in particular \code{UnknownSymbol} (for an unbound variable),
+    Typo-level errors, in particular \code{UnknownSymbol} (for an unbound variable),
     are much more common in \mnonstrict{} than \mstrict{}.
     This may be because \mnonstrict{} reports fewer errors
     to dilute the proportion of unknown symbols.
 
   \item
     Despite being less strict, \mnonstrict{} reported four errors that
-    never appeared in the \mstrict{} records:
-    \code{DuplicateTypeDefinition}, \code{OnlyTablesCanHaveMethods},
-    \code{MissingUnionProperty}, and \code{FunctionDoesNotTakeSelf}.
+    never appeared in \mstrict{} records:
+    \code{DuplicateTypeDefinition}, \code{FunctionDoesNotTakeSelf},
+    \code{MissingUnionProperty}, and \code{OnlyTablesCanHaveMethods}.
     We attribute this to the much larger number of \mnonstrict{} records in the
     dataset.
 
@@ -1488,13 +1487,13 @@ Note that all three sessions \emph{could} have been from the same codebase.
   %% - nocheck indeed the highest > NS > S
 
   \mnocheck{}
-  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff-no-switch.pdf}
 
   \mnonstrict{}
-  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff-no-switch.pdf}
 
   \mstrict{}
-  \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff.pdf}
+  \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff-no-switch.pdf}
   \caption{Changes in type error density ($\frac{\mbox{\#errors}}{\mbox{\#lines}}$) over time (seconds).}
   \label{f:error-density}
 \end{figure}
@@ -1507,17 +1506,18 @@ to normalize for the wide range of codebase sizes~(\cref{t:codebase-size}).
 Density is the number of type errors divided by the number of lines.
 
 \Cref{f:error-density} plots changes to error density for every session in the dataset.
+The data excludes module-switch telemetry records to keep the focus on edits.
 The x axis counts time in seconds from the start of the session.
 Most sessions last a few dozen seconds~(\cref{t:session-size}), so the axis
 ends at 150 seconds to show some but not all of the long tail.
 The y axis shows changes to errors over time; a positive number means errors
 increased since the last record, and a negative number represents a decrease.
 While there are a few errors that go outside the plot bounds
-(max \mnocheck{}: 101, max \mnonstrict{}: 3577, max \mstrict{}: 87), we focus
+(max \mnocheck{}: 51, max \mnonstrict{}: 3586, max \mstrict{}: 87), we focus
 on $\pm{}50$ errors because most of the mass is in that region.
 The points are color-coded by their session.
 There are many colors througout the plot, which shows that the data comes
-from many different sessions and is not dominated by a few high-traffic sessions.
+from many different sessions rather than from a few high-traffic sessions.
 
 
 \paragraph{Observations}
@@ -1534,23 +1534,22 @@ from many different sessions and is not dominated by a few high-traffic sessions
     The next section explores this point in detail.
 
   \item
+    Only a small fraction of \mnocheck{} records have nonzero type error density.
+    This is in line with~\cref{t:type-error-survival}.
+    Module switches in \mnocheck{} have nonzero density more often, but still
+    rarely (\pct{3}).
+    %% 34372 / 1337552 = 100 * 0.025664048949124968
+
+  \item
     After the 40-second mark, changes to type error density become much
     smaller.
     These long-running sessions are not introducing errors.
-    %% TODO check #mod switch in long sessions
 
   \item
-    \mnonstrict{} has the biggest fluctuations in errors, whereas \mstrict{}
-    has the smallest.
+    \mnonstrict{} has a bigger fluctuations in errors than \mstrict{}.
     One explanation is that some \mnonstrict{} sessions ignore type analysis
     (in particular the one with over 3,000 errors!) whereas most \mstrict{}
     sessions pay close attention to it.
-
-  \item
-    When a color appears above the x axis, the same color usually appears below it as well.
-    For example, \mnocheck{} has a cluster of purple points near the 20 second mark
-    and $\pm 30$ density, which suggests that one session repeatedly added and removed errors.
-    The next subsection conducts a thorough analysis.
 
 \end{itemize}
 
@@ -1581,40 +1580,31 @@ from many different sessions and is not dominated by a few high-traffic sessions
   % FS mod: strict & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
 
   %% with NON-moduleswitch data
-% TE
-%   nocheck & 961 & (\pct{38.50}) & 694 & [\pct{27.80}] & 841 & [\pct{33.69}] \\
-% FS
-%   nocheck & 156422 & (\pct{37.19}) & 153965 & [\pct{36.61}] & 110194 & [\pct{26.20}] \\
-% TE mod
-%   nocheck & 0 & (\pct{na}) & 0 & [\pct{na}] & 0 & [\pct{na}] \\
-% FS mod
-%   nocheck & 153913 & (\pct{36.96}) & 152735 & [\pct{36.68}] & 109807 & [\pct{26.37}] \\
-% TE
-%   nonstrict & 8623 & (\pct{37.67}) & 5263 & [\pct{22.99}] & 9004 & [\pct{39.34}] \\
-% FS
-%   nonstrict & 18927 & (\pct{37.41}) & 17791 & [\pct{35.17}] & 13872 & [\pct{27.42}] \\
-% TE mod
-%   nonstrict & 7185 & (\pct{36.61}) & 4768 & [\pct{24.30}] & 7672 & [\pct{39.09}] \\
-% FS mod
-%   nonstrict & 18573 & (\pct{37.09}) & 17604 & [\pct{35.15}] & 13905 & [\pct{27.76}] \\
-% TE
-%   strict & 442 & (\pct{38.27}) & 244 & [\pct{21.13}] & 469 & [\pct{40.61}] \\
-% FS
-%   strict & 296 & (\pct{31.66}) & 360 & [\pct{38.50}] & 279 & [\pct{29.84}] \\
-% TE mod
-%   strict & 251 & (\pct{35.35}) & 204 & [\pct{28.73}] & 255 & [\pct{35.92}] \\
-% FS mod
-%   strict & 272 & (\pct{32.04}) & 317 & [\pct{37.34}] & 260 & [\pct{30.62}] \\
+  % TE nocheck & 961 & (\pct{38.50}) & 694 & [\pct{27.80}] & 841 & [\pct{33.69}] \\
+  % TE nonstrict & 8623 & (\pct{37.67}) & 5263 & [\pct{22.99}] & 9004 & [\pct{39.34}] \\
+  % TE strict & 442 & (\pct{38.27}) & 244 & [\pct{21.13}] & 469 & [\pct{40.61}] \\
+
+  % TE mod nocheck & 0 & (\pct{na}) & 0 & [\pct{na}] & 0 & [\pct{na}] \\
+  % TE mod nonstrict & 7185 & (\pct{36.61}) & 4768 & [\pct{24.30}] & 7672 & [\pct{39.09}] \\
+  % TE mod strict & 251 & (\pct{35.35}) & 204 & [\pct{28.73}] & 255 & [\pct{35.92}] \\
+
+  % FS nocheck & 156422 & (\pct{37.19}) & 153965 & [\pct{36.61}] & 110194 & [\pct{26.20}] \\
+  % FS nonstrict & 18927 & (\pct{37.41}) & 17791 & [\pct{35.17}] & 13872 & [\pct{27.42}] \\
+  % FS strict & 296 & (\pct{31.66}) & 360 & [\pct{38.50}] & 279 & [\pct{29.84}] \\
+
+  % FS mod nocheck & 153913 & (\pct{36.96}) & 152735 & [\pct{36.68}] & 109807 & [\pct{26.37}] \\
+  % FS mod nonstrict & 18573 & (\pct{37.09}) & 17604 & [\pct{35.15}] & 13905 & [\pct{27.76}] \\
+  % FS mod strict & 272 & (\pct{32.04}) & 317 & [\pct{37.34}] & 260 & [\pct{30.62}] \\
 
   \begin{tabular}{l@{~~}lr@{}rr@{}rr@{}r}
     & & \zerowidth{\rbox{\addsym{}}} & & \zerowidth{\ybox{\keepsym{}}} & & \zerowidth{\gbox{\dropsym{}}} \\\midrule
-    type error  & \mnocheck{}   & 20085 & [\pct{49.83}] & 906 & [\pct{2.25}] & 19317 & [\pct{47.92}] \\
-    (in module) & \mnonstrict{} & 13030 & [\pct{40.22}] & 5513 & [\pct{17.02}] & 13852 & [\pct{42.76}] \\
-                & \mstrict{}    & 419 & [\pct{39.31}] & 230 & [\pct{21.58}] & 417 & [\pct{39.12}] \\
+    type error  & \mnocheck{}   &      0 & [\nanpct{}  ] &      0 & [\nanpct{}]   &      0 & [\nanpct{}] \\
+    (in module) & \mnonstrict{} &   7185 & [\pct{36.61}] &   4786 & [\pct{24.30}] &   7672 & [\pct{39.09}] \\
+                & \mstrict{}    &    251 & [\pct{35.35}] &    204 & [\pct{28.73}] &    255 & [\pct{35.92}] \\
     \\[-2ex]
-    \FS         & \mnocheck{}   & 259865 & [\pct{39.09}] & 175643 & [\pct{26.42}] & 229271 & [\pct{34.49}] \\
-    error       & \mnonstrict{} & 33988 & [\pct{39.74}] & 20738 & [\pct{24.25}] & 30798 & [\pct{36.01}] \\
-    (in module) & \mstrict{}    & 488 & [\pct{36.53}] & 344 & [\pct{25.75}] & 504 & [\pct{37.72}] \\
+    \FS         & \mnocheck{}   & 153913 & [\pct{36.96}] & 152735 & [\pct{36.68}] & 109807 & [\pct{26.37}] \\
+    error       & \mnonstrict{} &  18573 & [\pct{37.09}] &  17604 & [\pct{35.15}] &  13905 & [\pct{27.76}] \\
+    (in module) & \mstrict{}    &    272 & [\pct{32.04}] &    317 & [\pct{37.34}] &    260 & [\pct{30.62}] \\
   \end{tabular}
   \caption{How often do edits increase, maintain, or decrease the number of errors?}
   \label{f:error-changes}
@@ -1636,21 +1626,29 @@ The ``maintain'' rows include cases where there are zero errors before and after
 
 \begin{itemize}
   \item
-    The type error increases and decreases are remarkably balanced: across all
-    three modes, they are at most \pct{2} apart.
-    While some of this balance is due to module-switch records
-    (if the two modules have different error counts, there will be a change),
-    most of the data is from keystrokes; thus, it appears that sessions tend to
-    fix errors highlighted by type analysis.
+    None of our \mnocheck{} samples captured a change in syntax errors in the
+    current module.
+    The nonzero changes in density above~(1802 total, shown in \cref{f:error-density}) all affected
+    other modules.
+    %% TODO doublecheck really zero??!
+    %% QALAN what would this mean ... how can one module change stx errors in another??
+    %% 961 + 841 = 1802
+
+  \item
+    The type error increases and decreases are evenly balanced in
+    \mnonstrict{} and \mstrict{} modes ($\pm\pct{3}$).
+    Since this data is from keystrokes rather than module switches,
+    it appears that sessions tend to fix errors highlighted by type analysis.
 
   \item
     \mstrict{} mode has a higher percent of ``maintain'' (\keepsym{}) records.
     Errors may be more likely to persist in this mode.
-    %% TODO check if actually zero
+    %% NOTE these "=" are all maintaining a nonzero number of errors
 
   \item
-    In \FS{} mode, the percent of ``maintain'' records is high across
-    the board and the increases and decreases are lower.
+    In \FS{} mode, the percent of ``maintain'' records is higher across
+    the board and roughly equal to the percents of increases and decreases
+    (about one-third each).
     No matter the mode, reducing type errors is not guaranteed to reduce
     \FS{} errors as well.
     This is surprising for \mstrict{} mode, and likely relates to
@@ -1670,10 +1668,12 @@ then \mstrict{} analysis does not analyze the import but
 
 In \cref{f:error-changes}, however, nearly \pct{3} of \mstrict{}-mode records
 increase the number of \mstrict{} errors without increasing \FS{} errors.
+%% 3% = 35% - 32%
 Further inspection reveals that the situation is a bit worse, as
 some records increase \mstrict{} errors without changing the \FS{} errors:
-    \pct{22} of \mstrict{} records increase (\addsym{}) the number of type errors
-    but maintain (\keepsym{}) the number of \FS{} errors.
+\pct{16} of all \mstrict{} records increase (\addsym{}) the number of type errors
+but maintain (\keepsym{}) the number of \FS{} errors.
+%% 16% = from code/compass.rkt
 
 The reason for the discrepancy is that \mstrict{} mode and \FS{} analysis
 assign different types to the data model: \mstrict{} assigns a top type
@@ -1694,8 +1694,7 @@ at the same time offer several directions for future improvements.
 Luau has an efficient type checker that can
 analyze thousands of lines of code~(\cref{t:codebase-size}) quickly
 enough to be used on-the-fly in an IDE.
-But, few sessions use type analysis directly and the data presents little
-evidence that doing so would improve creators' quality of life.
+But, few sessions use type analysis directly.
 We conjecture that Luau needs further tailoring to match
 common idioms in untyped code.
 Discovering these idioms is a question for future work~(\cref{s:conclusion}).
@@ -1727,6 +1726,8 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
         to \mnonstrict{}, and therefore keep some type analysis.
         The remainder switch from \mstrict{} to \mnocheck{} (\pct{50})
         or from \mnonstrict{} to \mnocheck{} (\pct{25}).
+        Then again, sessions rarely turn analysis on as well:
+        only 176 ($<\pct{0.05}$) switch to a stronger mode.
         %% FILL more insight if we match ups and downs together??
 
         %% upgrade
@@ -1829,7 +1830,7 @@ Discovering these idioms is a question for future work~(\cref{s:conclusion}).
     higher percentage of the errors.
     Furthermore, there is no apparent relation between \FS{} errors and edits,
     regardless of analysis mode~(\cref{f:error-changes}).
-    A randomly-chosen edit has a 1/3 chance of increasing, decreasing, or
+    A randomly-chosen edit has a roughly 1/3 chance of increasing, decreasing, or
     maintaining the number of \FS{} errors.
 
 \end{description}
@@ -1851,9 +1852,9 @@ and gave up.
 Furthemore, our method of sampling by keystroke and by module switch
 skews the data toward creators who, for whatever reason, do more
 of these actions.
-We have no access to other events, e.g., run locally~(\cref{s:tel-limitations});
+We have no access to other events, e.g., local runs~(\cref{s:tel-limitations});
 future studies may wish to avoid this limitation by actively
-recruiting subjects.
+recruiting participants.
 
 Second, the edit ranges are a coarse approximation of actual edits.
 They begin at the lowest edited line of code and end at the highest
@@ -1930,8 +1931,9 @@ in~\cref{t:telemetry-design}.
 
 In a \emph{classic} telemetry system, such as the ones in
 VSCode~\cite{vscode-telemetry}, IntelliJ~\cite{intellij-telemetry},
-Eclipse~\cite{eclipse-udc}, and
-\code{.NET}~\cite{dotnet-telemetry},
+\code{.NET}~\cite{dotnet-telemetry}
+and
+Eclipse~\cite{eclipse-udc},
 telemetry may include all sorts of
 data: error reports, source code fragments, time\-stamps, and filepaths.
 Users may be able to opt out of some telemetry, but the details depend on the
@@ -2021,11 +2023,10 @@ A major difference is that we have only samples, not full sequences,
 which significantly impacts our study methods and inferences.
 
 There is a rich body of work that uses IDE instrumentation to study programmers
-(e.g.,~\cite{hl-icse-2010,j-ieeesoft-2013,kje-ase-2010, mmlb-swvis-2014, ncvjd-ecoop-2013, rl-icse-2008, we-xp-2004}).
+(e.g.,~\cite{pgnwk-koli-2022,wk-icer-2019,hl-icse-2010,j-ieeesoft-2013,kje-ase-2010, mmlb-swvis-2014, ncvjd-ecoop-2013, rl-icse-2008, we-xp-2004}).
 WatchDog records the time that programmers spend reading, writing, and testing
 code~\cite{blpgz-icse-2016}.
 TDD-Guide collects similar data to teach testing methods~\cite{mdk-xp-2008}.
-Examplar logs programs to give students feedback on their tests~\cite{pgnwk-koli-2022,wk-icer-2019}.
 The Blackbox project collects Java programs and has enabled
 dozens of contributions to the area of CS education~\cite{bask-icer-2018,bkmu-sigcse-2014}.
 Other logging-based studies of Java programs draw conclusions from compiler error
@@ -2084,9 +2085,8 @@ different issues.
 This paper presents the first large-scale analysis of developers' interactions with
 an industrial strength typechecker in a privacy-respecting way.
 Despite the intentionally-restricted data,
-the analysis offers several lessons for the Luau
-developers and other maintainers of gradually-typed languages:
-%% TODO more lessons?
+the analysis offers several lessons for Luau in
+particular and for other gradual languages~(e.g.~\cite{bat-ecoop-2014,cdv-elixir-types-2023,tfffgksst-snapl-2017}) in general:
 \begin{itemize}
   \item
     Nearly all sessions (\pct{90}) use the default ``no check''
@@ -2095,6 +2095,8 @@ developers and other maintainers of gradually-typed languages:
     very conservative about the errors it reports, we conjecture that
     developers would have no objections to using it and are simply unaware that
     other modes exist.
+    Luau, and perhaps other languages, must take care to advertise gradual
+    types and demonstrate how to use them effectively to increase adoption.
 %  \item
 %    \pct{50} of all errors are in current module, so probably errors appear locally (not in a distant module);
 %    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
@@ -2102,6 +2104,8 @@ developers and other maintainers of gradually-typed languages:
     Sessions tend to fix errors immediately rather than dealing with them in a batch
     or ignoring the errors altogether~(\cref{f:error-density,f:error-changes}).
     This should give Roblox confidence to make \mnonstrict{} the default in the future.
+    Other languages should consider adding a nonstrict mode that minimizes false positives
+    as a bridge toward strict type checking.
     % Changes to the number of errors balance one another~(\cref{f:error-density});
     % edits are equally likely to add or remove errors~(\cref{f:error-changes}).
   \item
@@ -2110,6 +2114,7 @@ developers and other maintainers of gradually-typed languages:
     Improving precision is an important direction for future work.
     Until then, \mstrict{} mode clearly needs to relax its data model
     analysis because it raises even more errors than \FS{} checking~(\cref{s:tefs-compass}).
+    Other languages should avoid making the same mistake.
 \end{itemize}
 
 
@@ -2136,7 +2141,7 @@ in Roblox Studio supports a variety of useful analyses:
 
 One aspect of the telemetry that we would change for next time is to provide
 more metadata.
-Luau recently adopted semantic subtyping to reduce false-positive type
+For example, Luau recently adopted semantic subtyping to reduce false-positive type
 errors~\cite{CF05:GentleIntroduction,Jef22:SemanticSubtyping}, but the current
 telemetry has no way to tell if this
 internal extension is enabled or not.
@@ -2144,9 +2149,10 @@ internal extension is enabled or not.
 Three other aspects are also worth rethinking:
 \begin{enumerate}
 
-  \item It would be useful to have fine-grained counts for \FS{} analysis
-errors and to know the specific reason behind errors such as \code{TypeMismatch}.
-But, this additional data could double the size of telemetry records.
+  \item It would be useful to track the identity of errors (to know exactly which ones get fixed),
+    to have fine-grained counts for \FS{} analysis errors, and to
+    record the specific reason behind errors such as \code{TypeMismatch}.
+    But, this additional data could easily double the size of telemetry records.
 
 \item Although tracking edit ranges was useful, it made the telemetry system
 much more difficult to build and maintain.
@@ -2227,6 +2233,36 @@ to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 %   \includegraphics[width=\columnwidth]{img/error-count-strict-row--fs-density-diff.pdf}
 %   \caption{Changes in \FS{} error density (errors / lines) over time (seconds).}
 %   \label{f:error-density}
+% \end{figure}
+
+% \begin{figure}[t]\centering
+%   YES SWITCH
+% 
+%   \mnocheck{}
+%   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff-yes-switch.pdf}
+% 
+%   \mnonstrict{}
+%   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff-yes-switch.pdf}
+% 
+%   \mstrict{}
+%   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff-yes-switch.pdf}
+%   \caption{Changes in type error density ($\frac{\mbox{\#errors}}{\mbox{\#lines}}$) over time (seconds).}
+%   \label{f2:error-density}
+% \end{figure}
+% 
+% \begin{figure}[t]\centering
+%   ALL
+% 
+%   \mnocheck{}
+%   \includegraphics[width=\columnwidth]{img/error-count-nocheck-row--te-density-diff-all.pdf}
+% 
+%   \mnonstrict{}
+%   \includegraphics[width=\columnwidth]{img/error-count-nonstrict-row--te-density-diff-all.pdf}
+% 
+%   \mstrict{}
+%   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff-all.pdf}
+%   \caption{Changes in type error density ($\frac{\mbox{\#errors}}{\mbox{\#lines}}$) over time (seconds).}
+%   \label{f3:error-density}
 % \end{figure}
 
 

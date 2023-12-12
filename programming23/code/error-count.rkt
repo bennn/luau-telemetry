@@ -1,5 +1,9 @@
 #lang racket
 
+(provide
+  *current-row-filter*
+  make-row-filter)
+
 (require
   "base.rkt"
   plot/no-gui
@@ -9,6 +13,15 @@
 ;; ---
 
 (define out-kind 'pdf)
+
+(define *current-row-filter* (make-parameter 'all))
+
+(define (make-row-filter)
+  (case (*current-row-filter*)
+    ((all) (lambda (_) #true))
+    ((yes-switch) (lambda (rr) (row->switchedmodule rr)))
+    ((no-switch) (lambda (rr) (not (row->switchedmodule rr))))
+    (else (raise-argument-error 'make-row-filter "unknown ~a" (*current-row-filter*)))))
 
 (define (row->te x) (first x))
 (define (row->fs x) (second x))
@@ -30,11 +43,15 @@
 
 (define (go-counts getter mode)
   (define row** (file->value (build-path data-dir (format "error-density-ss-~a.rktd" mode))))
+  (define rfilter (make-row-filter))
+  (printf "total filter records: ~a~n" (for/sum ((r* (in-list row**))) (length r*)))
   (define num-up 0)
   (define num-down 0)
   (define num-same 0)
   (void
-    (for ((row* (in-list (map (lambda (rr*) (filter-not row->switchedmodule rr*)) row**)))
+    (for ((row* (in-list (map (lambda (rr*)
+                                (filter rfilter rr*))
+                              row**)))
           #:unless (or (null? row*) (null? (cdr row*))))
       (for/fold ((prev (getter (car row*))))
                 ((row (in-list (cdr row*))))
@@ -155,10 +172,11 @@
       (define x0 (row->ctime (car row*)))
       (define (row->x rr) ;; seconds
         (/ (- (row->ctime rr) x0) 1000))
+      (define rf (make-row-filter))
       (points
         (filter values
           (for/list ((rr (in-list row*))
-                     #:unless (row->switchedmodule rr))
+                     #:when (rf rr))
             (define x (row->x rr))
             (define y (row->y rr))
             (and x y
@@ -174,7 +192,10 @@
                  [plot-y-ticks (linear-major-y-ticks 3)]
                  [plot-font-size 18]
                  [plot-font-family 'roman])
-    (define out-file (build-path img-dir (string-replace (format "error-count-~a-~a.~a" mode (object-name row->y) out-kind) ">" "-")))
+    (define out-file (build-path img-dir (string-replace (format "error-count-~a-~a~a.~a" mode (object-name row->y)
+                                                                 (if (*current-row-filter*) (format "-~a" (*current-row-filter*)) "")
+                                                                 out-kind)
+                                                         ">" "-")))
     (printf "plot-file ~a~n" (path->string (file-name-from-path out-file)))
     (printf "ymax ~a ymin ~a xmax ~a~n"
             (unbox *ymax) (unbox *ymin) (unbox *xmax))
@@ -209,8 +230,12 @@
 
 (module+ main
   (printf "error-count, density~n")
-  (for-each simple-go roblox-mode*)
-  (for-each plot-go (values #;cddr roblox-mode*))
+  (for ((row-filter (in-list '(no-switch) #;(all yes-switch no-switch))))
+    (printf "~n===~nCURRENT FILTER ~a~n" row-filter)
+    (parameterize ((*current-row-filter* row-filter))
+      (for-each simple-go roblox-mode*)
+      (for-each plot-go (values roblox-mode*))
+      (void)))
   (void))
 
 
