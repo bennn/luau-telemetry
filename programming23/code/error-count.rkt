@@ -188,7 +188,8 @@
   (define y-max (or -y-max 50))
   (parameterize ([plot-x-far-ticks no-ticks]
                  [plot-y-far-ticks no-ticks]
-                 [plot-x-ticks (linear-major-y-ticks 4)]
+                 [label-angle 90]
+                 [plot-x-ticks (linear-major-y-ticks 4 "s")]
                  [plot-y-ticks (linear-major-y-ticks 3)]
                  [plot-font-size 18]
                  [plot-font-family 'roman])
@@ -211,7 +212,7 @@
         #:x-max 150
         #:x-min 0
         #:title #f
-        #:y-label #f
+        #:y-label "density"
         #:x-label #f
         ))
     (save-pict out-file (freeze pp) out-kind)
@@ -230,7 +231,7 @@
 
 (module+ main
   (printf "error-count, density~n")
-  (for ((row-filter (in-list '(no-switch) #;(all yes-switch no-switch))))
+  (for ((row-filter (in-list '(all yes-switch no-switch))))
     (printf "~n===~nCURRENT FILTER ~a~n" row-filter)
     (parameterize ((*current-row-filter* row-filter))
       (for-each simple-go roblox-mode*)

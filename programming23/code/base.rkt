@@ -167,17 +167,26 @@
     (linear-major-layout num-ticks ymax)
     percent-format))
 
-(define (linear-major-y-ticks num-ticks)
+(define (linear-major-y-ticks num-ticks [unit-str #f])
   (ticks
     (linear-major-layout num-ticks)
-    linear-major-format))
+    (linear-major-format unit-str)))
 
 (define ((linear-major-layout num-ticks [ymax #f]) ax-min ax-max)
   (for/list ((ii (in-list (linear-seq ax-min (or ymax ax-max) num-ticks))))
     (pre-tick (exact-floor ii) #true)))
 
-(define (linear-major-format ax-min ax-max pre-ticks)
-  (map (compose1 number->string pre-tick-value) pre-ticks))
+(define ((linear-major-format unit-str) ax-min ax-max pre-ticks)
+  (add-units unit-str
+    (map (compose1 number->string pre-tick-value) pre-ticks)))
+
+(define (add-units str ss*)
+  (if (or (not str) (null? ss*))
+    ss*
+    (let loop ((ss* ss*))
+      (if (null? (cdr ss*))
+        (list (string-append (car ss*) " " str))
+        (cons (car ss*) (loop (cdr ss*)))))))
 
 (define (percent-format ax-min ax-max pre-ticks)
   (map (compose1 (lambda (n) (format "~a%" n)) pre-tick-value) pre-ticks))

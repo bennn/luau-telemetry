@@ -42,7 +42,8 @@
         (cons (car k*) (cons n (cdr k*)))
         (cons (car k*) (loop (cdr k*)))))))
 
-(define (f:plot-simple-distro h# summary key out-kind #:x-max [x-max #f] #:y-max [y-max #f])
+(define (f:plot-simple-distro h# summary key out-kind
+                              #:x-max [x-max #f] #:y-max [y-max #f])
   (define ww 200)
   (define hh 180)
   (define out-file (build-path img-dir (format "~a-distribution.~a" key out-kind)))
@@ -90,7 +91,8 @@
         #:x-max x-max
         #:y-min 0
         #:y-max y-max
-        #:x-label #f #:y-label #f #:title #f)))
+        #:x-label "# Records"
+        #:y-label #f #:title #f)))
   (void))
 
 (define (f:plot-codebase-distros x y out-kind limit)

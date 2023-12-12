@@ -20,6 +20,7 @@
                  [plot-y-ticks (linear-major-y-ticks 3)]
                  [plot-font-size 18]
                  [plot-font-family 'roman]
+                 [label-angle 90]
                  [rectangle-color bg-dark-blue]
                  [rectangle-line-color bg-dark-blue]
                 )
@@ -60,17 +61,18 @@
     (define-values [out-file out-kind]
       (let ((out-kind -out-kind))
         (values (build-path img-dir (format "row-distribution.~a" out-kind)) out-kind)))
-    (plot-file
+    (save-pict out-file
+    (plot-pict
       (list weekend-shade day-rules my-bars)
-      out-file
-      out-kind
       #:width  700
       #:height 180
       #:x-min (->posix (ts->datetime max-timestamp))
       #:x-max (->posix (ts->datetime min-timestamp))
       #:y-max ymax
       #:y-min ymin
-      #:x-label #f #:y-label #f #:title #f)
+      #:x-label #f
+      #:y-label "# Records"
+      #:title #f) out-kind)
     (printf "plot-file ~a~n" out-file)
     (void)))
 

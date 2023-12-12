@@ -734,7 +734,9 @@ Each hour has a few dozen to over 3,000 records, typically about
 We conjecture the very low bars are due to outage on
 the logging server and that the very tall bars are due to
 user scripts that generated a huge number of keystrokes.
-%% TODO investigate one tower, what's happening?? all one session?
+%% two biggest towers (7050 6691) are mostly from 2 sessions:
+%% (("\"178,020,742,609,772\"" . 6079))
+%% (("\"458,983,252,701,986\"" . 5085))
 Telemetry ended in early April; however, there are short bars in the mid-April
 range from developers who waited a few days to update Roblox Studio.
 
@@ -1497,7 +1499,7 @@ Note that all three sessions \emph{could} have been from the same codebase.
 
   \mstrict{}
   \includegraphics[width=\columnwidth]{img/error-count-strict-row--te-density-diff-no-switch.pdf}
-  \caption{Changes in type error density ($\frac{\mbox{\#errors}}{\mbox{\#lines}}$) over time (seconds).}
+  \caption{Changes in type error density ($\frac{\mbox{\#curr - \#old errors}}{\mbox{\#lines}}$) over time (seconds).}
   \label{f:error-density}
 \end{figure}
 
