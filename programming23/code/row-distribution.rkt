@@ -5,7 +5,7 @@
   plot/no-gui
   racket/file
   (only-in plot/utils ->pen-color linear-seq)
-  pict pict-abbrevs
+  pict pict-abbrevs ppict/2
   racket/draw
   (only-in gregor posix->datetime ->posix parse-datetime
            days-between +days))
@@ -62,19 +62,27 @@
       (let ((out-kind -out-kind))
         (values (build-path img-dir (format "row-distribution.~a" out-kind)) out-kind)))
     (save-pict out-file
-    (plot-pict
-      (list weekend-shade day-rules my-bars)
-      #:width  700
-      #:height 180
-      #:x-min (->posix (ts->datetime max-timestamp))
-      #:x-max (->posix (ts->datetime min-timestamp))
-      #:y-max ymax
-      #:y-min ymin
-      #:x-label #f
-      #:y-label "# Records"
-      #:title #f) out-kind)
+               (hide-tick-artifact
+                (plot-pict
+                  (list weekend-shade day-rules my-bars)
+                  #:width  700
+                  #:height 180
+                  #:x-min (->posix (ts->datetime max-timestamp))
+                  #:x-max (->posix (ts->datetime min-timestamp))
+                  #:y-max ymax
+                  #:y-min ymin
+                  #:x-label #f
+                  #:y-label "# Records"
+                  #:title #f))
+               out-kind)
     (printf "plot-file ~a~n" out-file)
     (void)))
+
+(define (hide-tick-artifact pp)
+  (define wbox (filled-rectangle 20 20 #:draw-border? #f #:color "white"))
+  (ppict-do
+    pp
+    #:go (coord 17/100 1 'cb) wbox))
 
 (module+ main
   (f:plot-clienttime-distro
