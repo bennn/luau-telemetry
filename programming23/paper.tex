@@ -703,7 +703,8 @@ The upshot of this strategy is that it reduces the size and complexity of
 telemetry records because there is only one interval for errors to overlap with.
 
 This telemetry design is admittedly coarse-grained.
-For instance, it does not distinguish between edits that remove one error
+For instance, it does not distinguish between edits that
+ignore a type error from edits that remove one error
 while introducing another.
 We acknowledge this and other threats in~\cref{s:threats}.
 The main advantages of this telemetry are the small size of each record and
@@ -2197,8 +2198,9 @@ can better accommodate untyped idioms.
 
 Thanks to Benjamin Chung for several helpful discussions about data analysis
 and effective plotting.
-Greenman was supported by
-NSF grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
+We gratefully acknowledge support from
+NSF grant \href{https://www.nsf.gov/awardsearch/showAward?AWD_ID=2227863&HistoricalAwards=false}{SHF-2227863}
+and NSF grant \href{https://nsf.gov/awardsearch/showAward?AWD_ID=2030859&HistoricalAwards=false}{2030859}
 to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
 \newpage
