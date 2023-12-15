@@ -2157,7 +2157,9 @@
       (for ((fn (in-list (map (lambda (s) (build-path output-data-dir s))
                          '( "ss-strict.rktd"
                             "ss-nonstrict.rktd"
-                            "ss-nocheck.rktd")))))
+                            "ss-nocheck.rktd"
+			    "ss-hasup.rktd"
+			    "ss-hasdown.rktd")))))
         (parameterize ((pretty-print-columns 200))
           (with-outfile (build-path output-data-dir (format "~a-~a" my-name (path->string (file-name-from-path fn))))
             (begin
