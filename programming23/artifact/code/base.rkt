@@ -103,6 +103,7 @@
     idx
     (raise-arguments-error 'title-index "no match" "str" str "title*" title*)))
 
+;; 0 nocheck, 2 strict
 (define (mode<? m0 m1)
   (< (mode->int m0) (mode->int m1)))
 

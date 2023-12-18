@@ -358,7 +358,7 @@
                 (loop next-mode
                       (or any-multi? switch?)
                       (or any-up? next-up?)
-                      (or any-down? (not next-up?))
+                      (or any-down? next-down?)
                       (cdr mm*))])))
          (when multi-mode?
            (hash-cons! gg# 'multimod timeline))

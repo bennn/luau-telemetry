@@ -10,6 +10,10 @@
   (define vv (file->value fn))
   (define total-session (length vv))
   (define down-from# (make-hash (map (lambda (x) (cons x 0)) roblox-mode*)))
+  (define mode-compare
+    (if (equal? what "downgrade")
+      mode<?
+      (lambda (next curr) (mode<? curr next))))
   (printf "~a total sessions~n" total-session)
   (void
     (for ((ss (in-list vv)))
@@ -18,9 +22,9 @@
           (define curr-mode (row->mode (car row*)))
           (define next-mode (row->mode (cadr row*)))
           (define next-switch (row->modswitch (cadr row*)))
-          (define downgrade? (and (not next-switch) (mode<? next-mode curr-mode)))
+          (define change? (and (not next-switch) (mode-compare next-mode curr-mode)))
           (define acc+
-            (if downgrade?
+            (if change?
               #;(hash-set acc curr-mode #true)
               (hash-add1 acc (list curr-mode next-mode))
               acc))
