@@ -1,12 +1,7 @@
 % -*- coding: utf-8; -*-
 % vim: set fileencoding=utf-8 :
 
-% TODO BEFORE SUBMISSION
-% - units on all plots
-
 % TODO BEFORE FINAL
-% - explain edit range computations
-% - uncomment acks
 % - update all refs to artifacts to no longer be in future tense
 
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
@@ -275,12 +270,11 @@ Whereas a traditional type system focuses on compilation and memory
 safety, Luau takes a lenient approach by default and lets creators
 gradually~\cite{st-sfp-2006,tf-popl-2008} migrate to rigorous checks
 one module at a time.
-In this way, for example,
-students in code camps may begin in the \mnocheck{} mode that reports only
-syntax errors; hobbyists can use \mnonstrict{} mode to identify
-would-be runtime errors; and developers who need to ensure software
-quality can rely on \mstrict{} mode.
-Also, no matter the mode, a {\FS{}} type analysis runs to guide \IDE{} tools~(\cref{s:context}).
+The \mnocheck{} mode reports only syntax errors,
+the \mnonstrict{} mode reports would-be runtime errors and skips over
+other issues,
+and the \mstrict{} mode reports a variety of potential errors.
+In addition, no matter the mode, a {\FS{}} type analysis runs to guide \IDE{} tools~(\cref{s:context}).
 Luau's types aim to support untyped designs, in the spirit of migratory
 typing~\cite{tfffgksst-snapl-2017}, so that creators can switch modes without
 needing to restructure their code in major, potentially-breaking, ways.
