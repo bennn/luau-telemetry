@@ -9,7 +9,7 @@ URL
 https://zenodo.org/doi/10.5281/zenodo.10275213
 
 md5sum artifact.tar.gz
-TODO
+07dac2ffcf6cd70cf0a3fd5c9d46385b
 
 md5sum data.tar.gz
 a62fa9e50258efda1756b6f85f71a799
@@ -122,23 +122,21 @@ sh runall.sh >& log.txt
 The `runall` script will print status messages as it goes.
 
 
-##### Example Run
+##### Example Timings
 
 We ran `runall.sh` in the Docker image on a single-user Linux machine
-with 16 GB RAM.
+with 16 GB RAM. The script printed 700 lines of output.
 
-The script printed 700 lines of output.
+Total time = 12 hours + 10 minutes:
 
-It spent 12 hours running `code/process.rkt` in various configurations:
-
-- 2 hours to merge csv files (`--mode main`)
-- 40 minutes to get info about code size and module switches (`--mode
-  size-distro`, `modswitch`)
-- 1 hours to group sessions (`--mode divide-sessions`)
-- 7 hours to aggregate type errors (`--mode aggregate-te`)
-- a few minutes total for other tasks (`--mode session-query`, `session-fold`,
-  `count-te-editrange`)
-
-It spent an additional 10 minutes running other scripts from the `code/`
-directory to build figures and tables.
+* 12 hours running `code/process.rkt` in various configurations:
+  - 2 hours to merge csv files (`--mode main`)
+  - 40 minutes to get info about code size and module switches (`--mode
+    size-distro`, `modswitch`)
+  - 1 hours to group sessions (`--mode divide-sessions`)
+  - 7 hours to aggregate type errors (`--mode aggregate-te`)
+  - a few minutes total for other tasks (`--mode session-query`, `session-fold`,
+    `count-te-editrange`)
+* 10 minutes running other scripts from the `code/` directory to build figures
+  and tables.
 

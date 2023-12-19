@@ -9,6 +9,13 @@ notification 2023-12-01
 <https://programming-journal.org/submission/>
 
 
+#### artifact submission
+
+https://easychair.org/conferences/submission?submission=6738498&a=30700121&track=301404
+
+https://zenodo.org/records/10403738
+
+
 #### latexdiff
 
 ```

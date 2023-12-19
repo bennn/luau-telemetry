@@ -16,7 +16,7 @@ cleandata:
 	rm -f out/error-density-ss-nocheck.rktd
 	rm -f out/ss-nocheck.rktd
 	rm -f out/ss-nonstrict.rktd
-	rm main.aux main.log texput.log
+	rm -f main.aux main.log texput.log
 
 clean:
 	find . -name "compiled" | xargs rm -r
