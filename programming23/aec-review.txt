@@ -1,0 +1,221 @@
+Dear Ben,
+
+We are happy to inform you that we award your artifact the "Supports Claims"
+badge. Thank you for preparing an artifact that complements your article so
+well. Below, you can find the detailed reviews.
+
+You have already provided your artifact via Zenodo, so there is little left to do:
+[X] - let us know whether you intend to keep the artifact publicly available
+      via Zenodo so we can award the "Available" badge
+[X] - make sure you reference the artifact in the camera-ready version of your
+      article
+
+Best wishes,
+Patrick and Robert
+
+SUBMISSION: 7730
+TITLE: Artifact: Privacy-Respecting Type Error Telemetry at Scale
+
+
+----------------------- REVIEW 1 ---------------------
+SUBMISSION: 7730
+TITLE: Artifact: Privacy-Respecting Type Error Telemetry at Scale
+AUTHORS: Ben Greenman, Alan Jeffrey, Shriram Krishnamurthi and Mitesh Shah
+
+----------- Artifact Availability -----------
+SCORE: 2 (yes)
+----- TEXT:
+No issue
+----------- Artifact Runnability -----------
+SCORE: 2 (yes)
+----- TEXT:
+No issue
+----------- Documentation Comprehensiveness -----------
+SCORE: 2 (yes)
+----- TEXT:
+No issue
+----------- Compilability/Executability -----------
+SCORE: 2 (yes)
+----- TEXT:
+No issue (for the "Getting Started" section)
+----------- Other Problems in the Kick-the-Tires Phase -----------
+(Since there were no instructions on the Kick-the-tires phase, I followed all
+the instructions in the artifact description.)
+
+I verified that this artifact supports the claims listed in the artifact
+description. I confirmed that the figures and tables in `main.pdf` closely
+resemble those in `submission.pdf`. Some notations in the tables are slightly
+different (e.g., zeros in Table 5 in main.pdf are replaced with hyphens in
+submission.pdf; "0.00%" in Table 6 is replaced with "<0.01%"), but I think
+these differences are within the acceptable range.
+
+However, I could not generate the figures and tables on my machine by executing
+`sh runall.sh`. Specifically, `runall.sh` did not generate the following four
+files:
+
+- out/lines-distribution.pdf
+- out/editrange-distribution.pdf
+- out/timespan-distribution.pdf
+- out/event-count-distribution.pdf
+
+As a consequence, I could not build main.pdf on my machine without removing
+several `\includegraphics` calls in main.tex.
+
+Although the artifact description says that “running the code” is optional, I
+recommend the authors to fix this issue. (I did not investigate its root cause,
+but I guess it can be fixed with small efforts.) To generate figures and
+tables, I did
+
+- Run `docker build -t gjks-programming-2023 .`
+- Run `docker run -v "$PWD:/vol" -w /vol -ti gjks-programming-2023 bash`
+- Unpack `data.tar.gz` to `data/`
+- Run `sh runall.sh`
+
+and I found no issues for *generated* files. They closely resemble the figures
+and tables in submission.pdf.
+
+----------- Supporst Claims Badge Awarded -----------
+SCORE: 2 (yes)
+----- TEXT:
+I confirmed that this artifact supports the claims in the artifact description.
+The issues I reported in the kick-the-tires phase are resolved by the authors.
+
+
+
+----------------------- REVIEW 2 ---------------------
+SUBMISSION: 7730
+TITLE: Artifact: Privacy-Respecting Type Error Telemetry at Scale
+AUTHORS: Ben Greenman, Alan Jeffrey, Shriram Krishnamurthi and Mitesh Shah
+
+----------- Artifact Availability -----------
+SCORE: 2 (yes)
+----- TEXT:
+The artifact is available on zenedo.org. The artifact can be decompressed
+without any errors. The md5 hash of both (artifact.tar.gz and data.tar.gz)
+archives do match with the provided hashes in the README.
+
+REVISED:
+
+The artifact.tar.gz md5 hash is marked TBD since the author updated the artifact.
+----------- Artifact Runnability -----------
+SCORE: 2 (yes)
+----- TEXT:
+I tried to build the Docker Container on the following system:
+
+Apple M1 Pro
+Memory 32 GB
+macOS 14.0 (23A344)
+Docker version 24.0.2, build cb74dfc
+
+When building the provided Docker Image executing "docker build -t gjks-programming-2023 ."), I get the following error message.
+
+#0 262.0 Get:133 http://deb.debian.org/debian stable/main amd64 xxd amd64 2:9.0.1378-2 [83.7 kB]
+#0 262.1 Fetched 121 MB in 4min 16s (472 kB/s)
+#0 262.1 E: Failed to fetch http://deb.debian.org/debian/pool/main/libt/libtirpc/libtirpc-dev_1.3.3%2bds-1_amd64.deb  Hash Sum mismatch
+#0 262.1    Hashes of expected file:
+#0 262.1     - SHA256:03326473eed54ffa27efae19aa5d6aeb402930968f869f318445513093691d55
+#0 262.1     - MD5Sum:2577c303fb9c6413e6855f03dff40ccf [weak]
+#0 262.1     - Filesize:191428 [weak]
+#0 262.1    Hashes of received file:
+#0 262.1     - SHA256:8fa71f08b6c24877c31877dd32c793f8e38cb4d13f0b0ef6c98aa8bd553563d4
+#0 262.1     - MD5Sum:2928b1bf05beed98a2502033e71f583d [weak]
+#0 262.1     - Filesize:191428 [weak]
+#0 262.1    Last modification reported: Thu, 11 Aug 2022 15:59:12 +0000
+#0 262.1 E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+------
+Dockerfile:3
+--------------------
+   1 |     FROM racket/racket:8.8-full
+   2 |     RUN apt-get update -y
+   3 | >>> RUN apt-get install -y apt-utils build-essential vim libedit-dev git
+   4 |     RUN raco pkg install --auto text-table pict-abbrevs gregor gtp-util colorblind-palette
+   5 |
+--------------------
+ERROR: failed to solve: process "/bin/sh -c apt-get install -y apt-utils build-essential vim libedit-dev git" did not complete successfully: exit code: 100
+
+
+REVISED:
+
+Since I wasn't able to get the artifact running on MacOS, I started the
+container on Ubuntu 22.04.3 LTS. No further issues identified.
+----------- Documentation Comprehensiveness -----------
+SCORE: 2 (yes)
+----- TEXT:
+The README file includes a getting-started guide and a list of figures and
+tables that should support the claims made in the paper. Optionally, the
+authors may explain the claims of the paper (Which claims are the figures and
+tables supposed to confirm?) in more detail in the README.
+
+REVISED:
+
+The author has sufficiently addressed the above.
+----------- Compilability/Executability -----------
+SCORE: 2 (yes)
+----- TEXT:
+The provided steps in the getting started section are manual validation steps.
+
+The reconstruction of the tables and figures is not easily reproducible since
+the provided scripts are not runnable.
+
+The current version of the README declares the execution of the scripts as
+optional. However, the (working) code to construct the tables and figures must
+be included in my interpretation of the artifact guidelines.
+
+See (https://programming-journal.org/artifact-evaluation/):
+"In the ideal case, an artifact with this designation includes all relevant
+materials (code, dependencies, input data, benchmark scripts, questionnaires,
+raw data) and the artifact’s documentation is sufficient for reviewers to
+reproduce the exact results described in the article."
+
+REVISED:
+
+The author has sufficiently addressed the above.
+----------- Other Problems in the Kick-the-Tires Phase -----------
+REVISED:
+
+I executed the docker container in detach mode to prevent docker from closing
+the container. This is especially useful for long running tasks such as the
+'runall.sh' script.
+----------- Supporst Claims Badge Awarded -----------
+SCORE: 2 (yes)
+----- TEXT:
+The artefact contains the necessary instructions to validate the claims. The
+scripts provided can be used to produce the necessary output for the claims
+made by the author.
+
+
+
+----------------------- REVIEW 3 ---------------------
+SUBMISSION: 7730
+TITLE: Artifact: Privacy-Respecting Type Error Telemetry at Scale
+AUTHORS: Ben Greenman, Alan Jeffrey, Shriram Krishnamurthi and Mitesh Shah
+
+----------- Artifact Availability -----------
+SCORE: 2 (yes)
+----- TEXT:
+The artifact is available and anonymous.
+----------- Artifact Runnability -----------
+SCORE: 2 (yes)
+----- TEXT:
+The container can be started without errors.
+----------- Documentation Comprehensiveness -----------
+SCORE: 2 (yes)
+----- TEXT:
+The documentation was comprehensive, containing all information as required.
+----------- Compilability/Executability -----------
+SCORE: 2 (yes)
+----- TEXT:
+All the steps in Getting Started can be executed.
+----------- Other Problems in the Kick-the-Tires Phase -----------
+It did take hours (6+) to regenerate all data analyses and visualizations, as
+the authors warned in README. This is a minor comment, but it would be great if
+the authors could provide an estimate of the total execution time in the README
+file.
+----------- Supporst Claims Badge Awarded -----------
+SCORE: 2 (yes)
+----- TEXT:
+The updated artifact provides instructions for reproducing the necessary
+outputs that validate the claims made in the article. I thank the authors for
+addressing my comment during the kick-the-tires phase on providing an estimate
+time for regenerating outputs in README.
+
