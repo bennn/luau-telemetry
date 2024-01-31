@@ -1,13 +1,9 @@
 % -*- coding: utf-8; -*-
 % vim: set fileencoding=utf-8 :
 
-% TODO BEFORE FINAL
-% - update all refs to artifacts to no longer be in future tense
-
 % The paper on using Luau telemetry to measure the effectiveness of type error reporting.
 
-\documentclass[english,cleveref]{programming}
-%% use 'submission' for initial submission, remove it for camera-ready (see 5.1)
+\documentclass[crc,english,cleveref]{programming}
 
 \usepackage{todonotes}
 
@@ -42,32 +38,18 @@
 \usepackage{xcolor}
 \usetikzlibrary{shapes.geometric}
 
-%%%%%%%%%%%%%%%%%%
+%%% The following is specific to Programming Journal, Volume 8, Issue 3 and the paper
+%%% 'Privacy-Respecting Type Error Telemetry at Scale'
+%%% by Ben Greenman, Alan Jeffrey, Shriram Krishnamurthi, and Mitesh Shah.
+%%%
 \paperdetails{
-  %% perspective options are: art, sciencetheoretical, scienceempirical, engineering.
-  %% Choose exactly the one that best describes this work. (see 2.1)
-  perspective=scienceempirical,
-  %% State one or more areas, separated by a comma. (see 2.2)
-  %% Please see list of areas in http://programming-journal.org/cfp/
-  %% The list is open-ended, so use other areas if yours is/are not listed.
-  area={Data mining for programming, Telemetry},
-  %% You may choose the license for your paper (see 3.)
-  %% License options include: cc-by (default), cc-by-nc
-  % license=cc-by,
+  submitted=2023-10-01,
+  published=2024-02-15,
+  year=2024,
+  volume=8,
+  issue=3,
+  articlenumber=12,
 }
-%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%
-%% These data are provided by the editors. May be left out on submission.
-%\paperdetails{
-%  submitted=2023-1-31,
-%  published=2016-10-11,
-%  year=2016,
-%  volume=1,
-%  issue=1,
-%  articlenumber=1,
-%}
-%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -84,9 +66,9 @@
 \authorinfo{(\email{benjamin.l.greenman@gmail.com}) was a CIFellows 2020
 postdoc at Brown University and is now an assistant professor in the
 Kahlert School of Computing at the University of Utah.}
+% \orcid{0000-0001-7078-9287}
 \affiliation[a]{Brown University, Providence, RI, USA}
 \affiliation[b]{University of Utah, Salt Lake City, UT, USA}
-% \orcid{0000-0001-7078-9287}
 
 \author[c]{Alan Jeffrey}
 \authorinfo{(\email{ajeffrey@roblox.com}) is a Principal Software Engineer at Roblox.}
@@ -98,6 +80,7 @@ Kahlert School of Computing at the University of Utah.}
 \authorinfo{(\email{shriram@brown.edu}) is the Vice President of Programming Languages (no, not really) at Brown University.}
 
 \author[c]{Mitesh Shah}
+% \orcid{0009-0000-6084-123X}
 \authorinfo{(\email{mshah@roblox.com}) is Senior Engineering Director, Programmability, at Roblox.}
 
 %\renewcommand{\shortauthors}{...}
@@ -227,7 +210,7 @@ Kahlert School of Computing at the University of Utah.}
   %% or results and evaluation support this work?
   Our findings are supported by a dataset
   of over 1.5 million telemetry records.
-  The data and scripts for analyzing it will be available in an artifact.
+  The data and scripts for analyzing it are available in an artifact.
 
   \paragraph{Importance}
   %% Why does this work matter?
@@ -742,7 +725,7 @@ The tall weekend (shaded) regions could be because
 Roblox has a significant school-aged creator community.
 
 \begin{figure}[t]\centering
-  %% TODO weird artifact (|) in x-min label
+  %% TODO weird artefact (|) in x-min label
   %% code/row-distribution.rkt
   \includegraphics[width=\columnwidth]{img/row-distribution.pdf}
   \begin{tabular}{ll}
@@ -2185,6 +2168,13 @@ can better accommodate untyped idioms.
 %% PS
 %% - downloading from Kibana was a HUGE pain and source of errors. Awful!
 %% - worth finding ways to reduce / ignore syntax errors?
+
+\paragraph{Data Availability Statement}
+
+The artifact for this paper contains the full telemetry dataset
+and scripts for reproducing the analysis in~\cref{s:data}.
+The source code for the paper itself is available through Software
+Heritage~\cite{luau-swhid}.
 
 
 %% -----------------------------------------------------------------------------
