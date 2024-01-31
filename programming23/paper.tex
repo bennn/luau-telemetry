@@ -234,7 +234,7 @@ There are over 5~million distinct user-created programs available on the platfor
 worldwide community of 3~million creators.
 Many of the creators program for fun or learning and may
 not consider themselves software developers; others are professional
-developers.
+developers who work full time with the Roblox platform.
 
 Creators program using the
 {Luau} programming language~\cite{luau-lang.org},
@@ -252,8 +252,8 @@ system are rather unique~\cite{bfj-hatra-2021}.
 Whereas a traditional type system focuses on compilation and memory
 safety, Luau takes a lenient approach by default and lets creators
 gradually~\cite{st-sfp-2006,tf-popl-2008} migrate to rigorous checks
-one module at a time.
-The \mnocheck{} mode reports only syntax errors,
+one module at a time via three analysis modes.
+The default \mnocheck{} mode reports only syntax errors,
 the \mnonstrict{} mode reports would-be runtime errors and skips over
 other issues,
 and the \mstrict{} mode reports a variety of potential errors.
@@ -287,10 +287,9 @@ exposing source code, source locations, or even error message text (which
 may contain revealing information).
 The telemetry counts the number and \emph{kind} of type errors at various
 levels of granularity.
-Furthermore it maintains a client-side approximation of the latest source-code
+Furthermore, it maintains a client-side approximation of the latest source-code
 edits and uses that to identify type errors that overlap with this edit range.
-Telemetry records are correlated by session, using a \panon{} session
-identifier and a timestamp.
+Each record contains a \panon{} session identifier and a timestamp.
 
 With this telemetry data, we investigate research questions about
 the adoption and benefits of type analysis:
@@ -308,7 +307,7 @@ the adoption and benefits of type analysis:
   \item[RQ3.]
     What impact does type analysis have on the number of \FS{}
     errors?
-    For example, do \FS{} errors pile up in unanalyzed projects?
+    For example, do \FS{} errors pile up in unanalyzed (\mnocheck{}) projects?
 \end{description}
 
 Beyond their immediate revelance to {Luau},
@@ -330,7 +329,7 @@ and covers thousands of type analysis errors
 and millions of \FS{} errors.
 By contrast to typical qualitative methods such as surveys and interviews, it
 is not restricted to users' \emph{perceptions} about their work and it is not
-limited to a small number of users.
+limited to a small number of users performing synthetic tasks.
 
 
 \paragraph{Contributions}
@@ -344,8 +343,7 @@ limited to a small number of users.
     adoption, persistent errors, and creators' responses.
 
   \item
-    An available dataset of over 1.5 million telemetry records
-    and scripts to analyze them: \url{https://zenodo.org/doi/10.5281/zenodo.10275213}
+    A dataset of over 1.5 million telemetry records and scripts to analyze them~\cite{luau-artifact}.
 
 \end{itemize}
 
@@ -374,16 +372,17 @@ source locations in code where reported errors occur.
 \paragraph{Type Analysis Modes, Background Analysis}
 
 Creators can opt in to detailed error reports and highlights by
-choosing a \emph{type analysis mode} for each script they write:
+choosing a \emph{type analysis mode} for each script.
+The modes are:
 \begin{itemize}
   \item \mnocheck{}: report only syntax errors (the default),
-  \item \mnonstrict{}: report syntax errors and a subset of high confidence type errors, or
+  \item \mnonstrict{}: report syntax errors and a subset of high confidence type errors, and
   \item \mstrict{}: report syntax errors and all type errors.
 \end{itemize}
-Each run of type analysis can report several errors.
+Each run of the type analysis can report several errors.
 There is no guarantee that creators read every error.
 In fact, creators who close the Script Analysis widget
-will see highlights in their code but no further details.
+can see highlights in their code but no further details about the errors.
 
 \begin{figure}[t]\centering
   \includegraphics[width=.35\textwidth]{img/roblox-studio.png}
@@ -393,7 +392,7 @@ will see highlights in their code but no further details.
   \label{fig:roblox-studio}
 \end{figure}
 
- As an example of \mnonstrict{} mode, the following program only reports one error:
+ As an example of \mnonstrict{} mode, the following program reports only one error:
 \begin{verbatim}
   --!nonstrict
   local x = { p = 5, q = nil }
@@ -409,14 +408,14 @@ In \mstrict{} mode, it reports two errors:
   local y = x.p + x.q --> TypeMismatch: Type 'nil' could not be converted into 'number'
   local z = x.r           --> UnknownProperty: Key 'r' not found in table 'x'
 \end{verbatim}
-In cases like this, where it is undecidable whether there will be a run-time error,
-\mstrict{} mode errs on the side of reporting an error, and \mnonstrict{} mode errs on
+In programs like the above, where it is undecidable whether there will be a run-time error,
+\mstrict{} mode errs on the side of reporting an error and \mnonstrict{} mode errs on
 the side of suppressing the error.
 
 Both modes report the \code{UnknownProperty} error because
 misspellings of property names are common enough to report in both
 \mstrict{} and \mnonstrict{} mode.
-\mnocheck{} reports no error because the program is syntactically valid.
+The \mnocheck{} mode reports no error because the program is syntactically valid.
 See~\cite{bfj-hatra-2021} for a more detailed discussion of the rationale
 behind the type systems.
 
@@ -427,20 +426,20 @@ To infer precise types,
 the \FS{} analysis uses rigorous checks very similar to those of
 \mstrict{} mode (but not identical: see \cref{s:strict-vs-forcedstrict})
 no matter what mode the creator declared for the script.
-(Internally to Roblox Studio, this analysis is called \emph{forced strict}
-because it ignores the creator's choice and applies strong checks.)
 When it fails to infer a type, \FS{} analysis defaults to the unknown gradual
 type~\cite{st-sfp-2006}.
 Creators cannot see the errors reported by \FS{} analysis.
+Internally to Roblox Studio, this analysis is called \emph{forced strict}
+because it ignores the creator's choice and applies strong checks.
 
 \Cref{t:type-error-labels} lists a few of the type errors that
 script analysis can report (10 out of 35 total)
 to give a sense of Luau.
 A \code{SyntaxError} is the only error that can appear in
 \mnocheck{} code.
-Several errors in addition to \code{UnknownProperty} are about
+Several errors including \code{UnknownProperty} are about
 tables, which are Luau's (and Lua's) primary data structure.
-Tables support arrays, dictionaries, and objects; consequently,
+Tables encode arrays, dictionaries, and objects; consequently,
 tables can have methods and can usually be extended.
 The error \code{TypesAreUnrelated} is a special kind of type mismatch
 that arises only during cast, unification, or subtyping check.
@@ -448,8 +447,8 @@ A \code{CountMismatch} occurs when the arguments to a function
 do not match the function's arity.
 Similarly, an \code{IncorrectGenericParamCount} is an arity mismatch
 for a generic type.
-Lastly, \code{CodeTooComplex} occurs when the typechecker hits an
-internal limit on problem size and \code{GenericError} is a catch-all
+A \code{CodeTooComplex} occurs when the typechecker hits an
+internal limit on problem size. Lastly, \code{GenericError} is a catch-all
 label for miscellaneous errors.
 When Luau can provide more context regarding a generic error, it uses
 a second error label called \code{ExtraInformation} to attach
@@ -476,7 +475,7 @@ a brief description.
     %% \code{UnificationTooComplex} & Type analysis failed, unification solver hit a limit \\
     \code{GenericError}
     & Generic label for other non-type errors,\\
-    & \hbox{}~~such as looping over an unordered table.
+    & \hbox{}~~e.g., looping over an unordered table.
     %% attempting to extend a type that does not describe a class
     %% attempting to iterate over a table without a clear order
 
@@ -487,7 +486,7 @@ a brief description.
 
 Luau modules provide reusable libraries, which may be
 {imported} by other scripts.
-Imports therefore form a graph in general, though the analysis
+Imports therefore form a graph in general, though type analysis
 removes edges to ensure an acyclic graph.
 In \mstrict{} mode, it is an error to create an import cycle.
 
@@ -521,15 +520,15 @@ model to be edited.
 % For example, instances may be added or renamed.
 % --> Commented out to get a better page break.
 Since the shape of the data model tree is reflected in
-the type system, it is possible for these edits to introduce a mountain
+the type system, it is possible for these edits to introduce a huge number
 of type errors across the project.
 
 
 \section{Telemetry Design}
 
-Telemetry allows an application to ``phone home'' with data
+Telemetry allows an application to phone home with data
 summarizing usage patterns, such performance data, crash reporting,
-and feature uptake. A typical usage is in deciding whether an API can
+and feature uptake. A typical use-case is in deciding whether an API can
 be deprecated; without telemetry, it may be difficult to know how
 popular the API is, but with telemetry it is straightforward.
 Telemetry for programming languages can, however, be controversial.
@@ -570,7 +569,7 @@ Telemetry in Roblox Studio faces three major constraints:
 
 \end{enumerate}
 See Cox~\cite{transparent-telemetry} for further discussion of
-the privacy implications and tradeoffs in telemetry.
+the privacy implications and tradeoffs of telemetry for programming languages.
 
 In addition, due to the architecture of Roblox Studio,
 there is some information that is not available to the
@@ -626,7 +625,7 @@ if one record uses \mstrict{} mode but the next uses \mnocheck{},
 then it is critical to know whether the creator downgraded modes
 or simply switched to another module.
 
-\Cref{f:tdata} shows the structure of our telemetry records:
+\Cref{f:tdata} shows the structure of telemetry records:
 \begin{enumerate}
   \item
     \uid{}: a \panon{} identifier (15-digit random number) for the current session.
@@ -863,7 +862,7 @@ and 1,000 lines in edit ranges.
 real time in seconds between the first and last record, and the total number of
 records.
 The plots focus
-on the lower-left fragment of the data, which again has a very long tail.
+on the lower-left fragment of the dataset, which again has a very long tail.
 %% comment on long-tail record counts?
 The longest sessions last several days and/or contain thousands of records,
 while the shortest last a few milliseconds or include just one record.
@@ -925,9 +924,9 @@ The low fraction of errors in the edit range sends a mixed message:
     This is true, however, only for type errors and not for \FS{} errors.
     There are 11,479 more type errors from the previous analysis
     that overlap with the current edit range~(\pct{27} difference),
-    but 172,678 fewer previous \FS{} errors~(\pct{15} difference).
-    Since creators can see the type errors but not the \FS{}
-    errors before making edits, we conclude that the visibility
+    but 172,678 fewer overlapping previous \FS{} errors~(\pct{15} difference).
+    Since creators can see type errors but not \FS{}
+    errors before making edits, we conclude that visibility
     makes a difference.
     \Cref{s:type-error-survival} explores edits and type errors in more detail.
 
@@ -939,7 +938,7 @@ The low fraction of errors in the edit range sends a mixed message:
     creators might ignore errors entirely and edit other code; or
     creators might choose to edit a non-highlighted location to fix an error.
     While non-privacy-protecting analyses have answered such
-    questions~\cite{mfk-sigcse-2011}, our data cannot narrow down the answer.
+    questions in the past~\cite{mfk-sigcse-2011}, our data cannot narrow down an answer.
 
 \end{itemize}
 
@@ -1002,7 +1001,7 @@ Among the other sessions, most of those (\pct{80}) switch to a
 module with a different mode, about half contain at least one edit that
 upgrades to a more strict mode, and about half contain a downgrade to a
 less-strict mode.
-There are 263 total upgrades (across all sessions) and 320 total downgrades.
+There are 263 total upgrades across all sessions and 320 total downgrades.
 
 
 \paragraph{Are Upgrades Discouraging?}
@@ -1022,7 +1021,7 @@ The data does not support this explanation.
 On average, mode-upgrades resulted in 3 additional
 type errors (stddev 7, median 0).
 This data excludes module switch records and considers only keystroke events.
-The worst-case increase was quite high at 57 type errors, but exceptional.
+The worst-case increase was quite high, at 57 type errors, but exceptional.
 In another exception, upgrading modes removed three type errors,
 possibly due to other edits being rolled in with the
 mode change.
@@ -1101,7 +1100,7 @@ as to how to fix \FS{} errors, \mstrict{} mode checks should closely match
 \FS{} checks.
 
 \Cref{f:error-by-mode} divides errors across modes.
-By the left plot, \mnonstrict{} accounts for two thirds of all type errors.
+The left plot shows that \mnonstrict{} accounts for two thirds of all type errors.
 This confirms our expectation.
 %% because \mnocheck{} reports only syntax errors and
 %% \mstrict{} covers only a small number of telemetry records.
@@ -1165,7 +1164,7 @@ This is surprising;~\cref{s:tefs-compass} explores further.
 The main focus of our telemetry design is to learn how type errors intersect
 with edit ranges.
 Indeed, most of the fields in a telemetry record are dedicated to this
-topic~(\cref{f:tdata}), and are directed to RQ2 on type errors .
+topic~(\cref{f:tdata}), and are directed toward RQ2 on type errors.
 
 Using the results of the previous and current type analysis from
 each telemetry record,~\cref{t:type-error-survival}
@@ -1206,19 +1205,20 @@ telemetry system.
     then most errors in the data are likely due to typos during edits.
     These errors also survive (\keepsym{}) the more than any other.
 
-    Curiously, the number of syntax errors never decreases or stays the same.
-    This may be because the easy fix is to press undo, and telemetry cannot
+    \subitem Curiously, the number of syntax errors never decreases or stays the same.
+    This may be because the easy fix is to press undo; telemetry does not
     see undo events.
 
     %% TODO awkward
-    Our telemetry strategy likely inflates the number of typos because it cannot
+    \subitem The number of typos is inflated by our telemetry strategy because it cannot
     determine when a creator is mid-edit.
     For example, a creator who writes a method call
     \code{bucket.countFish()} letter-by-letter will generate an
     \code{UnknownSymbol} error for \code{buck} and
-    \code{UnknownProperty} for \code{bucket.c}, which may end up getting sampled.
+    \code{UnknownProperty} for \code{bucket.c}, both of which may end up
+    getting sampled.
     \Cref{s:conclusion} suggests ways
-    to avoid this in the future.
+    to avoid reporting typos in the future.
 
   \item
     After the syntax errors, \code{CountMismatch}, \code{TypeMismatch}, and
@@ -1229,8 +1229,8 @@ telemetry system.
     telemetry artifact.
     The high incidence of \code{TypeMismatch} and \code{GenericError} calls for
     further study in future work to determine precisely which error arose.
-    (Some of the \code{GenericError}s come with context strings in the form of
-    \code{ExtraInformation} errors, but telemetry does not report these strings.)
+    Some of the \code{GenericError}s come with context strings in the form of
+    \code{ExtraInformation} errors, but telemetry does not report these strings.
     %% GenericError = only a few things: extend non-class, iterate non-table, ...?
 
   \item
@@ -1412,8 +1412,8 @@ The table does not include \mnocheck{} because all its type errors are
     dataset.
 
   \item
-    \code{TypeMismatch} is far more common in \mstrict{} (\pct{20.46})
-    than \mnonstrict{} (\pct{2.44}) because \mstrict{} mode
+    \code{TypeMismatch} is far more common in \mstrict{} mode (\pct{20.46})
+    than \mnonstrict{} (\pct{2.44}) because \mstrict{}
     has additional type constraints.
     Several other errors have higher \mstrict{} percentages for the
     same reason, such as \code{CannotInferBinaryOperation}, and
@@ -1424,7 +1424,8 @@ The table does not include \mnocheck{} because all its type errors are
     Several Luau errors never appeared in edit ranges.
     Four of these deal with internal typechecker limits, which we discuss
     below.
-    The others are for: dynamic property lookups,
+    The others are for
+    dynamic property lookups,
     deprecated APIs, swapped generic parameters,
     functions that require a self, and type pack mismatches.
     We would not expect these to appear often.
@@ -1443,7 +1444,7 @@ The table does not include \mnocheck{} because all its type errors are
 %% data = out/ctc-info.txt
 
 To deal with pathologies such as the worst-case time for ML-style type
-inference~\cite{ktu-caap-1990,m-popl-1990}, the typechecker
+inference~\cite{ktu-caap-1990,m-popl-1990}, the Luau typechecker
 has internal limits that restrict the problems it will attempt to solve.
 Hitting a limit triggers one of the following errors along with a message
 that the analysis failed to understand the code:
@@ -1483,7 +1484,7 @@ Note that all three sessions \emph{could} have been from the same codebase.
 
 Since errors and edits may not overlap, either because the highlights
 are misleading or because the creator ignores the errors, it is important
-to see how the total errors change over time.
+to see how the total number errors changes over time.
 We measure \emph{error density} rather than error count, however,
 to normalize for the wide range of codebase sizes~(\cref{t:codebase-size}).
 Density is the number of type errors divided by the number of lines.
@@ -1492,7 +1493,7 @@ Density is the number of type errors divided by the number of lines.
 The data excludes module-switch telemetry records to keep the focus on edits.
 The x axis counts time in seconds from the start of the session.
 Most sessions last a few dozen seconds~(\cref{t:session-size}), so the axis
-ends at 150 seconds to show some but not all of the long tail.
+ends at 150 seconds to show a bit of the long tail.
 The y axis shows changes to errors over time; a positive number means errors
 increased since the last record, and a negative number represents a decrease.
 While there are a few errors that go outside the plot bounds
@@ -1602,7 +1603,7 @@ maintain (\keepsym{}), or decrease (\dropsym{}) the number of type
 errors in the module.
 It also reports counts for \FS{} checks to see whether fixing type errors fixes
 \FS{} errors as well.
-The ``maintain'' rows include cases where there are zero errors before and after.
+The ``maintain'' rows exclude cases where there are zero errors before and after.
 
 
 \paragraph{Observations}
@@ -1670,9 +1671,7 @@ for creators using \mstrict{} mode.
 \label{s:discussion}
 
 With the data in hand, we can answer the research questions
-from~\cref{s:introduction}.
-The answers confirm several aspects of Luau's design, but
-at the same time offer several directions for future improvements.
+from~\cref{s:introduction}:
 
 \begin{description}
   \item[RQ1.]\leavevmode
@@ -1683,7 +1682,7 @@ at the same time offer several directions for future improvements.
         Most of these use \mnonstrict{} mode, and fewer than \pct{1}
         use \mstrict{} mode.
 
-        Luau has an efficient type checker that can
+        \subitem Luau has an efficient type checker that can
         analyze thousands of lines of code~(\cref{t:codebase-size}) quickly
         enough to be used on-the-fly in an IDE.
         But, few sessions use type analysis directly.
@@ -1769,17 +1768,17 @@ at the same time offer several directions for future improvements.
         and unsafe dynamic property lookup on a class.
 
       \item[- How do sessions respond? Which errors persist through edits?]
-        Sessions typically fix analysis errors.
+        Sessions appear to fix analysis errors.
         With few exceptions, increases and decreases in the number of errors
         balance out~(\cref{f:error-changes,t:type-error-survival,}).
         Even in \mnocheck{}, most edits that overlap with syntax errors
         remove at least one error~(\pct{67}) rather than increase or maintain
         the total.
-        The errors that most often survive edits are due to
+        The errors that survive edits most often are due to
         inference at a binary operation,
         sending \code{self} to a function that does not expect it,
         and failure to unpack an optional value.
-        But the first two seldom arise, and the third is something creators
+        But, the first two seldom arise and the third is something creators
         might reasonably ignore while prototyping.
 
 %% Keep percents
@@ -1805,8 +1804,8 @@ at the same time offer several directions for future improvements.
 
     \end{description}
 
-  \item[RQ3. What impact does type analysis have on the number of \FS{} errors?]
-    Opting in to type analysis has little impact on \FS{} errors.
+  \item[RQ3. What impact does type analysis have on \FS{} errors?]
+    Opting in to analysis has little impact on the number of \FS{} errors.
     The percent of \FS{} errors in \mnocheck{} code matches the percent of
     sessions using \mnocheck{} mode~(\cref{f:error-by-mode}); whereas,
     if type analysis helped reduce \FS{} errors, \mnocheck{} would own a
@@ -1832,7 +1831,7 @@ Though the data includes many thousands of sessions, it
 may have missed a few critical sessions where a creator
 adopted \mstrict{} mode, encountered \code{CodeTooComplex} errors,
 and gave up.
-Furthemore, our method of sampling by keystroke and by module switch
+Furthermore, our method of sampling by keystroke and by module switch
 skews the data toward creators who, for whatever reason, do more
 of these actions.
 We have no access to other events, e.g., local runs~(\cref{s:tel-limitations});
@@ -1842,7 +1841,7 @@ recruiting participants.
 Second, the edit ranges are a coarse approximation of actual edits.
 They begin at the lowest edited line of code and end at the highest
 edited line, even if nothing between those lines changed.
-On a related note, the computatation that determines whether an old
+On a related note, the computation that determines whether an old
 type error overlaps with the current edit range has many edge cases,
 especially to handle deletions, and may mis-count.
 This could explain why~\cref{t:type-error-survival} reports zero syntax errors
@@ -1973,8 +1972,8 @@ The goal is to collect a small amount of data from each user and perform
 statistically-sound analyses; privacy is not a main concern.
 Each feature of interest \emph{within} a user's codebase has a uniform-random
 probability of contributing telemetry.
-The system-builder can analyze this telemetry with predicates to identify
-notable events and logistic regression to narrow down nondeterministic bugs.
+A system-builder can analyze this telemetry with predicates to identify
+notable events and use logistic regression to narrow down nondeterministic bugs.
 There is a high burden on designers to decide what to capture,
 but a careful design can minimize the data from each individual user.
 %% more in diss: how to deal with native compilers, threads, dynamic loading
@@ -2088,9 +2087,9 @@ particular and for other gradual languages~(e.g.~\cite{bat-ecoop-2014,cdv-elixir
 %    \pct{50} of all errors are in current module, so probably errors appear locally (not in a distant module);
 %    \pct{5} of (current? old??) type errors overlap with edit range, so they don't stick around.
   \item
-    Sessions tend to fix errors immediately rather than dealing with them in a batch
+    Sessions appear to fix errors immediately rather than dealing with them in a batch
     or ignoring the errors altogether~(\cref{f:error-density,f:error-changes}).
-    This should give Roblox confidence to make \mnonstrict{} the default in the future.
+    This observation should give Roblox confidence to make \mnonstrict{} the default in the future.
     Other languages should consider adding a nonstrict mode that minimizes false positives
     as a bridge toward strict type checking.
     % Changes to the number of errors balance one another~(\cref{f:error-density});
