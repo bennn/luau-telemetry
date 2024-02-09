@@ -18,7 +18,8 @@
 
 \usepackage{alltt}
 % Not sure why <Programming> is recommending non-standard tools
-% \usepackage[backend=biber]{biblatex}
+% uncomment because publisher asked about missing URL access dates
+\usepackage[backend=biber]{biblatex}
 \usepackage[export]{adjustbox}
 \usepackage{amssymb}
 \usepackage{calc}
@@ -37,6 +38,8 @@
 \usepackage{wasysym}
 \usepackage{xcolor}
 \usetikzlibrary{shapes.geometric}
+
+\addbibresource{bib.bib}
 
 %%% The following is specific to Programming Journal, Volume 8, Issue 3 and the paper
 %%% 'Privacy-Respecting Type Error Telemetry at Scale'
@@ -62,25 +65,21 @@
 
 % Alphabetical order for authors?
 
-\author[a,b]{Ben Greenman}
+\author[a,b]{Ben Greenman}[0000-0001-7078-9287]
 \authorinfo{(\email{benjamin.l.greenman@gmail.com}) was a CIFellows 2020
 postdoc at Brown University and is now an assistant professor in the
 Kahlert School of Computing at the University of Utah.}
-% \orcid{0000-0001-7078-9287}
 \affiliation[a]{Brown University, Providence, RI, USA}
 \affiliation[b]{University of Utah, Salt Lake City, UT, USA}
 
-\author[c]{Alan Jeffrey}
+\author[c]{Alan Jeffrey}[0000-0001-6342-0318]
 \authorinfo{(\email{ajeffrey@roblox.com}) is a Principal Software Engineer at Roblox.}
-% \orcid{0000-0001-6342-0318}
 \affiliation[c]{Roblox, San Mateo, CA, USA}
 
-\author[a]{Shriram Krishnamurthi}
-% \orcid{0000-0001-5184-1975}
+\author[a]{Shriram Krishnamurthi}[0000-0001-5184-1975]
 \authorinfo{(\email{shriram@brown.edu}) is the Vice President of Programming Languages (no, not really) at Brown University.}
 
-\author[c]{Mitesh Shah}
-% \orcid{0009-0000-6084-123X}
+\author[c]{Mitesh Shah}[0009-0000-6084-123X]
 \authorinfo{(\email{mshah@roblox.com}) is Senior Engineering Director, Programmability, at Roblox.}
 
 %\renewcommand{\shortauthors}{...}
@@ -372,8 +371,8 @@ source locations in code where reported errors occur.
 \paragraph{Type Analysis Modes, Background Analysis}
 
 Creators can opt in to detailed error reports and highlights by
-choosing a \emph{type analysis mode} for each script.
-The modes are:
+selecting a \emph{type analysis mode} for each script.
+There are three modes that creators may choose from:
 \begin{itemize}
   \item \mnocheck{}: report only syntax errors (the default),
   \item \mnonstrict{}: report syntax errors and a subset of high confidence type errors, and
@@ -612,9 +611,9 @@ In order to avoid swamping the telemetry servers, the client reports on a subset
 of telemetry events via two levels of uniform random sampling:
 \begin{itemize}
   \item
-    1\% of Roblox Studio sessions generate \emph{any} type error telemetry, and
+    \pct{1} of Roblox Studio sessions generate \emph{any} type error telemetry, and
   \item
-    0.5\% of all type analyses (approximately 1 in 200 keystrokes)
+    \pct{0.5} of all type analyses (approximately 1 in 200 keystrokes)
     in an enrolled session generate a telemetry record.
 \end{itemize}
 In addition to sending telemetry for randomly-selected keystrokes,
@@ -2260,6 +2259,9 @@ to the CRA for the \href{https://cifellows2020.org}{CIFellows} project.
 
 \newpage
 
-\bibliography{bib}
+{
+
+\printbibliography
+}
 
 \end{document}
