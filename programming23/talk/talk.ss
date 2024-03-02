@@ -1,12 +1,16 @@
 #lang at-exp slideshow
 
+;; outline:
+;;  https://docs.google.com/presentation/d/1Ci0SgJgme-7Vd8X-1GZ8n_lpYwdj_RtrxrpDIeL2Qts/edit
+;; colors:
+;;  https://imagecolorpicker.com/
+;; blog:
+;;  https://blog.brownplt.org/2024/02/02/privacy-telemetry.html
+
 ;; Programming Conference
 ;; March 2024
 ;; 30 min
 ;; https://2024.programming-conference.org/
-
-;; ... is there a more fun alternative? think LTL talk
-;;  no time really , go nuts + bolts
 
 ;; Privacy-Respecting Type Error Telemetry at Scale
 ;; - language design, the problems, designers vs users
@@ -33,8 +37,6 @@
 ;; - conclusions, answers to RQs
 ;; extra:
 ;; - cox transparent
-
-;; https://blog.brownplt.org/2024/02/02/privacy-telemetry.html
 
 (require
   racket/class
@@ -166,7 +168,8 @@
 
 (define at-sign @"@")
 
-(define black (hex-triplet->color% #x222222))
+(define roblox-black (hex-triplet->color% #x0e0f0f))
+(define black roblox-black)
 (define gray (string->color% "light gray"))
 (define white (string->color% "white"))
 (define lite-grey (hex-triplet->color% #xeeeeee)) ; "gainsboro"
@@ -229,7 +232,7 @@
 (define untyped-bg-color (color%-update-alpha untyped-pen-color 0.2))
 
 (define emph-color (hex-triplet->color% #x304E59))
-(define bg-color utah-darkgrey)
+(define bg-color roblox-black)
 
 (define bbox-frame-color (make-parameter dark-blue))
 (define bbox-radius (make-parameter 1))
@@ -240,8 +243,8 @@
 (define (color-off c)
   (color%-update-alpha c 0.2))
 
-(define title-font "Montserrat" #;"Bree Serif")
-(define body-font "Source Sans Pro" #;"Open Sans")
+(define title-font "Gotham")
+(define body-font "Gotham")
 (define code-font "Inconsolata")
 
 (define title-size 42)
@@ -291,10 +294,13 @@
 
 (define bodyrmhi (make-string->text #:font body-font-md #:size body-size #:color black))
 (define hugerm (make-string->text #:font body-font-md #:size (+ 20 body-size) #:color black))
-(define bodyrmlo (make-string->text #:font body-font-lo #:size body-size #:color black))
-(define bodyrm bodyrmlo)
-(define rm bodyrmlo)
-(define rmlo rm)
+(define rmlo
+  (let ((f (make-string->text #:font body-font-lo #:size body-size #:color black))
+        (tshim (yblank 30))
+        (bshim (yblank 6)))
+    (lambda str*
+      (let ((pp (apply f str*)))
+        (vl-append tshim pp bshim)))))
 (define rmhi bodyrmhi)
 (define rmem (make-string->text #:font body-font-lo #:size body-size #:color emph-color))
 (define bodyrmlobb (make-string->text #:font body-font-lo #:size body-size #:color deep-pen-color))
@@ -423,7 +429,7 @@
         #:y-margin pico-y-sep))
 
 (define (sboxrm . arg*)
-  (sbox (apply bodyrm arg*)))
+  (sbox (apply rmlo arg*)))
 
 (define (wbox pp #:frame-color [frame-color #f] #:frame-width [frame-width #f])
   (bbox pp
@@ -433,10 +439,10 @@
         #:frame-width frame-width))
 
 (define (wboxrm . arg*)
-  (wbox (apply bodyrm arg*)))
+  (wbox (apply rmlo arg*)))
 
 (define (bboxrm . arg*)
-  (bbox (apply bodyrm arg*)))
+  (bbox (apply rmlo arg*)))
 
 (struct code-arrow (src-tag src-find tgt-tag tgt-find start-angle end-angle start-pull end-pull style) #:transparent)
 
@@ -609,7 +615,7 @@
         (cons a (loop b))))))
 
 (define (X-codeblock pp* #:dark? [dark? #f] #:title [title #f] #:label [label #f] #:frame-color [frame-color #f] #:background-color [background-color #f])
-  (define title-pict (if (pict? title) title (if (string? title) (bodyrmlo title) #f)))
+  (define title-pict (if (pict? title) title (if (string? title) (rmlo title) #f)))
   (define label-margin (if title-pict (* 10/100 (pict-height title-pict)) 0))
   (define (add-label-margin pp [extra 0]) (vl-append (+ extra label-margin) (blank) pp))
   (define radius 1)
@@ -695,12 +701,6 @@
 
 (define (typed-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang typed"] . str*)
   (deep-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
-
-(define (xblank n)
-  (blank n 0))
-
-(define (yblank n)
-  (blank 0 n))
 
 (define (pblank pp)
   (blank (pict-width pp) (pict-height pp)))
@@ -833,7 +833,7 @@
     #:go center-coord
     (freeze (-bitmap (build-path img-dir "chess2.png")))
     #:go title-coord-m
-    (let* ((top (title-pict))
+    (let* ((top (bbox (titlerm the-title-str)))
            (bot (bbox (rmlo "Programming '24")))
            (low (bbox (freeze (scale-to-square (bitmap (build-path src-dir "cra.png")) 140))))
            (xgap (xblank smol-x-sep))
@@ -890,7 +890,26 @@
     (make-bg client-w client-h)
 
     #:go center-coord
-    @bboxrm{Hello World}
+    (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
+    #:go title-coord-m
+    ;; TODO brown + roblox + cra
+    (let* ((top (bbox (titlerm the-title-str)))
+           (bot (bbox (rmlo "Programming '24")))
+           (low (bbox (freeze (scale-to-square (bitmap (build-path src-dir "cra.png")) 140))))
+           (xgap (xblank smol-x-sep))
+           (mid (bbox
+                  (author-append
+                    @rmlo{Ben Greenman}
+                    @rmlo{Alan Jeffrey}
+                    @rmlo{Shriram Krishnamurthi}
+                    @rmlo{Mitesh Shah}
+                    )))
+           )
+      (vr-append
+        pico-y-sep
+        (hc-append xgap top xgap)
+        (vc-append pico-y-sep mid bot low)))
+
 
 
   )))
