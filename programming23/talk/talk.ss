@@ -16,7 +16,7 @@
 ;;     paper is actually about privacy-respecting telemetry. So I'd want to see two
 ;;     conclusions: one about Luau/whatever else you currently talk about, one more
 ;;     about setting the agenda for this kind of research going forward.
-;; [ ] roblox logo == brown size
+;; [X] roblox logo == brown size
 
 ;; Privacy-Respecting Type Error Telemetry at Scale
 ;; - language design, the problems, designers vs users
@@ -240,7 +240,7 @@
 (define untyped-bg-color (color%-update-alpha untyped-pen-color 0.2))
 
 (define emph-color roblox-darkred #;(hex-triplet->color% #x304E59))
-(define bg-color roblox-black)
+(define bg-color (hex-triplet->color% #xcecfcf))
 
 (define bbox-frame-color (make-parameter dark-blue))
 (define bbox-radius (make-parameter 1))
@@ -302,7 +302,7 @@
 (define tt coderm)
 
 (define (shimhack f)
-  (let ((tshim (yblank 30))
+  (let ((tshim (yblank 32))
         (bshim (yblank 6)))
     (lambda str*
       (let ((pp (apply f str*)))
@@ -536,6 +536,12 @@
 
 (define (bhrule w #:thickness [thickness #f] #:color [color #f])
   (ben-rule w (or thickness 1) #:color color))
+
+(define (plus-one [ww 40])
+  (scale-to-square (-bitmap "plus-one.png") ww))
+
+(define (scale-comment pp)
+  (scale pp 0.65))
 
 (define (scale-to-pict pp bg)
   (scale-to-fit pp (pict-width bg) (pict-height bg)))
@@ -839,6 +845,43 @@
 
 ;; ---
 
+(define (designers-and-users)
+  (define lo (bbox @rmlo{Language Designers  &  Users need to talk!}))
+  (define hi
+    (let* ((hh 160)
+           (maker (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)))
+           (users (freeze (scale-to-height (values (inset/clip (-bitmap "penguin-group.png") 0 -120 0 -140)) hh)))
+           (phone (sbox (freeze (scale-to-height (-bitmap "phone-call.png") (* 0.6 hh)))))
+           (phone (cc-superimpose (bhrule (w%->pixels 35/100) #:thickness 2) phone))
+           )
+      (hc-append tiny-x-sep maker phone users)))
+  (vc-append tiny-y-sep hi lo))
+
+(define (howtostudy n)
+  (define lhs
+    (ppict-do
+      (vc-append
+        pico-y-sep
+        (bbox @rmlo{Interviews})
+        (bbox @rmlo{Surveys})
+        (bbox @rmlo{Experiments}))
+      #:go (coord 0 0 'rt #:abs-x (- pico-x-sep)) (scale (titlerm "?") 3)))
+  (define mid
+    (bbox (hc-append (plus-one) (scale-comment @rmlo{   but Low Bandwidth}))))
+  (define rhs
+    (bbox
+      (vc-append
+        pico-y-sep
+        (scale-comment @rmlo{this work:})
+        @rmem{Telemetry})))
+  (hc-append
+    medd-x-sep
+    (if (< n 1)
+      lhs
+      (ppict-do (bblur lhs) #:go (coord 1 1 'rt #:abs-y tiny-y-sep) ((if (< n 2) values bblur) mid)))
+    ((if (< n 2) pblank values) rhs)))
+
+
 ;; -----------------------------------------------------------------------------
 
 (define the-title-str "Privacy-Respecting Type Error Telemetry at Scale")
@@ -847,7 +890,6 @@
 
 (define (sec:title)
   (unless (*export*)
-    ;; TODO why no image??! unreliable
     (pslide
       #:go center-coord
       (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))))
@@ -855,7 +897,6 @@
     #:go center-coord
     (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
     #:go title-coord-m
-    ;; TODO brown + roblox + cra
     (let* ((top (bbox (titlerm the-title-str)))
            (bot (bbox (subtitlerm "<Programming> '24")))
            (scale-amt 0.8)
@@ -873,9 +914,28 @@
            )
       (ppict-do
         top
-        #:go (coord 4/100 1 'lt #:abs-y bigg-y-sep) (ht-append tiny-y-sep mid low)
+        #:go (coord 4/100 1 'lt #:abs-y (+ smol-y-sep bigg-y-sep)) (ht-append tiny-y-sep mid low)
         #:go (coord 96/100 1 'rt #:abs-y tiny-y-sep) bot
         ))
+    )
+  (void))
+
+(define (sec:intro)
+  (pslide
+    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
+    (designers-and-users)
+    #:next
+    #:go (coord 1/2 1/2 'ct #:abs-y smol-y-sep)
+    #:alt ((howtostudy 0))
+    #:alt ((howtostudy 1))
+    (howtostudy 2)
+    )
+  (pslide
+
+    )
+  (pslide
+    )
+  (pslide
     )
   (void))
 
@@ -896,8 +956,10 @@
   (parameterize ((*export* (and (member "-x" (vector->list (current-command-line-arguments))) #true))
                  (current-slide-assembler bg-bg))
     (sec:title)
+    (sec:intro)
 ;    (sec:take2)
 ;    (sec:results)
+
     (sec:takeaways)
     (sec:extra)
     (when (*export*) (pslide))
@@ -916,30 +978,6 @@
   (ppict-do
     (make-bg client-w client-h)
 
-    #:go center-coord
-    (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
-    #:go title-coord-m
-    ;; TODO brown + roblox + cra
-    (let* ((top (bbox (titlerm the-title-str)))
-           (bot (bbox (subtitlerm "<Programming> '24")))
-           (scale-amt 0.8)
-           (low (vc-append
-                  tiny-y-sep
-                  (ht-append tiny-y-sep (bbox (scale (brown-logo) scale-amt)) (bbox (scale (cra-logo) scale-amt)))
-                  (sbox (roblox-logo))))
-           (mid (bbox
-                  (author-append
-                    @rmem{Ben Greenman}
-                    @rmlo{Alan Jeffrey}
-                    @rmlo{Shriram Krishnamurthi}
-                    @rmlo{Mitesh Shah}
-                    )))
-           )
-      (ppict-do
-        top
-        #:go (coord 4/100 1 'lt #:abs-y bigg-y-sep) (ht-append tiny-y-sep mid low)
-        #:go (coord 96/100 1 'rt #:abs-y tiny-y-sep) bot
-        ))
 
 
   )))
