@@ -12,6 +12,12 @@
 ;; 30 min
 ;; https://2024.programming-conference.org/
 
+;; [ ] main issue is that it ends all about concrete things about Luau, but the
+;;     paper is actually about privacy-respecting telemetry. So I'd want to see two
+;;     conclusions: one about Luau/whatever else you currently talk about, one more
+;;     about setting the agenda for this kind of research going forward.
+;; [ ] roblox logo == brown size
+
 ;; Privacy-Respecting Type Error Telemetry at Scale
 ;; - language design, the problems, designers vs users
 ;;   user studies not great
@@ -182,6 +188,8 @@
 (define lite-blue (hex-triplet->color% #xC0EFFF))
 (define lite-green (hex-triplet->color% #x00b18f))
 
+(define roblox-litered (hex-triplet->color% #xe5001d))
+(define roblox-darkred (hex-triplet->color% #xa90e1c))
 (define utah-red (hex-triplet->color% #xCC0000))
 (define utah-black (hex-triplet->color% #x000000))
 (define utah-white (hex-triplet->color% #xFFFFFF))
@@ -231,7 +239,7 @@
 (define typed-bg-color deep-bg-color)
 (define untyped-bg-color (color%-update-alpha untyped-pen-color 0.2))
 
-(define emph-color (hex-triplet->color% #x304E59))
+(define emph-color roblox-darkred #;(hex-triplet->color% #x304E59))
 (define bg-color roblox-black)
 
 (define bbox-frame-color (make-parameter dark-blue))
@@ -272,8 +280,9 @@
 (define page-font (make-font #:face code-font #:size code-size))
 
 (define titlerm (make-string->text #:font utah-web-headline-font #:size title-size #:color black))
+(define subtitlerm (compose1 (lambda (pp) (scale pp 0.85)) titlerm))
+
 (define titlerm2 (make-string->text #:font utah-web-headline-font #:size (- title-size 8) #:color black))
-(define subtitlerm (make-string->text #:font title-font #;body-font-md #:size subtitle-size #:color black))
 (define subtitlermem (make-string->text #:font (bold-style title-font) #:size subtitle-size #:color emph-color))
 (define subtitlermemlo (make-string->text #:font title-font #:size subtitle-size #:color emph-color))
 (define subtitlermlo
@@ -292,17 +301,18 @@
 (define tcodebf (make-string->text #:font (bold-style code-font) #:size tcode-size #:color black))
 (define tt coderm)
 
-(define bodyrmhi (make-string->text #:font body-font-md #:size body-size #:color black))
-(define hugerm (make-string->text #:font body-font-md #:size (+ 20 body-size) #:color black))
-(define rmlo
-  (let ((f (make-string->text #:font body-font-lo #:size body-size #:color black))
-        (tshim (yblank 30))
+(define (shimhack f)
+  (let ((tshim (yblank 30))
         (bshim (yblank 6)))
     (lambda str*
       (let ((pp (apply f str*)))
         (vl-append tshim pp bshim)))))
+
+(define bodyrmhi (make-string->text #:font body-font-md #:size body-size #:color black))
+(define hugerm (make-string->text #:font body-font-md #:size (+ 20 body-size) #:color black))
+(define rmlo (shimhack (make-string->text #:font body-font-lo #:size body-size #:color black)))
 (define rmhi bodyrmhi)
-(define rmem (make-string->text #:font body-font-lo #:size body-size #:color emph-color))
+(define rmem (shimhack (make-string->text #:font body-font-lo #:size body-size #:color emph-color)))
 (define bodyrmlobb (make-string->text #:font body-font-lo #:size body-size #:color deep-pen-color))
 (define bodyrmloyy (make-string->text #:font body-font-lo #:size body-size #:color shallow-pen-color))
 ;; (define bodyrmhi (make-string->text #:font body-font-hi #:size body-size #:color black))
@@ -361,11 +371,23 @@
              (or (string-prefix? str "img/")
                  (string-prefix? str "src/")))
       (build-path img-dir (substring str 4))
-      str))
+      (if (string? str)
+        (build-path img-dir str)
+        str)))
   (bitmap ps))
 
 (define (main-logo str [ww main-logo-w] [hh main-logo-h])
-  (freeze (scale-to-fit (-bitmap str) ww ww)))
+  (freeze (scale-to-fit (-bitmap str) (* 2 ww) hh)))
+
+(define (brown-logo)
+  (main-logo "browncs-logo.png"))
+
+(define (cra-logo)
+  (main-logo "cra.png"))
+
+(define (roblox-logo)
+  (main-logo "roblox-logo.png"))
+
 
 (define checker-w 40)
 
@@ -828,27 +850,32 @@
     ;; TODO why no image??! unreliable
     (pslide
       #:go center-coord
-      (freeze (-bitmap (build-path img-dir "chess2.png")))))
+      (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))))
   (pslide
     #:go center-coord
-    (freeze (-bitmap (build-path img-dir "chess2.png")))
+    (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
     #:go title-coord-m
+    ;; TODO brown + roblox + cra
     (let* ((top (bbox (titlerm the-title-str)))
-           (bot (bbox (rmlo "Programming '24")))
-           (low (bbox (freeze (scale-to-square (bitmap (build-path src-dir "cra.png")) 140))))
-           (xgap (xblank smol-x-sep))
+           (bot (bbox (subtitlerm "<Programming> '24")))
+           (scale-amt 0.8)
+           (low (vc-append
+                  tiny-y-sep
+                  (ht-append tiny-y-sep (bbox (scale (brown-logo) scale-amt)) (bbox (scale (cra-logo) scale-amt)))
+                  (sbox (roblox-logo))))
            (mid (bbox
                   (author-append
-                    @rmlo{Ben Greenman}
+                    @rmem{Ben Greenman}
                     @rmlo{Alan Jeffrey}
                     @rmlo{Shriram Krishnamurthi}
                     @rmlo{Mitesh Shah}
                     )))
            )
-      (vr-append
-        pico-y-sep
-        (hc-append xgap top xgap)
-        (vc-append pico-y-sep mid bot low)))
+      (ppict-do
+        top
+        #:go (coord 4/100 1 'lt #:abs-y bigg-y-sep) (ht-append tiny-y-sep mid low)
+        #:go (coord 96/100 1 'rt #:abs-y tiny-y-sep) bot
+        ))
     )
   (void))
 
@@ -894,22 +921,25 @@
     #:go title-coord-m
     ;; TODO brown + roblox + cra
     (let* ((top (bbox (titlerm the-title-str)))
-           (bot (bbox (rmlo "Programming '24")))
-           (low (bbox (freeze (scale-to-square (bitmap (build-path src-dir "cra.png")) 140))))
-           (xgap (xblank smol-x-sep))
+           (bot (bbox (subtitlerm "<Programming> '24")))
+           (scale-amt 0.8)
+           (low (vc-append
+                  tiny-y-sep
+                  (ht-append tiny-y-sep (bbox (scale (brown-logo) scale-amt)) (bbox (scale (cra-logo) scale-amt)))
+                  (sbox (roblox-logo))))
            (mid (bbox
                   (author-append
-                    @rmlo{Ben Greenman}
+                    @rmem{Ben Greenman}
                     @rmlo{Alan Jeffrey}
                     @rmlo{Shriram Krishnamurthi}
                     @rmlo{Mitesh Shah}
                     )))
            )
-      (vr-append
-        pico-y-sep
-        (hc-append xgap top xgap)
-        (vc-append pico-y-sep mid bot low)))
-
+      (ppict-do
+        top
+        #:go (coord 4/100 1 'lt #:abs-y bigg-y-sep) (ht-append tiny-y-sep mid low)
+        #:go (coord 96/100 1 'rt #:abs-y tiny-y-sep) bot
+        ))
 
 
   )))
