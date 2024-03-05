@@ -445,6 +445,10 @@
     #:frame-width (or frame-width (bbox-frame-width))
     #:frame-color (or frame-color (bbox-frame-color))))
 
+(define (thinkbox pp)
+  (parameterize ((bbox-radius 12))
+    (bbox pp #:x-margin pico-x-sep)))
+
 (define (sbox pp)
   (bbox pp
         #:x-margin pico-y-sep
@@ -845,17 +849,20 @@
 
 ;; ---
 
-(define (designers-and-users)
+(define (designers-and-users [n 0])
   (define lo (bbox @rmlo{Language Designers  &  Users need to talk!}))
-  (define hi
+  (define hi (penguin-row n))
+  (vc-append tiny-y-sep hi ((if (= n 0) values pblank) lo)))
+
+(define (penguin-row n)
     (let* ((hh 160)
-           (maker (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)))
+           (maker (tag-pict (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)) 'maker))
            (users (freeze (scale-to-height (values (inset/clip (-bitmap "penguin-group.png") 0 -120 0 -140)) hh)))
            (phone (sbox (freeze (scale-to-height (-bitmap "phone-call.png") (* 0.6 hh)))))
            (phone (cc-superimpose (bhrule (w%->pixels 35/100) #:thickness 2) phone))
+           (hide2 (if (not (= n 1)) values pblank))
            )
-      (hc-append tiny-x-sep maker phone users)))
-  (vc-append tiny-y-sep hi lo))
+      (hc-append tiny-x-sep maker (hide2 phone) (hide2 users))))
 
 (define (howtostudy n)
   (define lhs
@@ -931,7 +938,20 @@
     (howtostudy 2)
     )
   (pslide
-
+    #:alt (
+      #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep)) (designers-and-users 1)
+      #:go (at-find-pict 'maker rt-find 'lc) (thinkbox @rmlo{Deprecate API?})
+      #:next
+      #:go (at-find-pict 'maker rb-find 'lc #:abs-y 2) (thinkbox @rmlo{Are fatal errors uncommon?})
+    )
+    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
+    (designers-and-users 2)
+    #:go (at-find-pict 'maker rt-find 'lc) (thinkbox @rmlo{Deprecate API?})
+    #:go (at-find-pict 'maker rb-find 'lc #:abs-y 2) (thinkbox @rmlo{Are fatal errors uncommon?})
+    #:go (coord 1/2 55/100 'ct)
+    ;; TODO nicer right arrow
+    (bbox
+      (hc-append @rmlo{Telemetry  ==>  Informed Decisions } (plus-one)))
     )
   (pslide
     )
@@ -978,6 +998,13 @@
   (ppict-do
     (make-bg client-w client-h)
 
-
+    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
+    (designers-and-users 2)
+    #:go (at-find-pict 'maker rt-find 'lc) (thinkbox @rmlo{Deprecate API?})
+    #:go (at-find-pict 'maker rb-find 'lc #:abs-y 2) (thinkbox @rmlo{Are fatal errors uncommon?})
+    #:go (coord 1/2 55/100 'ct)
+    ;; TODO nicer right arrow
+    (bbox
+      (hc-append @rmlo{Telemetry ==> Informed Decisions } (plus-one)))
 
   )))
