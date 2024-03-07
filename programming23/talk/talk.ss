@@ -203,7 +203,7 @@
 (define typed-color utah-sunrise)
 (define untyped-color utah-granite)
 (define shallow-color utah-lake)
-(define concrete-color utah-crimson)
+(define concrete-color (hex-triplet->color% #xB17b03 #;F5ac0a))
 (define primitive-color utah-lake)
 (define deep-color typed-color)
 (define typed-brush-color (color%++ typed-color 20))
@@ -311,8 +311,8 @@
 (define bodyrmhi (make-string->text #:font body-font-md #:size body-size #:color black))
 (define hugerm (make-string->text #:font body-font-md #:size (+ 20 body-size) #:color black))
 (define rmlo (shimhack (make-string->text #:font body-font-lo #:size body-size #:color black)))
-(define rmhi bodyrmhi)
 (define rmem (shimhack (make-string->text #:font body-font-lo #:size body-size #:color emph-color)))
+(define rmhi rmem)
 (define bodyrmlobb (make-string->text #:font body-font-lo #:size body-size #:color deep-pen-color))
 (define bodyrmloyy (make-string->text #:font body-font-lo #:size body-size #:color shallow-pen-color))
 ;; (define bodyrmhi (make-string->text #:font body-font-hi #:size body-size #:color black))
@@ -383,11 +383,22 @@
   (main-logo "browncs-logo.png"))
 
 (define (cra-logo)
-  (main-logo "cra.png"))
+  (main-logo "cra-logo.png"))
 
 (define (roblox-logo)
   (main-logo "roblox-logo.png"))
 
+(define (roblox-logo-smol)
+  (main-logo "roblox-logo.png" 170 90))
+
+(define (luau-logo [ww #f])
+  (freeze (scale-to-square (-bitmap "luau-logo.png") (or ww 260))))
+
+(define (luau-logo-big)
+  (luau-logo))
+
+(define (luau-logo-smol)
+  (luau-logo 150))
 
 (define checker-w 40)
 
@@ -569,7 +580,7 @@
 (define (word-append . pp*)
   (apply hb-append word-sep pp*))
 
-(define line-sep2 (+ 2))
+(define line-sep2 (+ 10))
 
 (define (left-line-append2 . pp*)
   (left-line-append2* pp*))
@@ -666,23 +677,26 @@
           #:go (coord 1/2 0 'ct) label))
       (if title-pict (vc-append 0 (ht-append 4 (blank) title-pict) (add-label-margin block-pict)) block-pict))))
 
-(define (conslang x y)
-  (if x (list* (tt x) (blank) y) y))
-
 (define (untyped-code str)
   (untyped-codeblock #:title #f #:lang #f str))
 
 (define (untyped-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang untyped"] . str*)
-  (untyped-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
+  (untyped-codeblock* #:dark? dark? #:title title str*))
 
 (define (untyped-codeblock* pp* #:dark? [dark? #f] #:title [title #f])
   (X-codeblock pp* #:dark? dark? #:title title #:frame-color untyped-pen-color #:background-color untyped-brush-color))
+
+(define (white-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang untyped"] . str*)
+  (white-codeblock* #:dark? dark? #:title title str*))
+
+(define (white-codeblock* pp* #:dark? [dark? #f] #:title [title #f])
+  (X-codeblock pp* #:dark? dark? #:title title #:frame-color untyped-pen-color #:background-color white))
 
 (define (shallow-code str)
   (shallow-codeblock #:title #f #:lang #f str))
 
 (define (shallow-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang shallow"] . str*)
-  (shallow-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
+  (shallow-codeblock* #:dark? dark? #:title title str*))
 
 (define (shallow-codeblock* pp* #:dark? [dark? #f] #:title [title #f])
   (X-codeblock pp* #:dark? dark? #:title title #:frame-color shallow-pen-color #:background-color shallow-brush-color))
@@ -691,30 +705,24 @@
   (deep-codeblock #:title #f #:lang #f str))
 
 (define (deep-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang deep"] . str*)
-  (deep-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
+  (deep-codeblock* #:dark? dark? #:title title str*))
 
 (define (deep-codeblock* pp* #:dark? [dark? #f] #:title [title #f])
   (X-codeblock pp* #:dark? dark? #:title title #:frame-color deep-pen-color #:background-color deep-brush-color))
 
-(define typed-codeblock* deep-codeblock*)
-
-(define (concrete-code str)
-  (concrete-codeblock #:title #f #:lang #f str))
-
 (define (concrete-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang concrete"] . str*)
-  (concrete-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
+  (concrete-codeblock* #:dark? dark? #:title title str*))
 
 (define (concrete-codeblock* pp* #:dark? [dark? #f] #:title [title #f])
-  (X-codeblock pp* #:dark? dark? #:title title #:frame-color concrete-pen-color #:background-color concrete-brush-color))
+  (X-codeblock pp* #:dark? dark? #:title title #:frame-color deep-pen-color #:background-color concrete-brush-color))
 
-(define (primitive-code str)
-  (primitive-codeblock #:title #f #:lang #f str))
-
-(define (primitive-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang primitive"] . str*)
-  (primitive-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
-
-(define (primitive-codeblock* pp* #:dark? [dark? #f] #:title [title #f])
-  (X-codeblock pp* #:dark? dark? #:title title #:frame-color primitive-pen-color #:background-color primitive-brush-color))
+(define typed-codeblock* deep-codeblock*)
+(define nocheck-codeblock shallow-codeblock)
+(define nocheck-codeblock* shallow-codeblock*)
+(define nonstrict-codeblock deep-codeblock)
+(define nonstrict-codeblock* deep-codeblock*)
+(define strict-codeblock concrete-codeblock)
+(define strict-codeblock* concrete-codeblock*)
 
 (define (ucode str)
   (untyped-codeblock* (list (coderm str))))
@@ -732,7 +740,7 @@
   (bbox #:x-margin 0 #:y-margin 0 #:color deep-brush-color pp))
 
 (define (typed-codeblock #:dark? [dark? #f] #:title [title #f] #:lang [lang #f #;"#lang typed"] . str*)
-  (deep-codeblock* #:dark? dark? #:title title (conslang lang (map tt str*))))
+  (deep-codeblock* #:dark? dark? #:title title str*))
 
 (define (pblank pp)
   (blank (pict-width pp) (pict-height pp)))
@@ -857,12 +865,24 @@
 (define (penguin-row n)
     (let* ((hh 160)
            (maker (tag-pict (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)) 'maker))
-           (users (freeze (scale-to-height (values (inset/clip (-bitmap "penguin-group.png") 0 -120 0 -140)) hh)))
-           (phone (sbox (freeze (scale-to-height (-bitmap "phone-call.png") (* 0.6 hh)))))
+           (users (tag-pict (freeze (scale-to-height (values (inset/clip (-bitmap "penguin-group.png") 0 -120 0 -140)) hh)) 'users))
+           (phone (tag-pict (sbox (freeze (scale-to-height (-bitmap "phone-call.png") (* 0.6 hh)))) 'telephone))
            (phone (cc-superimpose (bhrule (w%->pixels 35/100) #:thickness 2) phone))
            (hide2 (if (not (= n 1)) values pblank))
            )
       (hc-append tiny-x-sep maker (hide2 phone) (hide2 users))))
+
+(define (penguin-logo)
+  (scale (designers-and-users 2) 0.72))
+
+(define (lshift n pp)
+  (hc-append pp (xblank n)))
+
+(define (lindent pp)
+  (rshift tiny-x-sep pp))
+
+(define (rshift n pp)
+  (hc-append (xblank n) pp))
 
 (define (howtostudy n)
   (define lhs
@@ -887,6 +907,118 @@
       lhs
       (ppict-do (bblur lhs) #:go (coord 1 1 'rt #:abs-y tiny-y-sep) ((if (< n 2) values bblur) mid)))
     ((if (< n 2) pblank values) rhs)))
+
+(define (x-pict size)
+  (define outer-color red1-3k1)
+  (define inner-color red0-3k1)
+  (define line-width% 6)
+  ;;
+  (define size/2 (/ size 2))
+  (define line-width (/ size line-width%))
+  (define line-width/2 (/ line-width 2))
+  ;;
+  (define (draw-x dc% dx dy)
+    (define old-brush (send dc% get-brush))
+    (define old-pen (send dc% get-pen))
+    ;;
+    (send dc% set-brush (new brush% [color inner-color]))
+    (send dc% set-pen (new pen% [width 1] [color outer-color]))
+    ;; draw X from top-left, counterclockwise
+    (define path% (new dc-path%))
+    (send path% move-to 0 0)
+    (send path% line-to (- size/2 line-width/2) size/2)
+    (send path% line-to 0 size)
+    (send path% line-to line-width size)
+    (send path% line-to size/2 (+ size/2 line-width/2))
+    (send path% line-to (- size line-width) size)
+    (send path% line-to size size)
+    (send path% line-to (+ size/2 line-width/2) size/2)
+    (send path% line-to size 0)
+    (send path% line-to (- size line-width) 0)
+    (send path% line-to size/2 (- size/2 line-width/2))
+    (send path% line-to line-width 0)
+    (send path% close)
+    (send dc% draw-path path% dx dy)
+    ;;
+    (send dc% set-brush old-brush)
+    (send dc% set-pen old-pen)
+    (void))
+  (dc draw-x size size))
+
+(define (the-example-code [n 0])
+  (list
+      @coderm{local x = { p = 5, q = nil }}
+      @coderm{if condition then x.q = 7 end}
+      (word-append @coderm{local y = } ((if (< n 2) coderm codeembf) "x.q + x.p"))
+      (word-append @coderm{local z = } ((if (< n 1) coderm codeembf) "x.r"))))
+
+(define nocheck-tag (nocheck-codeblock @rmlo{nocheck}))
+(define nonstrict-tag (nonstrict-codeblock @rmlo{nonstrict}))
+(define strict-tag (strict-codeblock @rmlo{strict}))
+
+(define (code-tag tag pp)
+  (ppict-do
+    pp
+    #:go (coord 1 0 'lt #:abs-x pico-x-sep)
+    tag))
+
+(define (low-code-tag pp tag)
+  (ppict-do
+    pp
+    #:go (coord 1 1 'lb #:abs-x pico-x-sep #:abs-y (- 0))
+    tag))
+
+(define nonstrict-lang @coderm{--!nonstrict})
+(define strict-lang @coderm{--!strict})
+
+(define sww 40)
+(define shh 120)
+
+(define (sample-codeblock ff sym)
+  (add-hubs (ff (ppict-do (blank sww shh) #:go center-coord (rmlo (symbol->string sym)))) sym))
+
+(define nocheck-sample (sample-codeblock nocheck-codeblock 'NC))
+(define nonstrict-sample (sample-codeblock nonstrict-codeblock 'NS))
+(define strict-sample (sample-codeblock strict-codeblock 'S))
+(define white-sample (cellophane (sample-codeblock white-codeblock '|| ) 0.4))
+
+(define (script-modes-pict)
+  (define top
+    (ppict-do
+      white-sample
+      #:go (coord 1/2 7/10 'cc)
+      (bbox @rmlo{1 script, 3 typing options})))
+  (define bot
+    (ht-append smol-x-sep nocheck-sample nonstrict-sample strict-sample))
+  (let* ((pp (vc-append medd-y-sep top bot))
+         (arr* (list (code-arrow '|-S| lb-find 'NC-N ct-find (* 3/4 turn) (* 3/4 turn) 1/4 1/4 'solid)
+                     (code-arrow '|-S| cb-find 'NS-N ct-find (* 3/4 turn) (* 3/4 turn) 1/4 1/4 'solid)
+                     (code-arrow '|-S| rb-find 'S-N ct-find (* 3/4 turn) (* 3/4 turn) 1/4 1/4 'solid)
+                     )))
+    (add-code-arrow* pp arr*)))
+
+(define (codebase-modes-pict)
+  (define lbl (bbox (word-append @rmlo{N scripts, } (supers @rmlo{3} @rmlo{N}) @rmlo{  options})))
+  (define the-sep tiny-y-sep)
+  (ppict-do
+    (vc-append
+      the-sep
+      (apply hc-append the-sep (make-list 4 white-sample))
+      (apply hc-append the-sep (make-list 4 white-sample)))
+    #:go center-coord lbl))
+
+(define (supers lo hi)
+  (vc-append
+    (yblank 6)
+    (ppict-do
+       lo
+      #:go (coord 89/100 0 'lc) (scale hi 0.6))))
+
+(define (script-and-codebase [n 0])
+    (ht-append
+      smol-x-sep
+      (script-modes-pict)
+      ((if (< n 1) pblank values) (codebase-modes-pict))))
 
 
 ;; -----------------------------------------------------------------------------
@@ -954,8 +1086,174 @@
       (hc-append @rmlo{Telemetry  ==>  Informed Decisions } (plus-one)))
     )
   (pslide
+    ;; caution, t gone wrong, transparent telemetry
+    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
+    (designers-and-users 2)
+    #:go (at-find-pict 'telephone cc-find 'cc)
+    (frame (freeze (scale-to-square (-bitmap "caution.png") 180)))
+    #:next
+    ;; #:go (at-find-pict 'telephone cb-find 'ct #:abs-y smol-y-sep)
+    ;; (bbox @rmrlo{Telemetry is contentious!})
+    #:go (at-find-pict 'users lb-find 'ct #:abs-y tiny-y-sep #:sep tiny-y-sep)
+    (thinkbox @rmlo{Are you spying on me?})
+    #:next
+    (yblank tiny-y-sep)
+    (thinkbox @rmlo{Personal Info})
+    (thinkbox @rmlo{Trade Secrets})
     )
   (pslide
+    #:go (coord 1/2 42/100 'cc)
+    (bbox
+      (lc-append
+        (word-append @rmlo{How to study } @rmem{type errors} @rmlo{ without})
+        (word-append @rmlo{revealing any code?})))
+    #:go (coord 1/2 75/100 'cc)
+    (penguin-logo)
+    )
+  (pslide
+    #:go (coord 1/2 55/100 'cc)
+    (bbox
+      ;; https://discuss.ocaml.org/t/can-we-improve-type-error-messages/12966
+      (code-line-append
+        (word-append @coderm{File } @codebf{"main.ml"} @coderm{, line 292, characters 53-70:})
+        (word-append @coderm{292 |     } @codebf{textarea [ id "notescontrol"; name "notes"] [txt "%s" c.notes];})
+        (word-append @coderm{292 |     } @codebf{                                             ^^^^^^^^^^^^^^^^  })
+        (word-append @coderm{Error: This variant expression is expected to have type})
+        (word-append @codebf{         ('a, unit, string, node) format4})
+        (word-append @coderm{        There is no constructor :: within type } @codebf{format6})))
+    #:next
+    #:go (coord 1/2 55/100 'cc) (x-pict 340)
+    #:go (coord 1/2 22/100 'cc)
+      (hc-append smol-x-sep
+        (wbox (word-append (x-pict 40) @rmlo{ code}))
+        (wbox (word-append (x-pict 40) @rmlo{ types}))
+        (wbox (word-append (x-pict 40) @rmlo{ filenames})))
+    )
+  (pslide
+    #:go (coord 1/2 42/100 'cc)
+    (bbox
+      (lc-append
+        (word-append @rmlo{How to study } @rmem{type errors} @rmlo{ without})
+        (word-append @rmlo{revealing any code?})))
+    #:go (coord 1/2 75/100 'cc)
+    (penguin-logo)
+    #:go (coord 55/100 20/100 'lt)
+    (bbox @rmlo{FORMATIVE work, generating hypotheses})
+    )
+  (void))
+
+(define (sec:rctx)
+  (pslide
+    ;; roblox, luau, context
+    #:go (coord 1/2 18/100 'ct)
+    (hc-append
+      (vc-append (luau-logo) (yblank smol-y-sep))
+      (rmhi (string-append at-sign "  "))
+      (roblox-logo))
+    #:next
+    (bbox @rmlo{2.4 million developers  [Dec'23]})
+    (yblank tiny-y-sep)
+    (bbox @rmlo{gradual types})
+    )
+  (pslide
+    ;; luau example
+    #:go (coord 10/100 6/100 'lt)
+    (luau-logo-smol)
+    #:go (coord 40/100 20/100 'ct)
+    (tag-pict (nocheck-codeblock* (the-example-code)) 'thecode)
+    #:next
+    #:go (at-find-pict 'thecode rt-find 'lt #:abs-x pico-x-sep #:abs-y (- tiny-y-sep))
+    (bbox @rmlo{create a table})
+    (yblank tiny-y-sep)
+    (bbox @rmlo{update it, maybe})
+    (yblank tiny-y-sep)
+    (bbox @rmlo{read from it})
+    #:next
+    #:go (coord 1/2 50/100 'ct)
+    (bbox (word-append @codebf{x.r}  @rmlo{ ==> runtime error}))
+    (yblank tiny-y-sep)
+    (bbox (word-append @codebf{x.q + x.p}  @rmlo{ ==> may be error}))
+    )
+  (pslide
+    ;; nonstrict, strict
+    #:go (coord 10/100 6/100 'lt) (luau-logo-smol)
+    #:go (coord 40/100 20/100 'ct)
+    #:alt (
+    (code-tag
+      nocheck-tag
+      (tag-pict (nocheck-codeblock* (the-example-code)) 'thecode))
+    )
+    (low-code-tag
+      (code-tag
+        nonstrict-tag
+        (nonstrict-codeblock* (cons nonstrict-lang (the-example-code 1))))
+      (bbox @codeembf{Unknown Property}))
+    #:next
+    (yblank tiny-y-sep)
+    (low-code-tag
+      (code-tag
+        strict-tag
+        (strict-codeblock* (cons strict-lang (the-example-code 2))))
+      (vl-append
+        tiny-y-sep
+        (bbox @codeembf{Type Mismatch})
+        (bbox @codeembf{Unknown Property})))
+    )
+  (pslide
+    ;;
+    #:go (coord 10/100 6/100 'lt) (luau-logo-smol)
+    #:go (coord 1/2 30/100 'ct)
+    (ptable
+      #:ncols 2
+      #:row-sep smol-y-sep
+      (list
+        nocheck-tag (bbox @rmlo{syntax errors})
+        nonstrict-tag (bbox @rmlo{high-confidence errors})
+        strict-tag (bbox @rmlo{full type analysis})))
+    )
+  (pslide
+    ;; multi-module
+    #:go (coord 10/100 6/100 'lt) (luau-logo-smol)
+    #:go (coord 1/2 20/100 'ct)
+    #:alt ((script-and-codebase 0))
+    (script-and-codebase 1)
+    )
+  (pslide
+    ;; roblox studio, type analysis, on the fly, telemetry framework
+    #:go (coord 10/100 6/100 'lt)
+    (ppict-do
+      (luau-logo-smol)
+      #:go (coord 1/2 20/100 'cc)
+      (roblox-logo-smol))
+    #:go (coord 65/100 09/100 'ct)
+    ;; (bbox @rmlo{Roblox Studio IDE})
+    (freeze (scale-to-square (-bitmap "roblox-studio.png") (w%->pixels 66/100)))
+    ;; #:next
+    ;; TODO? highlight the widget
+    ;; #:go center-coord
+    ;; (rectangle 200 150 #:border-color lite-green #:border-width 4)
+    #:next
+    #:go (coord 32/100 34/100 'ct)
+    (lc-append
+      (bbox @rmlo{Analysis Widget})
+      (bbox (word-append @rmlo{Typechecking } @rmhi{Every} @rmlo{ Keystroke}))
+      (bbox @rmlo{Background Analysis})
+      (bbox @rmlo{Usage-Data Telemetry}))
+    )
+  (pslide
+    ;; rqs
+    )
+  (pslide
+    ;; 
+    )
+  (void))
+
+(define (sec:design)
+  (pslide
+    ;; constraints
+    )
+  (pslide
+    ;; the design
     )
   (void))
 
@@ -977,6 +1275,7 @@
                  (current-slide-assembler bg-bg))
     (sec:title)
     (sec:intro)
+    (sec:rctx)
 ;    (sec:take2)
 ;    (sec:results)
 
@@ -998,13 +1297,31 @@
   (ppict-do
     (make-bg client-w client-h)
 
-    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
-    (designers-and-users 2)
-    #:go (at-find-pict 'maker rt-find 'lc) (thinkbox @rmlo{Deprecate API?})
-    #:go (at-find-pict 'maker rb-find 'lc #:abs-y 2) (thinkbox @rmlo{Are fatal errors uncommon?})
-    #:go (coord 1/2 55/100 'ct)
-    ;; TODO nicer right arrow
-    (bbox
-      (hc-append @rmlo{Telemetry ==> Informed Decisions } (plus-one)))
+    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+    (bbox @rmlo{Research Topics})
+    (yblank pico-y-sep)
+    (ll-append
+      (bbox
+        (ll-append
+          (word-append @rmlo{1. Adoption})
+          (lindent (scale-comment @rmlo{How many use types?}))
+          (lindent (scale-comment (word-append @rmlo{How many } @rmem{mix} @rmlo{ analysis modes?})))
+          (lindent (scale-comment (word-append @rmlo{How many } @rmem{change} @rmlo{ analysis modes?})))
+          ))
+      (bbox
+        (word-append @rmlo{2. Errors and Repairs}))
+      (bbox
+        (word-append @rmlo{3. Impact on Background Errors})))
+
+
+;    #:go (coord 
+;    (bbox
+;      (lc-append
+;        (word-append @rmlo{How to study } @rmem{type errors} @rmlo{ without})
+;        (word-append @rmlo{revealing any code?})))
+;    #:go (coord 1/2 75/100 'cc)
+;    (penguin-logo)
+;    #:go (coord 55/100 20/100 'lt)
+;    (bbox @rmlo{FORMATIVE work, generating hypotheses})
 
   )))
