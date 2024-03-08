@@ -1,11 +1,8 @@
 #lang at-exp slideshow
 
-;; outline:
-;;  https://docs.google.com/presentation/d/1Ci0SgJgme-7Vd8X-1GZ8n_lpYwdj_RtrxrpDIeL2Qts/edit
-;; colors:
-;;  https://imagecolorpicker.com/
-;; blog:
-;;  https://blog.brownplt.org/2024/02/02/privacy-telemetry.html
+;; outline: https://docs.google.com/presentation/d/1Ci0SgJgme-7Vd8X-1GZ8n_lpYwdj_RtrxrpDIeL2Qts/edit
+;; colors:  https://imagecolorpicker.com/
+;; blog:    https://blog.brownplt.org/2024/02/02/privacy-telemetry.html
 
 ;; Programming Conference
 ;; March 2024
@@ -558,6 +555,8 @@
 (define (scale-comment pp)
   (scale pp 0.65))
 
+(define comment-scale scale-comment)
+
 (define (scale-to-pict pp bg)
   (scale-to-fit pp (pict-width bg) (pict-height bg)))
 
@@ -867,13 +866,44 @@
            (maker (tag-pict (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)) 'maker))
            (users (tag-pict (freeze (scale-to-height (values (inset/clip (-bitmap "penguin-group.png") 0 -120 0 -140)) hh)) 'users))
            (phone (tag-pict (sbox (freeze (scale-to-height (-bitmap "phone-call.png") (* 0.6 hh)))) 'telephone))
-           (phone (cc-superimpose (bhrule (w%->pixels 35/100) #:thickness 2) phone))
+           (phone (cc-superimpose (bhrule (w%->pixels (if (< n 3) 35/100 20/100)) #:thickness 2) phone))
            (hide2 (if (not (= n 1)) values pblank))
            )
       (hc-append tiny-x-sep maker (hide2 phone) (hide2 users))))
 
+(define (penguin-smol)
+  (freeze (scale (penguin-row 3) 0.7)))
+
 (define (penguin-logo)
   (scale (designers-and-users 2) 0.72))
+
+(define (endlogo-bg)
+  (blank 150 150))
+
+(define (muscle-pict)
+  ;; TODO
+  (frame (blank 150 150)))
+
+(define (wrench-pict)
+  ;; TODO from rational-deep-shallow
+  (frame (blank 150 150)))
+
+(define (big-plus-one)
+  (cc-superimpose (endlogo-bg) (plus-one)))
+
+(define (other-gt-langs)
+  ;; TODO
+  (frame (blank 150 150)))
+
+(define (telemetry-design-pict)
+  ;; TODO
+  (sbox (freeze (scale-to-width (-bitmap "struct.png") (w%->pixels 8/10)))))
+
+(define (future-work-pict)
+  (frame (blank 150 150)))
+
+(define (aec-pict)
+  (sbox (freeze (scale-to-height (-bitmap "aec.png") 180))))
 
 (define (lshift n pp)
   (hc-append pp (xblank n)))
@@ -1014,12 +1044,29 @@
        lo
       #:go (coord 89/100 0 'lc) (scale hi 0.6))))
 
+(define (luau-and-roblox-smol [n 0])
+  (if (< n 2)
+    (ppict-do
+      (luau-logo-smol)
+      #:go (coord 1/2 20/100 'cc)
+      (roblox-logo-smol))
+    (vc-append
+      -8
+      (scale (roblox-logo-smol) 0.8)
+      (luau-logo-smol))))
+
+
 (define (script-and-codebase [n 0])
     (ht-append
       smol-x-sep
       (script-modes-pict)
       ((if (< n 1) pblank values) (codebase-modes-pict))))
 
+(define (wideimg str)
+  (wbox (freeze (scale-to-width (-bitmap str) (w%->pixels 75/100)))))
+
+(define (roblox-studio-pict)
+  (freeze (scale-to-square (-bitmap "roblox-studio.png") (w%->pixels 66/100))))
 
 ;; -----------------------------------------------------------------------------
 
@@ -1033,8 +1080,7 @@
       #:go center-coord
       (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))))
   (pslide
-    #:go center-coord
-    (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
+    #:go center-coord (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
     #:go title-coord-m
     (let* ((top (bbox (titlerm the-title-str)))
            (bot (bbox (subtitlerm "<Programming> '24")))
@@ -1076,8 +1122,7 @@
       #:next
       #:go (at-find-pict 'maker rb-find 'lc #:abs-y 2) (thinkbox @rmlo{Are fatal errors uncommon?})
     )
-    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
-    (designers-and-users 2)
+    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep)) (designers-and-users 2)
     #:go (at-find-pict 'maker rt-find 'lc) (thinkbox @rmlo{Deprecate API?})
     #:go (at-find-pict 'maker rb-find 'lc #:abs-y 2) (thinkbox @rmlo{Are fatal errors uncommon?})
     #:go (coord 1/2 55/100 'ct)
@@ -1086,20 +1131,25 @@
       (hc-append @rmlo{Telemetry  ==>  Informed Decisions } (plus-one)))
     )
   (pslide
+    #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep)) (designers-and-users 2)
+    #:go (coord 1/2 55/100 'ct) (bbox @rmlo{But, telemetry can go wrong})
+    )
+  (pslide
     ;; caution, t gone wrong, transparent telemetry
     #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
     (designers-and-users 2)
     #:go (at-find-pict 'telephone cc-find 'cc)
+    ;; TODO caution-pict ugly
     (frame (freeze (scale-to-square (-bitmap "caution.png") 180)))
-    #:next
     ;; #:go (at-find-pict 'telephone cb-find 'ct #:abs-y smol-y-sep)
     ;; (bbox @rmrlo{Telemetry is contentious!})
     #:go (at-find-pict 'users lb-find 'ct #:abs-y tiny-y-sep #:sep tiny-y-sep)
     (thinkbox @rmlo{Are you spying on me?})
     #:next
     (yblank tiny-y-sep)
-    (thinkbox @rmlo{Personal Info})
-    (thinkbox @rmlo{Trade Secrets})
+    (hc-append tiny-x-sep
+      (thinkbox @rmlo{Personal Info})
+      (thinkbox @rmlo{Trade Secrets}))
     )
   (pslide
     #:go (coord 1/2 42/100 'cc)
@@ -1138,6 +1188,7 @@
     #:go (coord 1/2 75/100 'cc)
     (penguin-logo)
     #:go (coord 55/100 20/100 'lt)
+    ;; TODO
     (bbox @rmlo{FORMATIVE work, generating hypotheses})
     )
   (void))
@@ -1148,7 +1199,7 @@
     #:go (coord 1/2 18/100 'ct)
     (hc-append
       (vc-append (luau-logo) (yblank smol-y-sep))
-      (rmhi (string-append at-sign "  "))
+      (titlerm (string-append at-sign "  "))
       (roblox-logo))
     #:next
     (bbox @rmlo{2.4 million developers  [Dec'23]})
@@ -1167,21 +1218,25 @@
     (yblank tiny-y-sep)
     (bbox @rmlo{update it, maybe})
     (yblank tiny-y-sep)
-    (bbox @rmlo{read from it})
+    (bbox @rmlo{read from table})
     #:next
     #:go (coord 1/2 50/100 'ct)
     (bbox (word-append @codebf{x.r}  @rmlo{ ==> runtime error}))
     (yblank tiny-y-sep)
-    (bbox (word-append @codebf{x.q + x.p}  @rmlo{ ==> may be error}))
+    (bbox (word-append @codebf{x.q + x.p}  @rmlo{ ==> possible error}))
     )
   (pslide
     ;; nonstrict, strict
     #:go (coord 10/100 6/100 'lt) (luau-logo-smol)
     #:go (coord 40/100 20/100 'ct)
     #:alt (
-    (code-tag
-      nocheck-tag
-      (tag-pict (nocheck-codeblock* (the-example-code)) 'thecode))
+      (code-tag
+        nocheck-tag
+        (tag-pict (nocheck-codeblock* (the-example-code)) 'thecode))
+      #:go (coord 1/2 50/100 'ct)
+      (bbox (word-append @codebf{x.r}  @rmlo{ ==> runtime error}))
+      (yblank tiny-y-sep)
+      (bbox (word-append @codebf{x.q + x.p}  @rmlo{ ==> possible error}))
     )
     (low-code-tag
       (code-tag
@@ -1220,20 +1275,15 @@
     )
   (pslide
     ;; roblox studio, type analysis, on the fly, telemetry framework
-    #:go (coord 10/100 6/100 'lt)
-    (ppict-do
-      (luau-logo-smol)
-      #:go (coord 1/2 20/100 'cc)
-      (roblox-logo-smol))
-    #:go (coord 65/100 09/100 'ct)
-    ;; (bbox @rmlo{Roblox Studio IDE})
-    (freeze (scale-to-square (-bitmap "roblox-studio.png") (w%->pixels 66/100)))
+    #:go (coord 10/100 6/100 'lt) (luau-and-roblox-smol)
+    #:go (coord 65/100 09/100 'ct) (roblox-studio-pict)
     ;; #:next
     ;; TODO? highlight the widget
     ;; #:go center-coord
     ;; (rectangle 200 150 #:border-color lite-green #:border-width 4)
     #:next
     #:go (coord 32/100 34/100 'ct)
+    ;; TODO stage these, show constraints?
     (lc-append
       (bbox @rmlo{Analysis Widget})
       (bbox (word-append @rmlo{Typechecking } @rmhi{Every} @rmlo{ Keystroke}))
@@ -1242,25 +1292,243 @@
     )
   (pslide
     ;; rqs
-    )
-  (pslide
-    ;; 
+    ;; TODO awful slide, at least stage RQs
+    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+    (bbox @rmlo{Research Topics})
+    (yblank pico-y-sep)
+    (ll-append
+      (bbox
+        (ll-append
+          (word-append @rmlo{1. Adoption})
+          (lindent (scale-comment @rmlo{How many use types?}))
+          (lindent (scale-comment (word-append @rmlo{How many } @rmem{mix} @rmlo{ analysis modes?})))
+          (lindent (scale-comment (word-append @rmlo{How many } @rmem{change} @rmlo{ analysis modes?})))))
+      (bbox
+        (ll-append
+          (word-append @rmlo{2. Errors and Repairs})
+          (lindent (scale-comment @rmlo{Which errors are common?}))
+          (lindent (scale-comment (word-append @rmlo{Which errors tend to } @rmem{survive} @rmlo{ edits?})))))
+      (bbox
+        (ll-append
+          (word-append @rmlo{3. Impact on Background Errors})
+          (lindent (scale-comment @rmlo{nocheck ==> more background errors?})))))
     )
   (void))
 
 (define (sec:design)
   (pslide
-    ;; constraints
+    ;; constraints, design
+    #:go heading-coord-m
+    (bbox @rmlo{Telemetry Design})
+    (yblank smol-y-sep)
+    (bbox
+      (ptable
+        #:ncols 2
+        (map scale-comment
+          (list
+            @rmlo{Who?}  @rmlo{randomly-selected sessions}
+            @rmlo{When?} @rmlo{random keystrokes + module switch}
+            @rmlo{What?} @rmlo{counts, not code}))))
+    #:alt (
+      #:go (coord 1/2 55/100 'cc)
+      (designers-and-users 2)
+     )
+    (yblank smol-y-sep)
+    (telemetry-design-pict)
+    (yblank tiny-y-sep)
+    (scale-comment @rmlo{TODO explain step by step})
+    ;; TODO explain step-by-step
+    ;; give example errors here
+    ;; especially the edit range!
+    )
+  (void))
+
+(define (sec:experiment)
+  (pslide
+    ;; 3 months 300k sessions
+    #:go (coord 1/2 11/100 'ct)
+    (wideimg "ft-1.png")
+    (yblank tiny-y-sep)
+    #:next
+    (let ((wnum (lambda (str)
+                  (rc-superimpose
+                    (xblank (pict-width @rmlo{+340}))
+                    (rmlo str))))
+          (wtxt (lambda (pp)
+                  (lc-superimpose
+                    (xblank (pict-width @rmlo{  thousand sessions}))
+                    pp))))
+      (ll-append
+        (bbox (word-append (wnum "3")    (wtxt @rmlo{  months of data})))
+        (bbox (word-append (wnum "+1.5") (wtxt @rmlo{  million records})))
+        (bbox (word-append (wnum "+340") (wtxt @rmlo{  thousand sessions})))))
     )
   (pslide
-    ;; the design
+    ;; rq1 adoption
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{1. Adoption})
+    (yblank tiny-y-sep)
+    ;; TODO pics, staging
+    (wideimg "ft-5.png")
+    )
+  (pslide
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{2. Errors})
+    (yblank tiny-y-sep)
+    ;; TODO smaller, focus!
+    (wideimg "ft-7.png")
+    )
+  (pslide
+    #:go center-coord
+    (bbox @rmlo{too complex})
+    )
+  (pslide
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{2. Errors + Repairs})
+    (yblank tiny-y-sep)
+    ;; TODO something
+    ;; TODO colors for NC NS S
+    (wideimg "ft-9.png")
+    )
+  (pslide
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{3. Types vs. Background Errors})
+    (yblank tiny-y-sep)
+    ;; TODO something
+    ;; TODO colors for NC NS S
+    (wideimg "ft-5.png")
+    (yblank tiny-y-sep)
+    (bbox @rmlo{same % as adoption rates, yikes})
+    )
+  (pslide
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{3. Types vs. Background Errors})
+    (yblank tiny-y-sep)
+    ;; TODO something
+    (wideimg "ft-10.png")
+    )
+  (pslide
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{3. Types vs. Background Errors})
+    (yblank tiny-y-sep)
+    (bbox
+      (ll-append
+        @rmlo{Uh oh ...}
+        (word-append @rmlo{3% of strict increase } @rmem{module} @rmlo{ type errors but not background errors})
+        (word-append @rmlo{16% of strict increase } @rmem{global} @rmlo{ type errors but not background})
+        ))
+    (yblank tiny-y-sep)
+    (bbox @rmlo{strict is too strict for data model})
+    )
+  (pslide
+    #:go (coord 65/100 09/100 'ct) (roblox-studio-pict)
+    #:go center-coord
+    (bbox @rmlo{highlight DATA widget, use icons for terrain, music, character})
+    )
+  (pslide
+    ;; findings
+    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+    (bbox @rmlo{Findings})
+    (yblank pico-y-sep)
+    ;; TODO stage ... exictiement??!
+    ;; TODO at least -1 for adoption, +1 errors, =1 bg
+    (ll-append
+      (bbox
+        (ll-append
+          (word-append @rmlo{1. Adoption})
+          (lindent (scale-comment @rmlo{10% use types, a mere 1% use strict}))
+          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
+          (lindent (scale-comment @rmlo{<0.13% change modes}))
+          ;; roughly even b/w down (0.07) and upgrade (0.05)
+          ))
+      (bbox
+        (ll-append
+          (word-append @rmlo{2. Errors and Repairs})
+          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
+          (lindent (scale-comment @rmlo{errors rarely pile up}))
+          ))
+      (bbox
+        (ll-append
+          (word-append @rmlo{3. Impact on Background Errors})
+          (lindent (scale-comment @rmlo{no correlation})))))
     )
   (void))
 
 (define (sec:takeaways)
+  (pslide
+    ;; threats
+    ;; - sampling incomplete
+    ;; - edit ranges coarse
+    ;; - stx dominate global view
+    ;; - many errors reported, no idea which if any users targeted
+    )
+  (pslide
+    ;; roblox takeaways
+    #:go (coord 10/100 06/100 'lt) (luau-and-roblox-smol 2)
+    #:go (coord 26/100 25/100 'lt)
+    (bbox (hc-append tiny-x-sep (muscle-pict) @rmlo{Make nonstrict the default!}))
+    (yblank smol-y-sep)
+    (bbox
+        (hc-append
+          tiny-x-sep
+          (wrench-pict)
+          (ll-append
+            @rmlo{Strict needs work}
+            (lindent (comment-scale @rmlo{low adoption ==> inexpressive?}))
+            (lindent (comment-scale @rmlo{data model types})))))
+    )
+  (pslide
+    ;; general
+    #:go (coord 90/100 06/100 'rt) (penguin-smol)
+    #:go (coord 17/100 25/100 'lt)
+    (bbox
+      (hc-append tiny-x-sep (big-plus-one)
+        (ll-append
+          @rmlo{Lite telemetry ==> useful analyses}
+          (lindent (comment-scale @rmlo{gradual adoption}))
+          (lindent (comment-scale @rmlo{error frequency}))
+          (lindent (comment-scale @rmlo{repairs})))))
+    (yblank smol-y-sep)
+    #:next
+    (bbox
+      (hc-append
+        tiny-x-sep
+        (other-gt-langs)
+        @rmlo{Lots to learn about types in practice}))
+    )
+  (pslide
+    ;; public data
+    #:go (coord 1/2 14/100 'ct)
+    (hc-append
+      tiny-x-sep
+      (aec-pict)
+      (lc-append
+        (bbox @coderm{https://zenodo.org/doi/10.5281/zenodo.10275213})
+        (bbox @rmlo{Data + Analysis Scripts})))
+    (yblank medd-y-sep)
+    (bbox
+      (hc-append
+        tiny-x-sep
+        (future-work-pict)
+        @rmlo{Statistical models of programmers}))
+    )
+  (pslide
+    #:go center-coord (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
+    #:go center-coord (bbox @rmlo{The End})
+    )
+  (pslide
+    ;; final summary
+    #:go (coord 10/100 06/100 'lt) (luau-and-roblox-smol 2)
+    #:go (coord 90/100 06/100 'rt) (penguin-smol)
+    #:go (coord 1/2 48/100 'cc) (telemetry-design-pict)
+    ;; ??? data pict?
+    )
   (void))
 
 (define (sec:extra)
+  ;; big tables???
+  ;; ft-1 ... ft-11.png
   (void))
 
 ;; -----------------------------------------------------------------------------
@@ -1276,9 +1544,8 @@
     (sec:title)
     (sec:intro)
     (sec:rctx)
-;    (sec:take2)
-;    (sec:results)
-
+    (sec:design)
+    (sec:experiment)
     (sec:takeaways)
     (sec:extra)
     (when (*export*) (pslide))
@@ -1298,30 +1565,22 @@
     (make-bg client-w client-h)
 
     #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
-    (bbox @rmlo{Research Topics})
-    (yblank pico-y-sep)
-    (ll-append
-      (bbox
-        (ll-append
-          (word-append @rmlo{1. Adoption})
-          (lindent (scale-comment @rmlo{How many use types?}))
-          (lindent (scale-comment (word-append @rmlo{How many } @rmem{mix} @rmlo{ analysis modes?})))
-          (lindent (scale-comment (word-append @rmlo{How many } @rmem{change} @rmlo{ analysis modes?})))
-          ))
-      (bbox
-        (word-append @rmlo{2. Errors and Repairs}))
-      (bbox
-        (word-append @rmlo{3. Impact on Background Errors})))
+    (bbox @rmlo{Threats})
 
 
-;    #:go (coord 
-;    (bbox
-;      (lc-append
-;        (word-append @rmlo{How to study } @rmem{type errors} @rmlo{ without})
-;        (word-append @rmlo{revealing any code?})))
-;    #:go (coord 1/2 75/100 'cc)
-;    (penguin-logo)
-;    #:go (coord 55/100 20/100 'lt)
-;    (bbox @rmlo{FORMATIVE work, generating hypotheses})
+    ;; bare minimum example errors
+; TypeMismatch 	 Basic type error.
+; SyntaxError 	 Basic parse error, e.g., \code{for if end}.
+; UnknownProperty 	 Referenced an invalid field or method.
+; OnlyTablesCanHaveMethods 	 Tried to attach a method to a non-table.
+; CannotExtendTable 	 Tried to extend a sealed table.
+; TypesAreUnrelated 	 Failed cast, unify, or subtype.
+; CountMismatch 	 Arity mismatch for a function.
+; IncorrectGenericParamCount 	 Arity mismatch for a generic type.
+; CodeTooComplex 	 Type analysis failed~(\cref{s:code-too-complex}).
+; GenericError 	 Generic label for other non-type errors, e.g., looping over an unordered table.
+
+
+
 
   )))
