@@ -877,23 +877,35 @@
 (define (penguin-logo)
   (scale (designers-and-users 2) 0.72))
 
+(define endlogo-width 150)
+
 (define (endlogo-bg)
-  (blank 150 150))
+  (blank endlogo-width endlogo-width))
+
+(define (scale-to-endlogo pp)
+  (scale-to-square pp endlogo-width))
+
+(define (-endlogo str)
+  (values #;wbox (freeze (scale-to-endlogo (-bitmap str)))))
 
 (define (muscle-pict)
-  ;; TODO
-  (frame (blank 150 150)))
+  (-endlogo "muscle.png"))
 
 (define (wrench-pict)
-  ;; TODO from rational-deep-shallow
-  (frame (blank 150 150)))
+  (-endlogo "wrench.png"))
 
 (define (big-plus-one)
   (cc-superimpose (endlogo-bg) (plus-one)))
 
 (define (other-gt-langs)
-  ;; TODO
-  (frame (blank 150 150)))
+  ;; TODO racket typescript staticpython
+  (define (tinyp str)
+    (freeze (scale-to-square (-bitmap str) 80)))
+  (ppict-do
+    (endlogo-bg)
+    #:go (coord 77/100 51/100 'cb) (tinyp "racket.png")
+    #:go (coord 80/100 45/100 'rt) (tinyp "sp-logo.png")
+    #:go (coord 0 52/100 'lb) (tinyp "typescript.png")))
 
 (define (telemetry-design-pict)
   ;; TODO
