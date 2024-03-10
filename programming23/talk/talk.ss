@@ -835,7 +835,8 @@
   (bitmap (check-icon #:color apple-green #:height h #:material rubber-icon-material)))
 
 (define (caution-pict h)
-  (bitmap (close-icon #:color utah-sunrise #:height h #:material plastic-icon-material)))
+  ;; TODO caution-pict ugly
+  (frame (freeze (scale-to-square (-bitmap "caution.png") h))))
 
 (define (stop-pict h)
   (bitmap (stop-icon #:color utah-crimson #:height h #:material plastic-icon-material)))
@@ -898,7 +899,6 @@
   (cc-superimpose (endlogo-bg) (plus-one)))
 
 (define (other-gt-langs)
-  ;; TODO racket typescript staticpython
   (define (tinyp str)
     (freeze (scale-to-square (-bitmap str) 80)))
   (ppict-do
@@ -907,9 +907,19 @@
     #:go (coord 80/100 45/100 'rt) (tinyp "sp-logo.png")
     #:go (coord 0 52/100 'lb) (tinyp "typescript.png")))
 
-(define (telemetry-design-pict)
+(define (telemetry-design-pict2)
   ;; TODO
   (sbox (freeze (scale-to-width (-bitmap "struct.png") (w%->pixels 8/10)))))
+
+(define (telebox str)
+  (bbox (rmlo str)))
+
+(define (telemetry-design-pict)
+  (values
+    (vc-append
+      pico-y-sep
+      (apply hc-append pico-x-sep (map telebox '("Id" "Time" "Mode" "Reason" "Sizes")))
+      (apply hc-append pico-x-sep (map telebox '("Global #s" "Edit Range #s"))))))
 
 (define (future-work-pict)
   (frame (blank 150 150)))
@@ -1151,8 +1161,7 @@
     #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep))
     (designers-and-users 2)
     #:go (at-find-pict 'telephone cc-find 'cc)
-    ;; TODO caution-pict ugly
-    (frame (freeze (scale-to-square (-bitmap "caution.png") 180)))
+    (caution-pict 180)
     ;; #:go (at-find-pict 'telephone cb-find 'ct #:abs-y smol-y-sep)
     ;; (bbox @rmrlo{Telemetry is contentious!})
     #:go (at-find-pict 'users lb-find 'ct #:abs-y tiny-y-sep #:sep tiny-y-sep)
@@ -1448,7 +1457,7 @@
       (bbox
         (ll-append
           (word-append @rmlo{1. Adoption})
-          (lindent (scale-comment @rmlo{10% use types, a mere 1% use strict}))
+          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
           (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
           (lindent (scale-comment @rmlo{<0.13% change modes}))
           ;; roughly even b/w down (0.07) and upgrade (0.05)
@@ -1458,23 +1467,28 @@
           (word-append @rmlo{2. Errors and Repairs})
           (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
           (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
-          (lindent (scale-comment @rmlo{errors rarely pile up}))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
           ))
       (bbox
         (ll-append
           (word-append @rmlo{3. Impact on Background Errors})
           (lindent (scale-comment @rmlo{no correlation})))))
     )
+  (pslide
+    ;; threats
+    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+    (hc-append smol-x-sep (bbox @rmlo{Threats}) (caution-pict 120))
+    (yblank medd-y-sep)
+    (vc-append
+      smol-y-sep
+        (comment-scale (bbox @rmlo{sampling is incomplete}))
+        (comment-scale (bbox @rmlo{stx errors dominate global counts}))
+        (comment-scale (bbox @rmlo{edit ranges are coarse}))
+        (comment-scale (bbox @rmlo{no data for the intention behind edits})))
+    )
   (void))
 
 (define (sec:takeaways)
-  (pslide
-    ;; threats
-    ;; - sampling incomplete
-    ;; - edit ranges coarse
-    ;; - stx dominate global view
-    ;; - many errors reported, no idea which if any users targeted
-    )
   (pslide
     ;; roblox takeaways
     #:go (coord 10/100 06/100 'lt) (luau-and-roblox-smol 2)
@@ -1507,7 +1521,9 @@
       (hc-append
         tiny-x-sep
         (other-gt-langs)
-        @rmlo{Lots to learn about types in practice}))
+        (ll-append
+          (word-append @rmem{Much more} @rmlo{ to explore!})
+          (lindent (comment-scale @rmlo{How do devs actually use gradual types?})))))
     )
   (pslide
     ;; public data
@@ -1576,9 +1592,11 @@
   (ppict-do
     (make-bg client-w client-h)
 
-    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
-    (bbox @rmlo{Threats})
 
+    #:go center-coord
+    (telemetry-design-pict2)
+    (yblank tiny-y-sep)
+    (telemetry-design-pict)
 
     ;; bare minimum example errors
 ; TypeMismatch 	 Basic type error.
