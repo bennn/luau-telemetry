@@ -9,7 +9,7 @@
 ;; 30 min
 ;; https://2024.programming-conference.org/
 
-;; [ ] main issue is that it ends all about concrete things about Luau, but the
+;; [X] main issue is that it ends all about concrete things about Luau, but the
 ;;     paper is actually about privacy-respecting telemetry. So I'd want to see two
 ;;     conclusions: one about Luau/whatever else you currently talk about, one more
 ;;     about setting the agenda for this kind of research going forward.
@@ -723,6 +723,15 @@
 (define strict-codeblock concrete-codeblock)
 (define strict-codeblock* concrete-codeblock*)
 
+(define (edit-file-pict)
+  (define cc utah-white)
+  (cc-superimpose
+    (nonstrict-codeblock (blank 190 400))
+    (filled-rectangle 290 200
+                      #:color (color%-update-alpha cc 0.9)
+                      #:border-color cc
+                      #:draw-border? #true)))
+
 (define (ucode str)
   (untyped-codeblock* (list (coderm str))))
 
@@ -835,7 +844,6 @@
   (bitmap (check-icon #:color apple-green #:height h #:material rubber-icon-material)))
 
 (define (caution-pict h)
-  ;; TODO caution-pict ugly
   (frame (freeze (scale-to-square (-bitmap "caution.png") h))))
 
 (define (stop-pict h)
@@ -907,19 +915,11 @@
     #:go (coord 80/100 45/100 'rt) (tinyp "sp-logo.png")
     #:go (coord 0 52/100 'lb) (tinyp "typescript.png")))
 
-(define (telemetry-design-pict2)
-  ;; TODO
-  (sbox (freeze (scale-to-width (-bitmap "struct.png") (w%->pixels 8/10)))))
-
 (define (telebox str)
   (bbox (rmlo str)))
 
-(define (telemetry-design-pict)
-  (values
-    (vc-append
-      pico-y-sep
-      (apply hc-append pico-x-sep (map telebox '("Id" "Time" "Mode" "Reason" "Sizes")))
-      (apply hc-append pico-x-sep (map telebox '("Global #s" "Edit Range #s"))))))
+(define (telemetry-design-pict2)
+  (sbox (freeze (scale-to-width (-bitmap "struct.png") (w%->pixels 8/10)))))
 
 (define (future-work-pict)
   (frame (blank 150 150)))
@@ -1090,6 +1090,60 @@
 (define (roblox-studio-pict)
   (freeze (scale-to-square (-bitmap "roblox-studio.png") (w%->pixels 66/100))))
 
+(define telemetry-explain*
+  (list @rmlo{pseudonymized session id}
+        @rmlo{client-side timestamp}
+        (vc-append
+          pico-y-sep
+          @rmlo{current type mode}
+          (ht-append tiny-x-sep nocheck-sample nonstrict-sample strict-sample))
+        (word-append @rmem{keystroke} @rmlo{ or } @rmem{module switch})
+        (ll-append
+          @rmlo{# files}
+          @rmlo{# lines in codebase}
+          @rmlo{# lines in edit range})
+        (ll-append
+          @rmlo{# errors overall}
+          @rmlo{# errors in script}
+          @rmlo{# errors in edit range})
+        (ll-append
+          @coderm|{{ Type Error Code : #, ... }}|
+          @coderm|{{ BG   Error Code : #, ... }}|
+          (yblank pico-y-sep)
+          (scale-comment @rmlo{  in edit range,})
+          (scale-comment @rmlo{  up to 70 counts}))))
+
+(define telemetry-explain-pict
+  (let* ((ww (apply max (map pict-width telemetry-explain*)))
+         (hh (apply max (map pict-height telemetry-explain*)))
+         (bg (blank ww hh)))
+    (lambda (n)
+      (bbox (ct-superimpose bg (list-ref telemetry-explain* n))))))
+
+(define (telemetry-design-pict [n #f])
+  (define ii 0)
+  (define (telebox2 x)
+    (define base (telebox x))
+    (set! ii (+ ii 1))
+    (cond
+      [(or (not n) (= n ii))
+       base]
+      [(< ii n)
+       (bblur base)]
+      [else ;; (> ii n)
+       (pblank base)]))
+  (define bot
+    (if (not n)
+      (blank)
+      (telemetry-explain-pict (sub1 n))))
+  (vc-append
+    smol-y-sep
+    (vc-append
+      pico-y-sep
+      (apply hc-append pico-x-sep (map telebox2 '("Id" "Time" "Mode" "Reason" "Sizes")))
+      (apply hc-append pico-x-sep (map telebox2 '("Global Counts" "Edit Range Counts"))))
+    bot))
+
 ;; -----------------------------------------------------------------------------
 
 (define the-title-str "Privacy-Respecting Type Error Telemetry at Scale")
@@ -1206,11 +1260,12 @@
       (lc-append
         (word-append @rmlo{How to study } @rmem{type errors} @rmlo{ without})
         (word-append @rmlo{revealing any code?})))
+    (yblank pico-y-sep)
+    (bbox
+      (scale-comment
+        (word-append @rmlo{Formative work} @rmlo{, generating hypotheses})))
     #:go (coord 1/2 75/100 'cc)
     (penguin-logo)
-    #:go (coord 55/100 20/100 'lt)
-    ;; TODO
-    (bbox @rmlo{FORMATIVE work, generating hypotheses})
     )
   (void))
 
@@ -1338,7 +1393,6 @@
 
 (define (sec:design)
   (pslide
-    ;; constraints, design
     #:go heading-coord-m
     (bbox @rmlo{Telemetry Design})
     (yblank smol-y-sep)
@@ -1354,13 +1408,33 @@
       #:go (coord 1/2 55/100 'cc)
       (designers-and-users 2)
      )
+    #:next
     (yblank smol-y-sep)
+    #:alt ((telemetry-design-pict 1))
+    #:alt ((telemetry-design-pict 2))
+    #:alt ((telemetry-design-pict 3))
+    #:alt ((telemetry-design-pict 4))
+    #:alt ((telemetry-design-pict 5))
+    #:alt ((telemetry-design-pict 6))
+    #:alt ((telemetry-design-pict 7))
     (telemetry-design-pict)
-    (yblank tiny-y-sep)
-    (scale-comment @rmlo{TODO explain step by step})
-    ;; TODO explain step-by-step
-    ;; give example errors here
-    ;; especially the edit range!
+    )
+  (pslide
+    ;; what is edit range
+    #:go center-coord
+    (hc-append
+      medd-x-sep
+      (ll-append
+        (bbox
+          (ll-append
+            @rmlo{Edit Range =}
+            @rmlo{  [min edit line, max edit line]}))
+        (yblank tiny-y-sep)
+        (bbox
+          (ll-append
+            @rmlo{Not shared!}
+            (word-append @rmlo{Used to filter } @rmem{overlapping errors}))))
+      (edit-file-pict))
     )
   (void))
 
@@ -1429,6 +1503,7 @@
     (wideimg "ft-10.png")
     )
   (pslide
+    ;; TODO ?
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{3. Types vs. Background Errors})
     (yblank tiny-y-sep)
@@ -1550,7 +1625,7 @@
     #:go (coord 10/100 06/100 'lt) (luau-and-roblox-smol 2)
     #:go (coord 90/100 06/100 'rt) (penguin-smol)
     #:go (coord 1/2 48/100 'cc) (telemetry-design-pict)
-    ;; ??? data pict?
+    ;; TODO data pict?
     )
   (void))
 
@@ -1593,10 +1668,26 @@
     (make-bg client-w client-h)
 
 
-    #:go center-coord
-    (telemetry-design-pict2)
+
+    #:go (coord 1/2 11/100 'ct)
+    (wideimg "ft-1.png")
     (yblank tiny-y-sep)
-    (telemetry-design-pict)
+    #:next
+    (let ((wnum (lambda (str)
+                  (rc-superimpose
+                    (xblank (pict-width @rmlo{+340}))
+                    (rmlo str))))
+          (wtxt (lambda (pp)
+                  (lc-superimpose
+                    (xblank (pict-width @rmlo{  thousand sessions}))
+                    pp))))
+      (ll-append
+        (bbox (word-append (wnum "3")    (wtxt @rmlo{  months of data})))
+        (bbox (word-append (wnum "+1.5") (wtxt @rmlo{  million records})))
+        (bbox (word-append (wnum "+340") (wtxt @rmlo{  thousand sessions})))))
+
+;    #:go center-coord
+;    (telemetry-design-pict)
 
     ;; bare minimum example errors
 ; TypeMismatch 	 Basic type error.
