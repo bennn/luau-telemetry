@@ -927,7 +927,48 @@
   (sbox (freeze (scale-to-width (-bitmap "struct.png") (w%->pixels 8/10)))))
 
 (define (future-work-pict)
+  ;; TODO
   (frame (blank 150 150)))
+
+(define (rq-pict n)
+    (ll-append
+      (bbox
+        (ll-append
+          (word-append @rmlo{1. Adoption})
+          (lindent (scale-comment @rmlo{How many use types?}))
+          (lindent (scale-comment (word-append @rmlo{How many } @rmem{mix} @rmlo{ analysis modes?})))
+          (lindent (scale-comment (word-append @rmlo{How many } @rmem{change} @rmlo{ analysis modes?})))))
+      ((if (< n 1) pblank values) (bbox
+        (ll-append
+          (word-append @rmlo{2. Errors and Repairs})
+          (lindent (scale-comment @rmlo{Which errors are common?}))
+          (lindent (scale-comment (word-append @rmlo{Which errors tend to } @rmem{survive} @rmlo{ edits?}))))))
+      ((if (< n 2) pblank values) (bbox
+        (ll-append
+          (word-append @rmlo{3. Impact on Background Errors})
+          (lindent (scale-comment @rmlo{nocheck ==> more background errors?})))))))
+
+(define (findings-pict n)
+    (ll-append
+      (bbox
+        (ll-append
+          (word-append @rmlo{1. Adoption})
+          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
+          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
+          (lindent (scale-comment @rmlo{<0.13% change modes}))
+          ;; roughly even b/w down (0.07) and upgrade (0.05)
+          ))
+      ((if (< n 1) pblank values) (bbox
+        (ll-append
+          (word-append @rmlo{2. Errors and Repairs})
+          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
+          )))
+      ((if (< n 2) pblank values) (bbox
+        (ll-append
+          (word-append @rmlo{3. Impact on Background Errors})
+          (lindent (scale-comment @rmlo{no correlation})))))))
 
 (define (aec-pict)
   (sbox (freeze (scale-to-height (-bitmap "aec.png") 180))))
@@ -1096,13 +1137,13 @@
   (freeze (scale-to-square (-bitmap "roblox-studio.png") (w%->pixels 66/100))))
 
 (define telemetry-explain*
-  (list @rmlo{pseudonymized session id}
-        @rmlo{client-side timestamp}
+  (list @rmlo{Pseudonymized session id}
+        @rmlo{Client-side timestamp}
         (vc-append
           pico-y-sep
-          @rmlo{current type mode}
+          @rmlo{Current type mode}
           (ht-append tiny-x-sep nocheck-sample nonstrict-sample strict-sample))
-        (word-append @rmem{keystroke} @rmlo{ or } @rmem{module switch})
+        (word-append @rmem{Keystroke} @rmlo{ or } @rmem{module switch})
         (ll-append
           @rmlo{# files}
           @rmlo{# lines in codebase}
@@ -1112,8 +1153,8 @@
           @rmlo{# errors in script}
           @rmlo{# errors in edit range})
         (ll-append
-          @coderm|{{ Type Error Code : #, ... }}|
-          @coderm|{{ BG   Error Code : #, ... }}|
+          @coderm|{{ Type Error : #, ... }}|
+          @coderm|{{ BG   Error : #, ... }}|
           (yblank pico-y-sep)
           (scale-comment @rmlo{  in edit range,})
           (scale-comment @rmlo{  up to 70 counts}))))
@@ -1263,6 +1304,13 @@
       "CannotExtendTable" "0.09%"
       "OccursCheckFailed" "0.09%"
       "TypesAreUnrelated" "0.09%")))
+
+(define (roblox-background-pict n)
+    (lc-append
+      (bbox (word-append @rmlo{Typechecking } @rmhi{Every} @rmlo{ Keystroke}))
+      ((if (< n 1) pblank values) (bbox @rmlo{Background Analysis}))
+      ((if (< n 2) pblank values) (bbox @rmlo{Analysis Widget}))
+      ((if (< n 3) pblank values) (bbox @rmlo{Usage-Data Telemetry}))))
 
 ;; -----------------------------------------------------------------------------
 
@@ -1479,12 +1527,10 @@
     ;; (rectangle 200 150 #:border-color lite-green #:border-width 4)
     #:next
     #:go (coord 32/100 34/100 'ct)
-    ;; TODO stage these, show constraints?
-    (lc-append
-      (bbox @rmlo{Analysis Widget})
-      (bbox (word-append @rmlo{Typechecking } @rmhi{Every} @rmlo{ Keystroke}))
-      (bbox @rmlo{Background Analysis})
-      (bbox @rmlo{Usage-Data Telemetry}))
+    #:alt ((roblox-background-pict 0))
+    #:alt ((roblox-background-pict 1))
+    #:alt ((roblox-background-pict 2))
+    (roblox-background-pict 3)
     )
   (pslide
     ;; rqs
@@ -1492,22 +1538,9 @@
     #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
     (bbox @rmlo{Research Topics})
     (yblank pico-y-sep)
-    (ll-append
-      (bbox
-        (ll-append
-          (word-append @rmlo{1. Adoption})
-          (lindent (scale-comment @rmlo{How many use types?}))
-          (lindent (scale-comment (word-append @rmlo{How many } @rmem{mix} @rmlo{ analysis modes?})))
-          (lindent (scale-comment (word-append @rmlo{How many } @rmem{change} @rmlo{ analysis modes?})))))
-      (bbox
-        (ll-append
-          (word-append @rmlo{2. Errors and Repairs})
-          (lindent (scale-comment @rmlo{Which errors are common?}))
-          (lindent (scale-comment (word-append @rmlo{Which errors tend to } @rmem{survive} @rmlo{ edits?})))))
-      (bbox
-        (ll-append
-          (word-append @rmlo{3. Impact on Background Errors})
-          (lindent (scale-comment @rmlo{nocheck ==> more background errors?})))))
+    #:alt ((rq-pict 0))
+    #:alt ((rq-pict 1))
+    (rq-pict 2)
     )
   (void))
 
@@ -1521,9 +1554,9 @@
         #:ncols 2
         (map scale-comment
           (list
-            @rmlo{Who?}  @rmlo{randomly-selected sessions}
-            @rmlo{When?} @rmlo{random keystrokes + module switch}
-            @rmlo{What?} @rmlo{counts, not code}))))
+            @rmem{Who?}  @rmlo{randomly-selected sessions}
+            @rmem{When?} @rmlo{random keystrokes + module switch}
+            @rmem{What?} @rmlo{counts, not code}))))
     #:alt (
       #:go (coord 1/2 55/100 'cc)
       (designers-and-users 2)
@@ -1568,10 +1601,7 @@
     (wideimg "ft-1.png")
     (yblank tiny-y-sep)
     #:next
-    (let ((wnum (lambda (str)
-                  (rc-superimpose
-                    (xblank (pict-width @rmlo{+340}))
-                    (rmlo str))))
+    (let ((wnum rmlo)
           (wtxt values))
       (lc-append
         (bbox (word-append (wnum "3")    (wtxt @rmlo{  months of data})))
@@ -1585,6 +1615,7 @@
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{1. Adoption})
     (yblank smol-y-sep)
+    #:next
     #:alt ((adoption-pict 0))
     (adoption-pict 1)
     #:next
@@ -1602,11 +1633,14 @@
       (lc-append
         (scale-comment @rmlo{Internal Limits:})
         (hc-append smol-x-sep
-                   @coderm{CodeTooComplex}
-                   @coderm{UnificationTooComplex}
-                   @coderm{NormalizationTooComplex})))
+                   @coderm{Code Too Complex}
+                   @coderm{Unification Too Complex}
+                   @coderm{Normalization Too Complex})))
     (yblank smol-y-sep)
-    (bbox @rmlo{26 occurrence, only in 3 sessions})
+    (bbox
+      (lc-append
+        @rmlo{26 total, only in 3 sessions}
+        (plus-one)))
     )
   (pslide
     ;; popular errors
@@ -1619,8 +1653,16 @@
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{2. Errors})
     (yblank smol-y-sep)
-    (bbox @rmlo{Survival? See paper.})
-    (yblank tiny-y-sep)
+    (bbox
+      (lc-append
+        (scale-comment @rmlo{Likely to survive edits:})
+        (hc-append smol-x-sep
+                   @coderm{Optional Value Access}
+                   @coderm{Cannot Infer Binary Operation})))
+    #:next
+    (yblank medd-y-sep)
+    (bbox @rmlo{More in paper:})
+    (yblank pico-y-sep)
     ;; - stx un-sym un-prop most common
     ;; - then count-mismatch(arity) type-mismatch generic-error [ TE GE unknown origin ]
     ;; - optional-value-access persists
@@ -1630,7 +1672,6 @@
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{2. Errors + Repairs})
     (yblank tiny-y-sep)
-    ;; TODO something
     ;; TODO colors for NC NS S
     (bbox (scale-comment @rmlo{Density changes over time   (curr - old / lines)}))
     (yblank pico-y-sep)
@@ -1639,6 +1680,7 @@
   (pslide
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{3. Types vs. Background Errors})
+    #:next
     (yblank smol-y-sep)
     (background-error-pict 1)
     #:next
@@ -1646,69 +1688,46 @@
     ;; TODO surprise pict? first glance deceiving
     (bbox @rmlo{BG rates proportional to adoption rates})
     )
-;  (pslide
-;    #:go (coord 1/2 11/100 'ct)
-;    (bbox @rmlo{3. Types vs. Background Errors})
-;    (yblank tiny-y-sep)
-;    ;; TODO something
-;    (wideimg "ft-10.png")
-;    )
   (pslide
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{3. Types vs. Background Errors})
     (yblank medd-y-sep)
     (bbox
       (ll-append
+        ;; ditto for in-module but only 3%
         (word-append @rmem{16%} @rmlo{ of strict records})
-        @rmlo{  increase type errors}
+        @rmlo{  increase overall type errors}
         @rmlo{  but not background errors}))
-    (yblank pico-y-sep)
+    (yblank medd-y-sep)
     #:next
-    (bbox
-      (ll-append
-        (word-append @rmem{3%} @rmlo{ same for per-script counts})))
-    (yblank smol-y-sep)
-    #:next
-    (bbox @rmlo{==> Strict is too picky about data assets})
+    ;; TODO sad pict
+    (bbox @rmlo{Strict is too picky about data assets})
     )
   (pslide
-    #:go (coord 65/100 09/100 'ct) (roblox-studio-pict)
-    #:go center-coord
-    (bbox @rmlo{highlight DATA widget, use icons for terrain, music, character})
+    #:go (coord 18/100 18/100 'ct)
+    (bbox @rmlo{Data Model})
+    ;; TODO data icons: music, mountain, character
+    #:go (coord 65/100 09/100 'ct)
+    (ppict-do
+      (roblox-studio-pict)
+      #:go (coord 97/100 54/100 'rt)
+      (rectangle 260 110 #:border-color lite-green #:border-width 9))
     )
   (pslide
     ;; findings
     #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
     (bbox @rmlo{Findings})
     (yblank pico-y-sep)
-    ;; TODO stage ... exictiement??!
     ;; TODO at least -1 for adoption, +1 errors, =1 bg
-    (ll-append
-      (bbox
-        (ll-append
-          (word-append @rmlo{1. Adoption})
-          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
-          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
-          (lindent (scale-comment @rmlo{<0.13% change modes}))
-          ;; roughly even b/w down (0.07) and upgrade (0.05)
-          ))
-      (bbox
-        (ll-append
-          (word-append @rmlo{2. Errors and Repairs})
-          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
-          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
-          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
-          ))
-      (bbox
-        (ll-append
-          (word-append @rmlo{3. Impact on Background Errors})
-          (lindent (scale-comment @rmlo{no correlation})))))
+    #:alt ((findings-pict 0))
+    #:alt ((findings-pict 1))
+    (findings-pict 2)
     )
   (pslide
     ;; threats
     #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
     (hc-append smol-x-sep (bbox @rmlo{Threats}) (caution-pict 120))
-    (yblank medd-y-sep)
+    (yblank smol-y-sep)
     (vc-append
       smol-y-sep
         (comment-scale (bbox @rmlo{sampling is incomplete}))
@@ -1768,6 +1787,7 @@
     (bbox
       (hc-append
         tiny-x-sep
+        ;; TODO future pict
         (future-work-pict)
         @rmlo{Statistical models of programmers}))
     )
@@ -1834,33 +1854,43 @@
   (ppict-do
     (make-bg client-w client-h)
 
-    ;; findings
-    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
-    (bbox @rmlo{Findings})
-    (yblank pico-y-sep)
-    ;; TODO stage ... exictiement??!
-    ;; TODO at least -1 for adoption, +1 errors, =1 bg
-    (ll-append
-      (bbox
-        (ll-append
-          (word-append @rmlo{1. Adoption})
-          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
-          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
-          (lindent (scale-comment @rmlo{<0.13% change modes}))
-          ;; roughly even b/w down (0.07) and upgrade (0.05)
-          ))
-      (bbox
-        (ll-append
-          (word-append @rmlo{2. Errors and Repairs})
-          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
-          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
-          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
-          ))
-      (bbox
-        (ll-append
-          (word-append @rmlo{3. Impact on Background Errors})
-          (lindent (scale-comment @rmlo{no correlation})))))
+;    ;; findings
+;    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+;    (bbox @rmlo{Findings})
+;    (yblank pico-y-sep)
+;    ;; TODO stage ... exictiement??!
+;    ;; TODO at least -1 for adoption, +1 errors, =1 bg
+;    (ll-append
+;      (bbox
+;        (ll-append
+;          (word-append @rmlo{1. Adoption})
+;          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
+;          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
+;          (lindent (scale-comment @rmlo{<0.13% change modes}))
+;          ;; roughly even b/w down (0.07) and upgrade (0.05)
+;          ))
+;      (bbox
+;        (ll-append
+;          (word-append @rmlo{2. Errors and Repairs})
+;          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
+;          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
+;          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
+;          ))
+;      (bbox
+;        (ll-append
+;          (word-append @rmlo{3. Impact on Background Errors})
+;          (lindent (scale-comment @rmlo{no correlation})))))
 
+
+
+    #:go (coord 18/100 18/100 'ct)
+    (bbox @rmlo{Data Model})
+    ;; TODO data icons: music, mountain, character
+    #:go (coord 65/100 09/100 'ct)
+    (ppict-do
+      (roblox-studio-pict)
+      #:go (coord 97/100 54/100 'rt)
+      (rectangle 260 110 #:border-color lite-green #:border-width 9))
 
 
 
