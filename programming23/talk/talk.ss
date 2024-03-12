@@ -236,6 +236,9 @@
 (define typed-bg-color deep-bg-color)
 (define untyped-bg-color (color%-update-alpha untyped-pen-color 0.2))
 
+(define nocheck-color shallow-color)
+(define nonstrict-color deep-color)
+(define strict-color concrete-color)
 (define emph-color roblox-darkred #;(hex-triplet->color% #x304E59))
 (define bg-color (hex-triplet->color% #xcecfcf))
 
@@ -724,12 +727,14 @@
 (define strict-codeblock* concrete-codeblock*)
 
 (define (edit-file-pict)
-  (define cc utah-white)
+  (define cc utah-granite)
+  (define bb utah-granite)
   (cc-superimpose
     (nonstrict-codeblock (blank 190 400))
     (filled-rectangle 290 200
-                      #:color (color%-update-alpha cc 0.9)
-                      #:border-color cc
+                      #:color (color%-update-alpha cc 0.8)
+                      #:border-color bb
+                      #:border-width 4
                       #:draw-border? #true)))
 
 (define (ucode str)
@@ -1144,6 +1149,121 @@
       (apply hc-append pico-x-sep (map telebox2 '("Global Counts" "Edit Range Counts"))))
     bot))
 
+(define (adoption-pict n)
+  (define ww (w%->pixels 25/100))
+  (ht-append
+    smol-x-sep
+    (adoption-record ww)
+    ((if (< n 1) pblank values) (adoption-session ww))))
+
+(define (adoption-record ww)
+  (define data* '(89.14 10.43 0.43))
+  (define bar-pict (mkbar* data* ww))
+  (vc-append
+    tiny-y-sep
+    (bbox @rmlo{by Record})
+    bar-pict))
+
+(define (background-error-pict n)
+  (define ww (w%->pixels 25/100))
+  (ht-append
+    smol-x-sep
+    (te-bars ww)
+    ((if (< n 1) pblank values) (bg-bars ww))))
+
+(define (te-bars ww)
+  (define data* '(29.62 60.99 3.83))
+  (define bar-pict (mkbar* data* ww))
+  (vc-append
+    tiny-y-sep
+    (bbox @rmlo{Type Errors})
+    bar-pict))
+
+(define (bg-bars ww)
+  (define data* '(88.30 10.45 0.16))
+  (define bar-pict (mkbar* data* ww))
+  (vc-append
+    tiny-y-sep
+    (bbox @rmlo{Background Errors})
+    bar-pict))
+
+(define (adoption-session ww)
+  (define data* '(90.19 9.47 0.16 0.18))
+  (define bar-pict (mkbar* data* ww))
+  (vc-append
+    tiny-y-sep
+    (bbox @rmlo{by Session})
+    bar-pict))
+
+(define (lbl-sup name*)
+  (define pp*
+    (for/list ((nn (in-list name*)))
+      (wbox (scale-comment (rmlo nn)))))
+  (define ww (apply max (map pict-width pp*)))
+  (for/list ((pp (in-list pp*)))
+    (lc-superimpose (xblank ww) pp)))
+
+(define (mkbar* data* ww)
+  (define bar*
+    (for/list ((dd (in-list data*))
+               (lbl (in-list (lbl-sup '("nocheck" "nonstrict" "strict"))))
+               (cc (in-list (list nocheck-color nonstrict-color strict-color))))
+      (define txt (wbox (scale-comment (rmlo (format "~a%" dd)))))
+      (define bg (filled-rectangle (* (/ dd 100) ww) (+ (pict-height txt) tiny-y-sep) #:draw-border? #f #:color cc))
+      (hc-append tiny-x-sep
+                 lbl
+                 (lc-superimpose bg (hc-append (xblank pico-x-sep) txt)))))
+  (bbox
+    (lc-superimpose
+      (xblank ww)
+      (apply vl-append pico-y-sep bar*))))
+
+(define (popular-errors-pict)
+  (ht-append
+    smol-x-sep
+    (nonstrict-pop-errors)
+    (strict-pop-errors)))
+
+(define (pop-errors name ff data*)
+  (vc-append
+    pico-y-sep
+    (bbox (rmlo name))
+    (ff
+      (ptable
+        #:ncols 2
+        #:col-align (list lc-superimpose rc-superimpose)
+        (map coderm data*)))))
+
+(define (nonstrict-pop-errors)
+  (pop-errors
+    "nonstrict"
+    nonstrict-codeblock
+    (list
+      "UnknownSymbol"   "62.13%"
+      "SyntaxError"     "15.42%"
+      "UnknownProperty"  "8.28%"
+      "UnknownRequire"   "3.13%"
+      "..."                   ""
+      "CannotInferBinaryOperation" "0.02%"
+      "OnlyTablesCanHaveMethods"   "0.01%"
+      "DuplicateTypeDefinition"    "<0.01%"
+      "TypesAreUnrelated"          "<0.01%")))
+
+(define (strict-pop-errors)
+  (pop-errors
+    "strict"
+    strict-codeblock
+    (list
+      "UnknownSymbol"   "23.97%"
+      "TypeMismatch"    "20.46%"
+      "UnknownProperty" "18.88%"
+      "SyntaxError"     "9.31%"
+      "..." ""
+      "ModuleHasCyclicDependency" "0.09%"
+      "CannotExtendTable" "0.09%"
+      "OccursCheckFailed" "0.09%"
+      "TypesAreUnrelated" "0.09%")))
+
 ;; -----------------------------------------------------------------------------
 
 (define the-title-str "Privacy-Respecting Type Error Telemetry at Scale")
@@ -1428,7 +1548,10 @@
         (bbox
           (ll-append
             @rmlo{Edit Range =}
-            @rmlo{  [min edit line, max edit line]}))
+            @coderm{  [min line, max line]}
+            (yblank tiny-y-sep)
+            @rmlo{Coarse approximation}
+            ))
         (yblank tiny-y-sep)
         (bbox
           (ll-append
@@ -1449,33 +1572,59 @@
                   (rc-superimpose
                     (xblank (pict-width @rmlo{+340}))
                     (rmlo str))))
-          (wtxt (lambda (pp)
-                  (lc-superimpose
-                    (xblank (pict-width @rmlo{  thousand sessions}))
-                    pp))))
-      (ll-append
+          (wtxt values))
+      (lc-append
         (bbox (word-append (wnum "3")    (wtxt @rmlo{  months of data})))
-        (bbox (word-append (wnum "+1.5") (wtxt @rmlo{  million records})))
+        (bbox
+          (lc-append (word-append (wnum "+1.5") (wtxt @rmlo{  million records}))
+                     (scale-comment (wtxt @rmlo{66% from keystrokes, 34% from module switches}))))
         (bbox (word-append (wnum "+340") (wtxt @rmlo{  thousand sessions})))))
     )
   (pslide
     ;; rq1 adoption
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{1. Adoption})
-    (yblank tiny-y-sep)
-    ;; TODO pics, staging
-    (wideimg "ft-5.png")
+    (yblank smol-y-sep)
+    #:alt ((adoption-pict 0))
+    (adoption-pict 1)
+    #:next
+    (yblank smol-y-sep)
+    (bbox @rmlo{90% nocheck})
+    (yblank smol-y-sep)
+    (bbox @rmlo{0.18% of sessions use +1 modes})
     )
   (pslide
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{2. Errors})
-    (yblank tiny-y-sep)
-    ;; TODO smaller, focus!
-    (wideimg "ft-7.png")
+    (yblank medd-y-sep)
+    #:next
+    (bbox
+      (lc-append
+        (scale-comment @rmlo{Internal Limits:})
+        (hc-append smol-x-sep
+                   @coderm{CodeTooComplex}
+                   @coderm{UnificationTooComplex}
+                   @coderm{NormalizationTooComplex})))
+    (yblank smol-y-sep)
+    (bbox @rmlo{26 occurrence, only in 3 sessions})
     )
   (pslide
-    #:go center-coord
-    (bbox @rmlo{too complex})
+    ;; popular errors
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{2. Errors})
+    (yblank tiny-y-sep)
+    (popular-errors-pict)
+    )
+  (pslide
+    #:go (coord 1/2 11/100 'ct)
+    (bbox @rmlo{2. Errors})
+    (yblank smol-y-sep)
+    (bbox @rmlo{Survival? See paper.})
+    (yblank tiny-y-sep)
+    ;; - stx un-sym un-prop most common
+    ;; - then count-mismatch(arity) type-mismatch generic-error [ TE GE unknown origin ]
+    ;; - optional-value-access persists
+    (sbox (freeze (scale-to-width (-bitmap "tbl-preview.png") (w%->pixels 55/100))))
     )
   (pslide
     #:go (coord 1/2 11/100 'ct)
@@ -1483,38 +1632,44 @@
     (yblank tiny-y-sep)
     ;; TODO something
     ;; TODO colors for NC NS S
-    (wideimg "ft-9.png")
+    (bbox (scale-comment @rmlo{Density changes over time   (curr - old / lines)}))
+    (yblank pico-y-sep)
+    (sbox (inset/clip (wideimg "ft-9.png") 0 -220 0 0))
     )
   (pslide
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{3. Types vs. Background Errors})
-    (yblank tiny-y-sep)
-    ;; TODO something
-    ;; TODO colors for NC NS S
-    (wideimg "ft-5.png")
-    (yblank tiny-y-sep)
-    (bbox @rmlo{same % as adoption rates, yikes})
+    (yblank smol-y-sep)
+    (background-error-pict 1)
+    #:next
+    (yblank smol-y-sep)
+    ;; TODO surprise pict? first glance deceiving
+    (bbox @rmlo{BG rates proportional to adoption rates})
     )
+;  (pslide
+;    #:go (coord 1/2 11/100 'ct)
+;    (bbox @rmlo{3. Types vs. Background Errors})
+;    (yblank tiny-y-sep)
+;    ;; TODO something
+;    (wideimg "ft-10.png")
+;    )
   (pslide
     #:go (coord 1/2 11/100 'ct)
     (bbox @rmlo{3. Types vs. Background Errors})
-    (yblank tiny-y-sep)
-    ;; TODO something
-    (wideimg "ft-10.png")
-    )
-  (pslide
-    ;; TODO ?
-    #:go (coord 1/2 11/100 'ct)
-    (bbox @rmlo{3. Types vs. Background Errors})
-    (yblank tiny-y-sep)
+    (yblank medd-y-sep)
     (bbox
       (ll-append
-        @rmlo{Uh oh ...}
-        (word-append @rmlo{3% of strict increase } @rmem{module} @rmlo{ type errors but not background errors})
-        (word-append @rmlo{16% of strict increase } @rmem{global} @rmlo{ type errors but not background})
-        ))
-    (yblank tiny-y-sep)
-    (bbox @rmlo{strict is too strict for data model})
+        (word-append @rmem{16%} @rmlo{ of strict records})
+        @rmlo{  increase type errors}
+        @rmlo{  but not background errors}))
+    (yblank pico-y-sep)
+    #:next
+    (bbox
+      (ll-append
+        (word-append @rmem{3%} @rmlo{ same for per-script counts})))
+    (yblank smol-y-sep)
+    #:next
+    (bbox @rmlo{==> Strict is too picky about data assets})
     )
   (pslide
     #:go (coord 65/100 09/100 'ct) (roblox-studio-pict)
@@ -1660,35 +1815,6 @@
 
 ;; =============================================================================
 
-(module+ raco-pict (provide raco-pict)
-         ;; (define client-w 984) (define client-h 728) ;; 4:3
-         (define client-w 1320) (define client-h 726) ;; 16:9 sort of, too thin
-         (define raco-pict
-  (ppict-do
-    (make-bg client-w client-h)
-
-
-
-    #:go (coord 1/2 11/100 'ct)
-    (wideimg "ft-1.png")
-    (yblank tiny-y-sep)
-    #:next
-    (let ((wnum (lambda (str)
-                  (rc-superimpose
-                    (xblank (pict-width @rmlo{+340}))
-                    (rmlo str))))
-          (wtxt (lambda (pp)
-                  (lc-superimpose
-                    (xblank (pict-width @rmlo{  thousand sessions}))
-                    pp))))
-      (ll-append
-        (bbox (word-append (wnum "3")    (wtxt @rmlo{  months of data})))
-        (bbox (word-append (wnum "+1.5") (wtxt @rmlo{  million records})))
-        (bbox (word-append (wnum "+340") (wtxt @rmlo{  thousand sessions})))))
-
-;    #:go center-coord
-;    (telemetry-design-pict)
-
     ;; bare minimum example errors
 ; TypeMismatch 	 Basic type error.
 ; SyntaxError 	 Basic parse error, e.g., \code{for if end}.
@@ -1700,6 +1826,40 @@
 ; IncorrectGenericParamCount 	 Arity mismatch for a generic type.
 ; CodeTooComplex 	 Type analysis failed~(\cref{s:code-too-complex}).
 ; GenericError 	 Generic label for other non-type errors, e.g., looping over an unordered table.
+
+(module+ raco-pict (provide raco-pict)
+         ;; (define client-w 984) (define client-h 728) ;; 4:3
+         (define client-w 1320) (define client-h 726) ;; 16:9 sort of, too thin
+         (define raco-pict
+  (ppict-do
+    (make-bg client-w client-h)
+
+    ;; findings
+    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+    (bbox @rmlo{Findings})
+    (yblank pico-y-sep)
+    ;; TODO stage ... exictiement??!
+    ;; TODO at least -1 for adoption, +1 errors, =1 bg
+    (ll-append
+      (bbox
+        (ll-append
+          (word-append @rmlo{1. Adoption})
+          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
+          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
+          (lindent (scale-comment @rmlo{<0.13% change modes}))
+          ;; roughly even b/w down (0.07) and upgrade (0.05)
+          ))
+      (bbox
+        (ll-append
+          (word-append @rmlo{2. Errors and Repairs})
+          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
+          ))
+      (bbox
+        (ll-append
+          (word-append @rmlo{3. Impact on Background Errors})
+          (lindent (scale-comment @rmlo{no correlation})))))
 
 
 
