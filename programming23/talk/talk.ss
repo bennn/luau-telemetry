@@ -555,6 +555,9 @@
 (define (plus-one [ww 40])
   (scale-to-square (-bitmap "plus-one.png") ww))
 
+(define (minus-one [ww 70])
+  (scale-to-square (-bitmap "minus-one.png") ww))
+
 (define (scale-comment pp)
   (scale pp 0.65))
 
@@ -875,9 +878,12 @@
   (define hi (penguin-row n))
   (vc-append tiny-y-sep hi ((if (= n 0) values pblank) lo)))
 
+(define (wizard-pict hh)
+  (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)))
+
 (define (penguin-row n)
     (let* ((hh 160)
-           (maker (tag-pict (freeze (scale-to-height (-bitmap "penguin-wizard.png") hh)) 'maker))
+           (maker (tag-pict (wizard-pict hh) 'maker))
            (users (tag-pict (freeze (scale-to-height (values (inset/clip (-bitmap "penguin-group.png") 0 -120 0 -140)) hh)) 'users))
            (phone (tag-pict (sbox (freeze (scale-to-height (-bitmap "phone-call.png") (* 0.6 hh)))) 'telephone))
            (phone (cc-superimpose (bhrule (w%->pixels (if (< n 3) 35/100 20/100)) #:thickness 2) phone))
@@ -927,8 +933,7 @@
   (sbox (freeze (scale-to-width (-bitmap "struct.png") (w%->pixels 8/10)))))
 
 (define (future-work-pict)
-  ;; TODO
-  (frame (blank 150 150)))
+  (values (freeze (scale-to-square (-bitmap "stat.png") 140))))
 
 (define (rq-pict n)
     (ll-append
@@ -953,7 +958,7 @@
       (bbox
         (ll-append
           (word-append @rmlo{1. Adoption})
-          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{10% use types, 1% use strict}) (minus-one)))
           (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
           (lindent (scale-comment @rmlo{<0.13% change modes}))
           ;; roughly even b/w down (0.07) and upgrade (0.05)
@@ -962,7 +967,7 @@
         (ll-append
           (word-append @rmlo{2. Errors and Repairs})
           (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
-          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
+          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (blank)))
           (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
           )))
       ((if (< n 2) pblank values) (bbox
@@ -1209,8 +1214,8 @@
   (define ww (w%->pixels 25/100))
   (ht-append
     smol-x-sep
-    (te-bars ww)
-    ((if (< n 1) pblank values) (bg-bars ww))))
+    (bg-bars ww)
+    ((if (< n 1) pblank values) (te-bars ww))))
 
 (define (te-bars ww)
   (define data* '(29.62 60.99 3.83))
@@ -1308,7 +1313,7 @@
 (define (roblox-background-pict n)
     (lc-append
       (bbox (word-append @rmlo{Typechecking } @rmhi{Every} @rmlo{ Keystroke}))
-      ((if (< n 1) pblank values) (bbox @rmlo{Background Analysis}))
+      ((if (< n 1) pblank values) (bbox (word-append @rmhi{Strict} @rmlo{ Background Analysis})))
       ((if (< n 2) pblank values) (bbox @rmlo{Analysis Widget}))
       ((if (< n 3) pblank values) (bbox @rmlo{Usage-Data Telemetry}))))
 
@@ -1372,7 +1377,7 @@
     #:go (coord 1/2 55/100 'ct)
     ;; TODO nicer right arrow
     (bbox
-      (hc-append @rmlo{Telemetry  ==>  Informed Decisions } (plus-one)))
+      (hc-append @rmlo{Telemetry  ==>  Informed Decisions  } (plus-one)))
     )
   (pslide
     #:go (coord 1/2 1/2 'cb #:abs-y (- pico-y-sep)) (designers-and-users 2)
@@ -1387,7 +1392,11 @@
     ;; #:go (at-find-pict 'telephone cb-find 'ct #:abs-y smol-y-sep)
     ;; (bbox @rmrlo{Telemetry is contentious!})
     #:go (at-find-pict 'users lb-find 'ct #:abs-y tiny-y-sep #:sep tiny-y-sep)
-    (thinkbox @rmlo{Are you spying on me?})
+    (thinkbox
+      (vc-append
+        4
+        @rmlo{Are you spying on me?}
+        (frame (freeze (scale-to-square (-bitmap "spy.png") 90)))))
     #:next
     (yblank tiny-y-sep)
     (hc-append tiny-x-sep
@@ -1583,13 +1592,13 @@
             @rmlo{Edit Range =}
             @coderm{  [min line, max line]}
             (yblank tiny-y-sep)
-            @rmlo{Coarse approximation}
             ))
         (yblank tiny-y-sep)
         (bbox
           (ll-append
+            @rmlo{Coarse approximation}
             @rmlo{Not shared!}
-            (word-append @rmlo{Used to filter } @rmem{overlapping errors}))))
+            (word-append @rmlo{Filters } @rmem{overlapping errors}))))
       (edit-file-pict))
     )
   (void))
@@ -1623,6 +1632,8 @@
     (bbox @rmlo{90% nocheck})
     (yblank smol-y-sep)
     (bbox @rmlo{0.18% of sessions use +1 modes})
+    (yblank tiny-y-sep)
+    (sbox (minus-one))
     )
   (pslide
     #:go (coord 1/2 11/100 'ct)
@@ -1637,6 +1648,7 @@
                    @coderm{Unification Too Complex}
                    @coderm{Normalization Too Complex})))
     (yblank smol-y-sep)
+    #:next
     (bbox
       (lc-append
         @rmlo{26 total, only in 3 sessions}
@@ -1700,18 +1712,25 @@
         @rmlo{  but not background errors}))
     (yblank medd-y-sep)
     #:next
-    ;; TODO sad pict
     (bbox @rmlo{Strict is too picky about data assets})
+    (yblank tiny-y-sep)
+    (sbox (minus-one))
     )
   (pslide
-    #:go (coord 18/100 18/100 'ct)
-    (bbox @rmlo{Data Model})
-    ;; TODO data icons: music, mountain, character
-    #:go (coord 65/100 09/100 'ct)
+    #:go (coord 1/2 09/100 'ct)
     (ppict-do
       (roblox-studio-pict)
       #:go (coord 97/100 54/100 'rt)
-      (rectangle 260 110 #:border-color lite-green #:border-width 9))
+      (rectangle 260 110 #:border-color lite-orange #:border-width 9)
+      #:go (coord 10/100 1/2 'lc #:abs-x (+ bigg-x-sep))
+      (vc-append
+        pico-y-sep
+        (bbox @rmlo{Data Model})
+        (sbox (freeze (scale-to-square (-bitmap "rchar.png") 90)))
+        (hc-append
+          pico-y-sep
+          (sbox (freeze (scale-to-square (-bitmap "music.png") 90)))
+          (sbox (freeze (scale-to-square (-bitmap "mountain.png") 90))))))
     )
   (pslide
     ;; findings
@@ -1723,18 +1742,6 @@
     #:alt ((findings-pict 1))
     (findings-pict 2)
     )
-  (pslide
-    ;; threats
-    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
-    (hc-append smol-x-sep (bbox @rmlo{Threats}) (caution-pict 120))
-    (yblank smol-y-sep)
-    (vc-append
-      smol-y-sep
-        (comment-scale (bbox @rmlo{sampling is incomplete}))
-        (comment-scale (bbox @rmlo{stx errors dominate global counts}))
-        (comment-scale (bbox @rmlo{edit ranges are coarse}))
-        (comment-scale (bbox @rmlo{no data for the intention behind edits})))
-    )
   (void))
 
 (define (sec:takeaways)
@@ -1742,23 +1749,25 @@
     ;; roblox takeaways
     #:go (coord 10/100 06/100 'lt) (luau-and-roblox-smol 2)
     #:go (coord 26/100 25/100 'lt)
-    (bbox (hc-append tiny-x-sep (muscle-pict) @rmlo{Make nonstrict the default!}))
+    (bbox (hc-append tiny-x-sep (muscle-pict) @rmlo{Make types the default!}))
     (yblank smol-y-sep)
+    #:next
     (bbox
         (hc-append
           tiny-x-sep
           (wrench-pict)
           (ll-append
             @rmlo{Strict needs work}
-            (lindent (comment-scale @rmlo{low adoption ==> inexpressive?}))
-            (lindent (comment-scale @rmlo{data model types})))))
+            (lindent (comment-scale @rmlo{data model needs types}))
+            (lindent (comment-scale @rmlo{low adoption ==> inexpressive?})))))
     )
   (pslide
     ;; general
-    #:go (coord 90/100 06/100 'rt) (penguin-smol)
+    ;; #:go (coord 90/100 06/100 'rt) (penguin-smol)
     #:go (coord 17/100 25/100 'lt)
     (bbox
-      (hc-append tiny-x-sep (big-plus-one)
+      (hc-append tiny-x-sep
+                 (wizard-pict endlogo-width)
         (ll-append
           @rmlo{Lite telemetry ==> useful analyses}
           (lindent (comment-scale @rmlo{gradual adoption}))
@@ -1781,15 +1790,15 @@
       tiny-x-sep
       (aec-pict)
       (lc-append
-        (bbox @coderm{https://zenodo.org/doi/10.5281/zenodo.10275213})
+        (bbox @coderm{https://doi.org/10.5281/zenodo.10275213})
         (bbox @rmlo{Data + Analysis Scripts})))
     (yblank medd-y-sep)
+    #:next
     (bbox
       (hc-append
         tiny-x-sep
-        ;; TODO future pict
         (future-work-pict)
-        @rmlo{Statistical models of programmers}))
+        @rmlo{Statistical models of programmers?}))
     )
   (pslide
     #:go center-coord (freeze (bblur (-bitmap (build-path img-dir "roblox-bg.jpeg"))))
@@ -1799,21 +1808,36 @@
     ;; final summary
     #:go (coord 10/100 06/100 'lt) (luau-and-roblox-smol 2)
     #:go (coord 90/100 06/100 'rt) (penguin-smol)
-    #:go (coord 1/2 48/100 'cc) (telemetry-design-pict)
-    ;; TODO data pict?
+    #:go (coord 1/2 38/100 'ct) (telemetry-design-pict)
+    (yblank tiny-y-sep)
+    (scale (background-error-pict 1) 0.8)
     )
   (void))
 
 (define (sec:extra)
   ;; big tables???
   ;; ft-1 ... ft-11.png
+  (pslide
+    ;; threats
+    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
+    (hc-append smol-x-sep (bbox @rmlo{Threats}) (caution-pict 120))
+    ;; TODO awk
+    (yblank smol-y-sep)
+    (bbox
+    (vc-append
+      tiny-y-sep
+        (comment-scale (values @rmlo{sampling is incomplete}))
+        (comment-scale (values @rmlo{stx errors dominate global counts}))
+        (comment-scale (values @rmlo{edit ranges are coarse}))
+        (comment-scale (values @rmlo{no data for the intention behind edits}))))
+    )
   (void))
 
 ;; -----------------------------------------------------------------------------
 
 (define (do-show)
   [set-spotlight-style! #:size 60 #:color (color%-update-alpha highlight-brush-color 0.6)]
-  [set-page-numbers-visible! (if #true #true #false)]
+  [set-page-numbers-visible! (if #false #true #false)]
   [current-page-number-font page-font]
   [current-page-number-color white]
   ;; --
@@ -1854,44 +1878,19 @@
   (ppict-do
     (make-bg client-w client-h)
 
-;    ;; findings
-;    #:go (coord 1/2 16/100 'ct #:sep tiny-y-sep)
-;    (bbox @rmlo{Findings})
-;    (yblank pico-y-sep)
-;    ;; TODO stage ... exictiement??!
-;    ;; TODO at least -1 for adoption, +1 errors, =1 bg
-;    (ll-append
-;      (bbox
-;        (ll-append
-;          (word-append @rmlo{1. Adoption})
-;          (lindent (scale-comment @rmlo{10% use types, 1% use strict}))
-;          (lindent (scale-comment @rmlo{<0.15% mix analysis modes}))
-;          (lindent (scale-comment @rmlo{<0.13% change modes}))
-;          ;; roughly even b/w down (0.07) and upgrade (0.05)
-;          ))
-;      (bbox
-;        (ll-append
-;          (word-append @rmlo{2. Errors and Repairs})
-;          (lindent (scale-comment @rmlo{common errors: syntax (50%), arity (2%), option unpacking (2%)}))
-;          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{internal limits are rare}) (plus-one)))
-;          (lindent (hc-append tiny-x-sep (scale-comment @rmlo{errors rarely pile up}) (plus-one)))
-;          ))
-;      (bbox
-;        (ll-append
-;          (word-append @rmlo{3. Impact on Background Errors})
-;          (lindent (scale-comment @rmlo{no correlation})))))
-
-
-
-    #:go (coord 18/100 18/100 'ct)
-    (bbox @rmlo{Data Model})
-    ;; TODO data icons: music, mountain, character
-    #:go (coord 65/100 09/100 'ct)
+    #:go (coord 1/2 09/100 'ct)
     (ppict-do
       (roblox-studio-pict)
       #:go (coord 97/100 54/100 'rt)
-      (rectangle 260 110 #:border-color lite-green #:border-width 9))
-
-
+      (rectangle 260 110 #:border-color lite-orange #:border-width 9)
+      #:go (coord 10/100 1/2 'lc #:abs-x (+ bigg-x-sep))
+      (vc-append
+        pico-y-sep
+        (bbox @rmlo{Data Model})
+        (sbox (freeze (scale-to-square (-bitmap "rchar.png") 90)))
+        (hc-append
+          pico-y-sep
+          (sbox (freeze (scale-to-square (-bitmap "music.png") 90)))
+          (sbox (freeze (scale-to-square (-bitmap "mountain.png") 90))))))
 
   )))
