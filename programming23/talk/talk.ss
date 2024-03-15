@@ -553,13 +553,13 @@
   (ben-rule w (or thickness 1) #:color color))
 
 (define (plus-one [ww 40])
-  (scale-to-square (-bitmap "plus-one.png") ww))
+  (freeze (scale-to-square (-bitmap "plus-one.png") ww)))
 
 (define (minus-one [ww 70])
-  (scale-to-square (-bitmap "minus-one.png") ww))
+  (freeze (scale-to-square (-bitmap "minus-one.png") ww)))
 
 (define (scale-comment pp)
-  (scale pp 0.65))
+  (freeze (scale pp 0.65)))
 
 (define comment-scale scale-comment)
 
@@ -642,18 +642,6 @@
 
 (define (codeblock-append* #:sep [sep #f] pp*)
   (apply vl-append (or sep tiny-y-sep) pp*))
-
-(define (hcodeblock-append #:sep [sep #f] . pp*)
-  (hcodeblock-append* #:sep sep pp*))
-
-(define (hcodeblock-append* #:sep [sep #f] pp*)
-  (apply ht-append (or sep tiny-x-sep) pp*))
-
-(define (scale-lang-lo pp)
-  (scale-to-fit pp 120 80))
-
-(define (lang-lo str)
-  (scale-lang-lo (-bitmap str)))
 
 (define (split/n lang-img* n)
   (let loop ((pp* lang-img*))
@@ -824,49 +812,11 @@
 (define (label-above base . pp*)
   (vc-append 0 (apply vc-append 2 pp*) base))
 
-(define (mkchess n)
-  (format "img/chess~a.png" n))
-
-(define ((scale-square n) pp)
-  (scale-to-square pp n))
-
-(define (mag-icon [hh 60])
-  (bitmap (magnifying-glass-icon #:height hh)))
-
-(define (check-mini)
-  (check-pict 40))
-
-(define (check-mini2)
-  (check-pict2 40))
-
-(define (stop-mini)
-  (stop-pict 30))
-
-(define (stop-mini2)
-  (stop-pict2 30))
-
-(define (check-pict2 h)
-  (bitmap (check-icon #:height h #:material metal-icon-material)))
-
-(define (check-pict h)
-  (bitmap (check-icon #:color apple-green #:height h #:material rubber-icon-material)))
-
 (define (caution-pict h)
   (frame (freeze (scale-to-square (-bitmap "caution.png") h))))
 
-(define (stop-pict h)
-  (bitmap (stop-icon #:color utah-crimson #:height h #:material plastic-icon-material)))
-
-(define (stop-pict2 h)
-  (bitmap (stop-icon #:color utah-crimson #:height h #:material metal-icon-material)))
-
-(define (shuffle-grid pp)
-  (define row* (make-list 3 pp))
-  (define sep 4)
-  (apply
-    vc-append
-    sep
-    (make-list 3 (apply hc-append sep row*))))
+(define ((scale-square n) pp)
+  (scale-to-square pp n))
 
 (define (rnd n)
   (~r n #:precision '(= 2)))
@@ -903,7 +853,7 @@
   (blank endlogo-width endlogo-width))
 
 (define (scale-to-endlogo pp)
-  (scale-to-square pp endlogo-width))
+  (freeze (scale-to-square pp endlogo-width)))
 
 (define (-endlogo str)
   (values #;wbox (freeze (scale-to-endlogo (-bitmap str)))))
@@ -1877,20 +1827,5 @@
          (define raco-pict
   (ppict-do
     (make-bg client-w client-h)
-
-    #:go (coord 1/2 09/100 'ct)
-    (ppict-do
-      (roblox-studio-pict)
-      #:go (coord 97/100 54/100 'rt)
-      (rectangle 260 110 #:border-color lite-orange #:border-width 9)
-      #:go (coord 10/100 1/2 'lc #:abs-x (+ bigg-x-sep))
-      (vc-append
-        pico-y-sep
-        (bbox @rmlo{Data Model})
-        (sbox (freeze (scale-to-square (-bitmap "rchar.png") 90)))
-        (hc-append
-          pico-y-sep
-          (sbox (freeze (scale-to-square (-bitmap "music.png") 90)))
-          (sbox (freeze (scale-to-square (-bitmap "mountain.png") 90))))))
 
   )))
