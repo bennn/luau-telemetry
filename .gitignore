@@ -16,3 +16,13 @@ paper.pdf
 **/.DS_Store
 compiled/
 raco-pict.png
+
+programming23/artifact/TALL-SESSION.txt
+programming23/diff/
+programming23/out/error-count.txt
+programming23/out/error-density*.rktd
+programming23/revision/
+programming23/submission/
+programming23/telemetry-submission.pdf
+programming23/tmp/
+telemetry.tar.gz
